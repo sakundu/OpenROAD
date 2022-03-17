@@ -184,33 +184,6 @@ Opendp::mirrorCandidates(vector<dbInst*> &mirror_candidates,
   return mirror_count;
 }
 
-// apply mirror about Y axis to orient
-static dbOrientType
-orientMirrorY(dbOrientType orient)
-{
-  switch (orient) {
-  case dbOrientType::R0:
-    return dbOrientType::MY;
-  case dbOrientType::MX:
-    return dbOrientType::R180;
-  case dbOrientType::MY:
-    return dbOrientType::R0;
-  case dbOrientType::R180:
-    return dbOrientType::MX;
-  case dbOrientType::R90:
-    return dbOrientType::MXR90;
-  case dbOrientType::MXR90:
-    return dbOrientType::R90;
-  case dbOrientType::R270:
-    return dbOrientType::MYR90;
-  case dbOrientType::MYR90:
-    return dbOrientType::R270;
-  }
-  // make lame gcc happy
-  std::abort();
-  return dbOrientType::R0;
-}
-
 int64_t
 Opendp::hpwl(dbInst *inst)
 {
@@ -236,7 +209,7 @@ Opendp::hpwlIncrement(dbInst *inst, int pt_x, bool mirror,
     if (iterm->getNet() != NULL) {
       dbNet *net = iterm->getNet();
 
-      if (!net2iterm.count(net)) {
+      if (net2iterm.find(net) == net2iterm.end()) {
         net2iterm[net] = vector<dbITerm *>();
         net2iterm[net].push_back(iterm);
       } else {
@@ -355,6 +328,33 @@ Opendp::hpwlIncrementHelper(dbInst *inst, vector<dbITerm *> &iterms,
   }
   int64_t new_hpwl = new_net_box->dx() + new_net_box->dy();
   return new_hpwl - net_hpwl;
+}
+
+// apply mirror about Y axis to orient
+static dbOrientType
+orientMirrorY(dbOrientType orient)
+{
+  switch (orient) {
+  case dbOrientType::R0:
+    return dbOrientType::MY;
+  case dbOrientType::MX:
+    return dbOrientType::R180;
+  case dbOrientType::MY:
+    return dbOrientType::R0;
+  case dbOrientType::R180:
+    return dbOrientType::MX;
+  case dbOrientType::R90:
+    return dbOrientType::MXR90;
+  case dbOrientType::MXR90:
+    return dbOrientType::R90;
+  case dbOrientType::R270:
+    return dbOrientType::MYR90;
+  case dbOrientType::MYR90:
+    return dbOrientType::R270;
+  }
+  // make lame gcc happy
+  std::abort();
+  return dbOrientType::R0;
 }
 
 }  // namespace dpl
