@@ -40,24 +40,54 @@
 include("openroad")
 find_package(TCL)
 
+# Find Eigen3 for SAIT algorithms
+find_package(Eigen3 REQUIRED)
+
+# Find Boost for SAIT algorithms (needed for RCM-Boost)
+find_package(Boost REQUIRED COMPONENTS graph)
+
+# SAIT source files
+set(SAIT_SOURCES
+    src/sait/hypergraph.cpp
+    src/sait/fiedler_ordering.cpp
+    src/sait/rcm_ordering.cpp
+    src/sait/graph_conversion.cpp
+    src/sait/random_ordering.cpp
+    src/sait/io_utils.cpp
+    # Additional files for best-orderings functionality
+    src/sait/dirichlet_ordering.cpp
+    src/sait/peak_cutwidth_ordering.cpp
+    src/sait/sfc_ordering.cpp
+    src/sait/bfs_ordering.cpp
+    src/sait/dfs_ordering.cpp
+    src/sait/cutwidth_analysis.cpp
+)
+
 add_library(sa1d_lib
   src/Objects.cpp
   src/OptSA.cpp
   src/Worker.cpp
+  src/VertexOrdering.cpp
+  src/BestOrderings.cpp
+  ${SAIT_SOURCES}
 )
 
 target_link_libraries(sa1d_lib
   PUBLIC
     odb
     OpenSTA
+    Eigen3::Eigen
   PRIVATE
     utl_lib
     Boost::boost
+    Boost::graph
 )
 
 target_include_directories(sa1d_lib
   PUBLIC
     include
+  PRIVATE
+    include/sait
 )
 
 # Add OpenMP support

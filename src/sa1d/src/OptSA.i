@@ -37,6 +37,8 @@
 #include <vector>
 #include "ord/OpenRoad.hh"
 #include "sa1d/OptSA.h"
+#include "sa1d/VertexOrdering.h"
+#include "sa1d/BestOrderings.h"
 #include "utl/Logger.h"
 
 namespace sa1d {
@@ -94,6 +96,108 @@ void opt_sa_1d_cmd() {
   optsa->runSA();
 }
 
+// Vertex ordering integration commands
+void set_vertex_ordering_method_cmd(const char* method, bool verbose) {
+  sa1d::OptSA *optsa = ord::OpenRoad::openRoad()->getOptSA();
+  
+  sa1d::VertexOrderingParams params;
+  params.verbose = verbose;
+  
+  std::string method_str(method);
+  if (method_str == "random") {
+    params.method = sa1d::OrderingMethod::RANDOM;
+  } else if (method_str == "size_based") {
+    params.method = sa1d::OrderingMethod::SIZE_BASED;
+  } else if (method_str == "fiedler") {
+    params.method = sa1d::OrderingMethod::FIEDLER;
+  } else if (method_str == "rcm") {
+    params.method = sa1d::OrderingMethod::RCM;
+  } else if (method_str == "rcm_boost") {
+    params.method = sa1d::OrderingMethod::RCM_BOOST;
+  } else {
+    utl::Logger* logger = ord::OpenRoad::openRoad()->getLogger();
+    logger->error(utl::SA1D, 300, "Unknown vertex ordering method: {}", method_str);
+    return;
+  }
+  
+  optsa->setVertexOrderingMethod(params);
+}
+
+void enable_custom_ordering_cmd(bool enable) {
+  sa1d::OptSA *optsa = ord::OpenRoad::openRoad()->getOptSA();
+  optsa->enableCustomOrdering(enable);
+}
+
+bool compute_custom_ordering_cmd() {
+  sa1d::OptSA *optsa = ord::OpenRoad::openRoad()->getOptSA();
+  auto result = optsa->computeCustomOrdering();
+  
+  if (result.success) {
+    utl::Logger* logger = ord::OpenRoad::openRoad()->getLogger();
+    logger->info(utl::SA1D, 301, "Custom ordering computed successfully: {} cells, algorithm: {}, HPWL improvement: {:.1f}%",
+                result.cell_ordering.size(), result.algorithm_used, 
+                result.initial_hpwl > 0 ? 100.0 * (result.initial_hpwl - result.final_hpwl) / result.initial_hpwl : 0.0);
+  }
+  
+  return result.success;
+}
+
+// Best orderings integration commands (SAIT multi-algorithm)
+void set_best_orderings_params_cmd(bool verbose, bool use_parallel, int max_threads, int top_count, 
+                                   bool include_advanced, bool apply_refinement, bool use_constrained_refinement) {
+  sa1d::OptSA *optsa = ord::OpenRoad::openRoad()->getOptSA();
+  
+  sa1d::BestOrderingsParams params;
+  params.verbose = verbose;
+  params.use_parallel = use_parallel;
+  params.max_threads = max_threads;
+  params.top_count = top_count;
+  params.include_advanced_methods = include_advanced;
+  params.apply_refinement = apply_refinement;
+  params.use_constrained_refinement = use_constrained_refinement;
+  
+  optsa->setBestOrderingsParams(params);
+}
+
+void enable_best_orderings_cmd(bool enable) {
+  sa1d::OptSA *optsa = ord::OpenRoad::openRoad()->getOptSA();
+  optsa->enableBestOrderings(enable);
+}
+
+bool compute_best_orderings_cmd(bool verbose) {
+  sa1d::OptSA *optsa = ord::OpenRoad::openRoad()->getOptSA();
+  
+  // Set verbose mode if requested
+  if (verbose) {
+    sa1d::BestOrderingsParams params;
+    params.verbose = true;
+    optsa->setBestOrderingsParams(params);
+  }
+  
+  auto result = optsa->computeBestOrderings();
+  
+  if (result.success) {
+    utl::Logger* logger = ord::OpenRoad::openRoad()->getLogger();
+    logger->info(utl::SA1D, 302, "Best orderings computed successfully: {} algorithms tested, {} top solutions found",
+                result.algorithms_tested, result.top_orderings.size());
+    
+    for (size_t i = 0; i < result.top_orderings.size(); ++i) {
+      const auto& info = result.top_orderings[i];
+      logger->info(utl::SA1D, 303, "  {}. {} - Peak cutwidth: {} ({:.1f}% improvement), {:.0f}ms",
+                  i + 1, info.algorithm_name, info.final_peak_cutwidth, 
+                  info.improvement_percentage, info.computation_time_ms);
+    }
+  } else {
+    utl::Logger* logger = ord::OpenRoad::openRoad()->getLogger();
+    logger->error(utl::SA1D, 304, "Best orderings computation failed: {}", result.error_message);
+  }
+  
+  return result.success;
+}
+
 } // namespace
 
 %} // inline
+
+// Note: We don't include the full header files to avoid exposing incomplete types
+// All functionality is accessed through the command functions above

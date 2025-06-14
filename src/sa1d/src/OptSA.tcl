@@ -60,4 +60,95 @@ proc opt_sa_1d { args } {
   sa1d::opt_sa_1d_cmd
 }
 
+# Vertex ordering integration commands
+
+sta::define_cmd_args "set_vertex_ordering_method" {
+  method \
+  [-verbose] \
+}
+
+proc set_vertex_ordering_method { args } {
+  sta::parse_key_args "set_vertex_ordering_method" args \
+    keys {} \
+    flags {-verbose}
+  
+  set method [lindex $args 0]
+  set verbose [info exists flags(-verbose)]
+  
+  sa1d::set_vertex_ordering_method_cmd $method $verbose
+}
+
+sta::define_cmd_args "enable_custom_ordering" {
+  enable \
+}
+
+proc enable_custom_ordering { args } {
+  set enable [lindex $args 0]
+  sa1d::enable_custom_ordering_cmd $enable
+}
+
+sta::define_cmd_args "compute_custom_ordering" {}
+
+proc compute_custom_ordering { args } {
+  return [sa1d::compute_custom_ordering_cmd]
+}
+
+# Best orderings integration commands (SAIT multi-algorithm)
+
+sta::define_cmd_args "set_best_orderings_params" {
+  [-verbose] \
+  [-use_parallel] \
+  [-max_threads max_threads] \
+  [-top_count top_count] \
+  [-include_advanced] \
+  [-apply_refinement] \
+  [-use_constrained_refinement] \
+}
+
+proc set_best_orderings_params { args } {
+  sta::parse_key_args "set_best_orderings_params" args \
+    keys {-max_threads -top_count} \
+    flags {-verbose -use_parallel -include_advanced -apply_refinement -use_constrained_refinement}
+  
+  set verbose [info exists flags(-verbose)]
+  set use_parallel [info exists flags(-use_parallel)]
+  set include_advanced [info exists flags(-include_advanced)]
+  set apply_refinement [info exists flags(-apply_refinement)]
+  set use_constrained_refinement [info exists flags(-use_constrained_refinement)]
+  
+  set max_threads 0
+  if { [info exists keys(-max_threads)] } {
+    set max_threads $keys(-max_threads)
+  }
+  
+  set top_count 6
+  if { [info exists keys(-top_count)] } {
+    set top_count $keys(-top_count)
+  }
+  
+  sa1d::set_best_orderings_params_cmd $verbose $use_parallel $max_threads $top_count $include_advanced $apply_refinement $use_constrained_refinement
+}
+
+sta::define_cmd_args "enable_best_orderings" {
+  enable \
+}
+
+proc enable_best_orderings { args } {
+  set enable [lindex $args 0]
+  sa1d::enable_best_orderings_cmd $enable
+}
+
+sta::define_cmd_args "compute_best_orderings" {
+  [-verbose] \
+}
+
+proc compute_best_orderings { args } {
+  sta::parse_key_args "compute_best_orderings" args \
+    keys {} \
+    flags {-verbose}
+  
+  set verbose [info exists flags(-verbose)]
+  return [sa1d::compute_best_orderings_cmd $verbose]
+}
+
 

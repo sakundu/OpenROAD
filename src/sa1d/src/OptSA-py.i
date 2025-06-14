@@ -53,4 +53,26 @@ using namespace odb;
 %import "odb.i"
 %import "odb/dbTypes.h"
 
-%include "sa1d/OptSA.h"
+// Include only the safe parts of OptSA.h that don't expose incomplete types
+%inline %{
+
+namespace sa1d {
+
+void setSAParams(const char* filename) {
+  sa1d::OptSA *optsa = ord::OpenRoad::openRoad()->getOptSA();
+  optsa->setSAParams(filename);
+}
+
+void report_pack_hpwl_cmd() {
+  sa1d::OptSA *optsa = ord::OpenRoad::openRoad()->getOptSA();
+  optsa->reportPackHPWL();
+}
+
+void opt_sa_1d_cmd() {
+  sa1d::OptSA *optsa = ord::OpenRoad::openRoad()->getOptSA();
+  optsa->runSA();
+}
+
+} // namespace
+
+%}

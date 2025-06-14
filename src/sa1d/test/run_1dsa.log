@@ -1,0 +1,1232 @@
+OpenROAD v2.0-22153-gb61830f 
+Features included (+) or not (-): +GPU +GUI +Python
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ODB-0227] LEF file: ./lefs/asap7_tech_1x_201209.lef, created 24 layers, 9 vias
+[INFO ODB-0227] LEF file: ./lefs/asap7sc7p5t_27_L_1x_201211.lef, created 212 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t in asap7sc7p5t_27_R_1x_201211 already seen in asap7sc7p5t_27_L_1x_201211
+[INFO ODB-0227] LEF file: ./lefs/asap7sc7p5t_27_R_1x_201211.lef, created 212 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t in asap7sc7p5t_27_SL_1x_201211 already seen in asap7sc7p5t_27_L_1x_201211
+[INFO ODB-0227] LEF file: ./lefs/asap7sc7p5t_27_SL_1x_201211.lef, created 212 library cells
+[INFO ODB-0127] Reading DEF file: ./defs/testcase1/ArtNet.def
+[INFO ODB-0128] Design: ArtNet
+[INFO ODB-0130]     Created 14 pins.
+[INFO ODB-0131]     Created 50 components and 242 component-terminals.
+[INFO ODB-0132]     Created 2 special nets and 100 connections.
+[INFO ODB-0133]     Created 59 nets and 142 connections.
+[INFO ODB-0134] Finished DEF file: ./defs/testcase1/ArtNet.def
+[INFO SA1D-0211] Best orderings enabled - will use top orderings for worker initialization
+[INFO SA1D-0210] Best orderings parameters set: 8-11 algorithms, top 6
+[INFO SA1D-0001] Running simulated annealing
+[INFO] Number of cells : 50
+[INFO] Number of nets : 59
+[INFO SA1D-0011] Imported the database
+[Params] num_workers = 20
+[Params] num_threads = 20
+All the worker will be assigned with the same move probability vector !
+[Params] Move probability vector for worker is : [ 0.490000 0.490000 0.020000 ]
+[Params] max_temp = 0.1
+[Params] max_iter = 1000
+[Params] move_budget = 1000000
+[Params] num_move_per_iter = 1000
+[Params] cooling_rate = 0.97949
+[Params] gwtw_iter = 1
+[Params] max_temp_derate_factor = 1.0
+[Params] top_k = 2
+[Params] sync_freq = 0.167
+[Params] seed = 1
+[Params] incremental_flag = true
+[INFO SA1D-0010] All SA parameters are valid
+[INFO SA1D-0215] Computing best orderings for worker initialization...
+[INFO SA1D-0200] === BEST ORDERINGS COMPUTATION ===
+[INFO SA1D-0201] [+] Hypergraph: 64 vertices, 117 hyperedges
+[INFO SA1D-0202] [+] Parallel threads: 8
+[INFO SA1D-0203] [+] Testing 11 algorithms
+[INFO SA1D-0204] [OK] RCM-Boost completed (peak: 15)
+[INFO SA1D-0204] [OK] BFS completed (peak: 17)
+[INFO SA1D-0204] [OK] Fiedler completed (peak: 13)
+[INFO SA1D-0204] [OK] SFC-Hilbert2D completed (peak: 13)
+[INFO SA1D-0204] [OK] SFC-ZOrder2D completed (peak: 13)
+[INFO SA1D-0204] [OK] Soft-Penalty completed (peak: 13)
+[INFO SA1D-0204] [OK] Soft-Springs completed (peak: 13)
+[INFO SA1D-0204] [OK] DFS completed (peak: 19)
+[INFO SA1D-0204] [OK] RCM completed (peak: 17)
+[INFO SA1D-0204] [OK] Random completed (peak: 26)
+[INFO SA1D-0204] [OK] Dirichlet completed (peak: 0)
+[INFO] Norm HPWL = 460057
+[INFO] Norm HPWL = 468963
+[INFO] Norm HPWL = 476326
+[INFO] Norm HPWL = 417683
+[INFO] Norm HPWL = 495049
+[INFO] Norm HPWL = 701713
+[INFO] Norm HPWL = 460057
+[INFO] Norm HPWL = 460057
+[INFO] Norm HPWL = 346870
+[INFO] Norm HPWL = 346762
+[INFO] Norm HPWL = 346762
+[INFO] Norm HPWL = 346762
+[INFO] Norm HPWL = 346762
+[INFO] Norm HPWL = 346870
+[INFO] Norm HPWL = 417683
+[INFO] Norm HPWL = 460057
+[INFO] Norm HPWL = 460057
+[INFO SA1D-0206] === TOP 6 BEST ORDERINGS (Ranked by HPWL) ===
+[INFO SA1D-0207] 1. Soft-Penalty - HPWL: 346762, Peak: 13 -> 13 (0.0% improvement), 0ms
+[INFO SA1D-0207] 2. Soft-Springs - HPWL: 346762, Peak: 13 -> 13 (0.0% improvement), 0ms
+[INFO SA1D-0207] 3. Dirichlet - HPWL: 346870, Peak: 0 -> 0 (0.0% improvement), 5ms
+[INFO SA1D-0207] 4. BFS - HPWL: 417683, Peak: 18 -> 17 (5.6% improvement), 2ms
+[INFO SA1D-0207] 5. Fiedler - HPWL: 460057, Peak: 13 -> 13 (0.0% improvement), 2ms
+[INFO SA1D-0207] 6. SFC-Hilbert2D - HPWL: 460057, Peak: 13 -> 13 (0.0% improvement), 2ms
+[INFO SA1D-0208] Total computation time: 8ms
+[INFO SA1D-0209] Worker initialization: all 20 workers use best orderings
+[INFO SA1D-0220]   4 workers use Soft-Penalty ordering (HPWL: 346762)
+[INFO SA1D-0220]   4 workers use Soft-Springs ordering (HPWL: 346762)
+[INFO SA1D-0220]   3 workers use Dirichlet ordering (HPWL: 346870)
+[INFO SA1D-0220]   3 workers use BFS ordering (HPWL: 417683)
+[INFO SA1D-0220]   3 workers use Fiedler ordering (HPWL: 460057)
+[INFO SA1D-0220]   3 workers use SFC-Hilbert2D ordering (HPWL: 460057)
+[INFO SA1D-0216] Best orderings initialization complete: 11 algorithms tested, 6 top orderings ready
+[INFO] Worker_id = 0 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346762
+[INFO SA1D-0218] Worker 0 initialized with Soft-Penalty ordering
+[INFO] Worker_id = 1 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346762
+[INFO SA1D-0218] Worker 1 initialized with Soft-Springs ordering
+[INFO] Worker_id = 2 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346870
+[INFO SA1D-0218] Worker 2 initialized with Dirichlet ordering
+[INFO] Worker_id = 3 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 417683
+[INFO SA1D-0218] Worker 3 initialized with BFS ordering
+[INFO] Worker_id = 4 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 460057
+[INFO SA1D-0218] Worker 4 initialized with Fiedler ordering
+[INFO] Worker_id = 5 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 460057
+[INFO SA1D-0218] Worker 5 initialized with SFC-Hilbert2D ordering
+[INFO] Worker_id = 6 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346762
+[INFO SA1D-0218] Worker 6 initialized with Soft-Penalty ordering
+[INFO] Worker_id = 7 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346762
+[INFO SA1D-0218] Worker 7 initialized with Soft-Springs ordering
+[INFO] Worker_id = 8 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346870
+[INFO SA1D-0218] Worker 8 initialized with Dirichlet ordering
+[INFO] Worker_id = 9 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 417683
+[INFO SA1D-0218] Worker 9 initialized with BFS ordering
+[INFO] Worker_id = 10 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 460057
+[INFO SA1D-0218] Worker 10 initialized with Fiedler ordering
+[INFO] Worker_id = 11 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 460057
+[INFO SA1D-0218] Worker 11 initialized with SFC-Hilbert2D ordering
+[INFO] Worker_id = 12 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346762
+[INFO SA1D-0218] Worker 12 initialized with Soft-Penalty ordering
+[INFO] Worker_id = 13 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346762
+[INFO SA1D-0218] Worker 13 initialized with Soft-Springs ordering
+[INFO] Worker_id = 14 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346870
+[INFO SA1D-0218] Worker 14 initialized with Dirichlet ordering
+[INFO] Worker_id = 15 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 417683
+[INFO SA1D-0218] Worker 15 initialized with BFS ordering
+[INFO] Worker_id = 16 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 460057
+[INFO SA1D-0218] Worker 16 initialized with Fiedler ordering
+[INFO] Worker_id = 17 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 460057
+[INFO SA1D-0218] Worker 17 initialized with SFC-Hilbert2D ordering
+[INFO] Worker_id = 18 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346762
+[INFO SA1D-0218] Worker 18 initialized with Soft-Penalty ordering
+[INFO] Worker_id = 19 Move Prob = [ 0.490000 0.490000 0.020000 ]
+[INFO] Norm HPWL = 346762
+[INFO SA1D-0218] Worker 19 initialized with Soft-Springs ordering
+Initialized workers ... 
+[INFO] The copied cnt for top vector = [ 10 10 ]
+[INFO] GWTW Iteration 0 starts ...
+[INFO] Set the max temperature to 0.1
+********************* the current results after iteration 0 *********************
+###########################################
+## Worker ID: 0                          ##
+## cooling_rate: 0.965           ##
+## Eelapsed Time: 1.151           second ##
+## Flip operation count : 3294            ##
+## Move operation count : 81714           ##
+## Swap operation count : 81992           ##
+[INFO] worker_id = 0, HPWL = 188753
+###########################################
+## Worker ID: 5                          ##
+## cooling_rate: 0.972           ##
+## Eelapsed Time: 1.189           second ##
+## Flip operation count : 3242            ##
+## Move operation count : 82024           ##
+## Swap operation count : 81734           ##
+[INFO] worker_id = 5, HPWL = 189166
+###########################################
+## Worker ID: 6                          ##
+## cooling_rate: 0.974           ##
+## Eelapsed Time: 1.256           second ##
+## Flip operation count : 3264            ##
+## Move operation count : 81571           ##
+## Swap operation count : 82165           ##
+[INFO] worker_id = 6, HPWL = 190219
+###########################################
+## Worker ID: 2                          ##
+## cooling_rate: 0.968           ##
+## Eelapsed Time: 1.594           second ##
+## Flip operation count : 3422            ##
+## Move operation count : 81690           ##
+## Swap operation count : 81888           ##
+[INFO] worker_id = 2, HPWL = 190252
+###########################################
+## Worker ID: 3                          ##
+## cooling_rate: 0.970           ##
+## Eelapsed Time: 1.156           second ##
+## Flip operation count : 3391            ##
+## Move operation count : 81312           ##
+## Swap operation count : 82297           ##
+[INFO] worker_id = 3, HPWL = 190546
+###########################################
+## Worker ID: 4                          ##
+## cooling_rate: 0.971           ##
+## Eelapsed Time: 1.164           second ##
+## Flip operation count : 3410            ##
+## Move operation count : 81523           ##
+## Swap operation count : 82067           ##
+[INFO] worker_id = 4, HPWL = 192223
+###########################################
+## Worker ID: 7                          ##
+## cooling_rate: 0.975           ##
+## Eelapsed Time: 1.180           second ##
+## Flip operation count : 3382            ##
+## Move operation count : 81791           ##
+## Swap operation count : 81827           ##
+[INFO] worker_id = 7, HPWL = 194044
+###########################################
+## Worker ID: 8                          ##
+## cooling_rate: 0.977           ##
+## Eelapsed Time: 1.235           second ##
+## Flip operation count : 3360            ##
+## Move operation count : 81849           ##
+## Swap operation count : 81791           ##
+[INFO] worker_id = 8, HPWL = 194655
+###########################################
+## Worker ID: 1                          ##
+## cooling_rate: 0.967           ##
+## Eelapsed Time: 1.163           second ##
+## Flip operation count : 3323            ##
+## Move operation count : 81757           ##
+## Swap operation count : 81920           ##
+[INFO] worker_id = 1, HPWL = 197022
+###########################################
+## Worker ID: 9                          ##
+## cooling_rate: 0.978           ##
+## Eelapsed Time: 1.224           second ##
+## Flip operation count : 3374            ##
+## Move operation count : 81709           ##
+## Swap operation count : 81917           ##
+[INFO] worker_id = 9, HPWL = 215274
+###########################################
+## Worker ID: 12                         ##
+## cooling_rate: 0.982           ##
+## Eelapsed Time: 1.242           second ##
+## Flip operation count : 3343            ##
+## Move operation count : 81518           ##
+## Swap operation count : 82139           ##
+[INFO] worker_id = 12, HPWL = 233977
+###########################################
+## Worker ID: 10                         ##
+## cooling_rate: 0.979           ##
+## Eelapsed Time: 1.222           second ##
+## Flip operation count : 3216            ##
+## Move operation count : 81791           ##
+## Swap operation count : 81993           ##
+[INFO] worker_id = 10, HPWL = 235121
+###########################################
+## Worker ID: 11                         ##
+## cooling_rate: 0.981           ##
+## Eelapsed Time: 1.243           second ##
+## Flip operation count : 3319            ##
+## Move operation count : 81732           ##
+## Swap operation count : 81949           ##
+[INFO] worker_id = 11, HPWL = 245116
+###########################################
+## Worker ID: 13                         ##
+## cooling_rate: 0.984           ##
+## Eelapsed Time: 1.250           second ##
+## Flip operation count : 3410            ##
+## Move operation count : 81931           ##
+## Swap operation count : 81659           ##
+[INFO] worker_id = 13, HPWL = 248833
+###########################################
+## Worker ID: 14                         ##
+## cooling_rate: 0.985           ##
+## Eelapsed Time: 1.208           second ##
+## Flip operation count : 3391            ##
+## Move operation count : 81688           ##
+## Swap operation count : 81921           ##
+[INFO] worker_id = 14, HPWL = 297428
+###########################################
+## Worker ID: 19                         ##
+## cooling_rate: 0.992           ##
+## Eelapsed Time: 1.280           second ##
+## Flip operation count : 3264            ##
+## Move operation count : 81979           ##
+## Swap operation count : 81757           ##
+[INFO] worker_id = 19, HPWL = 366564
+###########################################
+## Worker ID: 15                         ##
+## cooling_rate: 0.987           ##
+## Eelapsed Time: 1.275           second ##
+## Flip operation count : 3292            ##
+## Move operation count : 81892           ##
+## Swap operation count : 81816           ##
+[INFO] worker_id = 15, HPWL = 379965
+###########################################
+## Worker ID: 16                         ##
+## cooling_rate: 0.988           ##
+## Eelapsed Time: 1.233           second ##
+## Flip operation count : 3366            ##
+## Move operation count : 81650           ##
+## Swap operation count : 81984           ##
+[INFO] worker_id = 16, HPWL = 394429
+###########################################
+## Worker ID: 17                         ##
+## cooling_rate: 0.989           ##
+## Eelapsed Time: 1.218           second ##
+## Flip operation count : 3355            ##
+## Move operation count : 81811           ##
+## Swap operation count : 81834           ##
+[INFO] worker_id = 17, HPWL = 494132
+###########################################
+## Worker ID: 18                         ##
+## cooling_rate: 0.991           ##
+## Eelapsed Time: 1.250           second ##
+## Flip operation count : 3299            ##
+## Move operation count : 81950           ##
+## Swap operation count : 81751           ##
+[INFO] worker_id = 18, HPWL = 520044
+[INFO] Norm HPWL = 188753
+[INFO] Norm HPWL = 188753
+[INFO] Norm HPWL = 188753
+[INFO] Norm HPWL = 188753
+[INFO] Norm HPWL = 188753
+[INFO] Norm HPWL = 188753
+[INFO] Norm HPWL = 188753
+[INFO] Norm HPWL = 188753
+[INFO] Norm HPWL = 188753
+[INFO] Norm HPWL = 189166
+[INFO] Norm HPWL = 189166
+[INFO] Norm HPWL = 189166
+[INFO] Norm HPWL = 189166
+[INFO] Norm HPWL = 189166
+[INFO] Norm HPWL = 189166
+[INFO] Norm HPWL = 189166
+[INFO] Norm HPWL = 189166
+[INFO] Norm HPWL = 189166
+********************* the current results after iteration 167 *********************
+###########################################
+## Worker ID: 5                          ##
+## cooling_rate: 0.972           ##
+## Eelapsed Time: 1.117           second ##
+## Flip operation count : 3319            ##
+## Move operation count : 82241           ##
+## Swap operation count : 81440           ##
+[INFO] worker_id = 5, HPWL = 183793
+###########################################
+## Worker ID: 10                         ##
+## cooling_rate: 0.979           ##
+## Eelapsed Time: 1.098           second ##
+## Flip operation count : 3338            ##
+## Move operation count : 81837           ##
+## Swap operation count : 81825           ##
+[INFO] worker_id = 10, HPWL = 183793
+###########################################
+## Worker ID: 11                         ##
+## cooling_rate: 0.981           ##
+## Eelapsed Time: 1.094           second ##
+## Flip operation count : 3352            ##
+## Move operation count : 81759           ##
+## Swap operation count : 81889           ##
+[INFO] worker_id = 11, HPWL = 183793
+###########################################
+## Worker ID: 14                         ##
+## cooling_rate: 0.985           ##
+## Eelapsed Time: 1.094           second ##
+## Flip operation count : 3313            ##
+## Move operation count : 81770           ##
+## Swap operation count : 81917           ##
+[INFO] worker_id = 14, HPWL = 183989
+###########################################
+## Worker ID: 13                         ##
+## cooling_rate: 0.984           ##
+## Eelapsed Time: 1.342           second ##
+## Flip operation count : 3287            ##
+## Move operation count : 81824           ##
+## Swap operation count : 81889           ##
+[INFO] worker_id = 13, HPWL = 184153
+###########################################
+## Worker ID: 16                         ##
+## cooling_rate: 0.988           ##
+## Eelapsed Time: 1.115           second ##
+## Flip operation count : 3378            ##
+## Move operation count : 81727           ##
+## Swap operation count : 81895           ##
+[INFO] worker_id = 16, HPWL = 185472
+###########################################
+## Worker ID: 6                          ##
+## cooling_rate: 0.974           ##
+## Eelapsed Time: 1.109           second ##
+## Flip operation count : 3308            ##
+## Move operation count : 81785           ##
+## Swap operation count : 81907           ##
+[INFO] worker_id = 6, HPWL = 188234
+###########################################
+## Worker ID: 2                          ##
+## cooling_rate: 0.968           ##
+## Eelapsed Time: 1.088           second ##
+## Flip operation count : 3431            ##
+## Move operation count : 81636           ##
+## Swap operation count : 81933           ##
+[INFO] worker_id = 2, HPWL = 188234
+###########################################
+## Worker ID: 4                          ##
+## cooling_rate: 0.971           ##
+## Eelapsed Time: 1.105           second ##
+## Flip operation count : 3341            ##
+## Move operation count : 81756           ##
+## Swap operation count : 81903           ##
+[INFO] worker_id = 4, HPWL = 188234
+###########################################
+## Worker ID: 7                          ##
+## cooling_rate: 0.975           ##
+## Eelapsed Time: 1.112           second ##
+## Flip operation count : 3296            ##
+## Move operation count : 81966           ##
+## Swap operation count : 81738           ##
+[INFO] worker_id = 7, HPWL = 188234
+###########################################
+## Worker ID: 3                          ##
+## cooling_rate: 0.970           ##
+## Eelapsed Time: 1.095           second ##
+## Flip operation count : 3379            ##
+## Move operation count : 81895           ##
+## Swap operation count : 81726           ##
+[INFO] worker_id = 3, HPWL = 188288
+###########################################
+## Worker ID: 8                          ##
+## cooling_rate: 0.977           ##
+## Eelapsed Time: 1.090           second ##
+## Flip operation count : 3393            ##
+## Move operation count : 81663           ##
+## Swap operation count : 81944           ##
+[INFO] worker_id = 8, HPWL = 188288
+###########################################
+## Worker ID: 1                          ##
+## cooling_rate: 0.967           ##
+## Eelapsed Time: 1.129           second ##
+## Flip operation count : 3424            ##
+## Move operation count : 81601           ##
+## Swap operation count : 81975           ##
+[INFO] worker_id = 1, HPWL = 188288
+###########################################
+## Worker ID: 0                          ##
+## cooling_rate: 0.965           ##
+## Eelapsed Time: 1.098           second ##
+## Flip operation count : 3322            ##
+## Move operation count : 82383           ##
+## Swap operation count : 81295           ##
+[INFO] worker_id = 0, HPWL = 188288
+###########################################
+## Worker ID: 12                         ##
+## cooling_rate: 0.982           ##
+## Eelapsed Time: 1.126           second ##
+## Flip operation count : 3387            ##
+## Move operation count : 81774           ##
+## Swap operation count : 81839           ##
+[INFO] worker_id = 12, HPWL = 188343
+###########################################
+## Worker ID: 9                          ##
+## cooling_rate: 0.978           ##
+## Eelapsed Time: 1.084           second ##
+## Flip operation count : 3392            ##
+## Move operation count : 81833           ##
+## Swap operation count : 81775           ##
+[INFO] worker_id = 9, HPWL = 188665
+###########################################
+## Worker ID: 15                         ##
+## cooling_rate: 0.987           ##
+## Eelapsed Time: 1.115           second ##
+## Flip operation count : 3392            ##
+## Move operation count : 81999           ##
+## Swap operation count : 81609           ##
+[INFO] worker_id = 15, HPWL = 189809
+###########################################
+## Worker ID: 17                         ##
+## cooling_rate: 0.989           ##
+## Eelapsed Time: 1.132           second ##
+## Flip operation count : 3369            ##
+## Move operation count : 82109           ##
+## Swap operation count : 81522           ##
+[INFO] worker_id = 17, HPWL = 200301
+###########################################
+## Worker ID: 18                         ##
+## cooling_rate: 0.991           ##
+## Eelapsed Time: 1.118           second ##
+## Flip operation count : 3210            ##
+## Move operation count : 82109           ##
+## Swap operation count : 81681           ##
+[INFO] worker_id = 18, HPWL = 209070
+###########################################
+## Worker ID: 19                         ##
+## cooling_rate: 0.992           ##
+## Eelapsed Time: 1.144           second ##
+## Flip operation count : 3421            ##
+## Move operation count : 81325           ##
+## Swap operation count : 82254           ##
+[INFO] worker_id = 19, HPWL = 215388
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+********************* the current results after iteration 334 *********************
+###########################################
+## Worker ID: 10                         ##
+## cooling_rate: 0.979           ##
+## Eelapsed Time: 1.086           second ##
+## Flip operation count : 3323            ##
+## Move operation count : 81613           ##
+## Swap operation count : 82064           ##
+[INFO] worker_id = 10, HPWL = 183793
+###########################################
+## Worker ID: 17                         ##
+## cooling_rate: 0.989           ##
+## Eelapsed Time: 1.087           second ##
+## Flip operation count : 3467            ##
+## Move operation count : 81361           ##
+## Swap operation count : 82172           ##
+[INFO] worker_id = 17, HPWL = 183793
+###########################################
+## Worker ID: 15                         ##
+## cooling_rate: 0.987           ##
+## Eelapsed Time: 1.087           second ##
+## Flip operation count : 3379            ##
+## Move operation count : 81898           ##
+## Swap operation count : 81723           ##
+[INFO] worker_id = 15, HPWL = 183793
+###########################################
+## Worker ID: 9                          ##
+## cooling_rate: 0.978           ##
+## Eelapsed Time: 1.083           second ##
+## Flip operation count : 3304            ##
+## Move operation count : 82016           ##
+## Swap operation count : 81680           ##
+[INFO] worker_id = 9, HPWL = 183793
+###########################################
+## Worker ID: 12                         ##
+## cooling_rate: 0.982           ##
+## Eelapsed Time: 1.089           second ##
+## Flip operation count : 3251            ##
+## Move operation count : 81986           ##
+## Swap operation count : 81763           ##
+[INFO] worker_id = 12, HPWL = 183793
+###########################################
+## Worker ID: 0                          ##
+## cooling_rate: 0.965           ##
+## Eelapsed Time: 1.335           second ##
+## Flip operation count : 3282            ##
+## Move operation count : 81935           ##
+## Swap operation count : 81783           ##
+[INFO] worker_id = 0, HPWL = 183793
+###########################################
+## Worker ID: 1                          ##
+## cooling_rate: 0.967           ##
+## Eelapsed Time: 1.143           second ##
+## Flip operation count : 3287            ##
+## Move operation count : 81772           ##
+## Swap operation count : 81941           ##
+[INFO] worker_id = 1, HPWL = 183793
+###########################################
+## Worker ID: 8                          ##
+## cooling_rate: 0.977           ##
+## Eelapsed Time: 1.097           second ##
+## Flip operation count : 3405            ##
+## Move operation count : 81648           ##
+## Swap operation count : 81947           ##
+[INFO] worker_id = 8, HPWL = 183793
+###########################################
+## Worker ID: 3                          ##
+## cooling_rate: 0.970           ##
+## Eelapsed Time: 1.105           second ##
+## Flip operation count : 3288            ##
+## Move operation count : 81516           ##
+## Swap operation count : 82196           ##
+[INFO] worker_id = 3, HPWL = 183793
+###########################################
+## Worker ID: 7                          ##
+## cooling_rate: 0.975           ##
+## Eelapsed Time: 1.093           second ##
+## Flip operation count : 3315            ##
+## Move operation count : 81992           ##
+## Swap operation count : 81693           ##
+[INFO] worker_id = 7, HPWL = 183793
+###########################################
+## Worker ID: 4                          ##
+## cooling_rate: 0.971           ##
+## Eelapsed Time: 1.072           second ##
+## Flip operation count : 3299            ##
+## Move operation count : 81543           ##
+## Swap operation count : 82158           ##
+[INFO] worker_id = 4, HPWL = 183793
+###########################################
+## Worker ID: 2                          ##
+## cooling_rate: 0.968           ##
+## Eelapsed Time: 1.111           second ##
+## Flip operation count : 3285            ##
+## Move operation count : 81653           ##
+## Swap operation count : 82062           ##
+[INFO] worker_id = 2, HPWL = 183793
+###########################################
+## Worker ID: 6                          ##
+## cooling_rate: 0.974           ##
+## Eelapsed Time: 1.099           second ##
+## Flip operation count : 3331            ##
+## Move operation count : 81861           ##
+## Swap operation count : 81808           ##
+[INFO] worker_id = 6, HPWL = 183793
+###########################################
+## Worker ID: 13                         ##
+## cooling_rate: 0.984           ##
+## Eelapsed Time: 1.098           second ##
+## Flip operation count : 3316            ##
+## Move operation count : 81748           ##
+## Swap operation count : 81936           ##
+[INFO] worker_id = 13, HPWL = 183793
+###########################################
+## Worker ID: 14                         ##
+## cooling_rate: 0.985           ##
+## Eelapsed Time: 1.072           second ##
+## Flip operation count : 3354            ##
+## Move operation count : 82048           ##
+## Swap operation count : 81598           ##
+[INFO] worker_id = 14, HPWL = 183793
+###########################################
+## Worker ID: 11                         ##
+## cooling_rate: 0.981           ##
+## Eelapsed Time: 1.076           second ##
+## Flip operation count : 3243            ##
+## Move operation count : 81920           ##
+## Swap operation count : 81837           ##
+[INFO] worker_id = 11, HPWL = 183793
+###########################################
+## Worker ID: 5                          ##
+## cooling_rate: 0.972           ##
+## Eelapsed Time: 1.094           second ##
+## Flip operation count : 3351            ##
+## Move operation count : 81775           ##
+## Swap operation count : 81874           ##
+[INFO] worker_id = 5, HPWL = 183793
+###########################################
+## Worker ID: 16                         ##
+## cooling_rate: 0.988           ##
+## Eelapsed Time: 1.097           second ##
+## Flip operation count : 3368            ##
+## Move operation count : 81755           ##
+## Swap operation count : 81877           ##
+[INFO] worker_id = 16, HPWL = 183901
+###########################################
+## Worker ID: 18                         ##
+## cooling_rate: 0.991           ##
+## Eelapsed Time: 1.098           second ##
+## Flip operation count : 3434            ##
+## Move operation count : 81454           ##
+## Swap operation count : 82112           ##
+[INFO] worker_id = 18, HPWL = 185771
+###########################################
+## Worker ID: 19                         ##
+## cooling_rate: 0.992           ##
+## Eelapsed Time: 1.119           second ##
+## Flip operation count : 3386            ##
+## Move operation count : 81552           ##
+## Swap operation count : 82062           ##
+[INFO] worker_id = 19, HPWL = 187916
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+********************* the current results after iteration 501 *********************
+###########################################
+## Worker ID: 17                         ##
+## cooling_rate: 0.989           ##
+## Eelapsed Time: 1.078           second ##
+## Flip operation count : 3321            ##
+## Move operation count : 81862           ##
+## Swap operation count : 81817           ##
+[INFO] worker_id = 17, HPWL = 183793
+###########################################
+## Worker ID: 18                         ##
+## cooling_rate: 0.991           ##
+## Eelapsed Time: 1.095           second ##
+## Flip operation count : 3400            ##
+## Move operation count : 81911           ##
+## Swap operation count : 81689           ##
+[INFO] worker_id = 18, HPWL = 183793
+###########################################
+## Worker ID: 16                         ##
+## cooling_rate: 0.988           ##
+## Eelapsed Time: 1.090           second ##
+## Flip operation count : 3288            ##
+## Move operation count : 81379           ##
+## Swap operation count : 82333           ##
+[INFO] worker_id = 16, HPWL = 183793
+###########################################
+## Worker ID: 5                          ##
+## cooling_rate: 0.972           ##
+## Eelapsed Time: 1.116           second ##
+## Flip operation count : 3364            ##
+## Move operation count : 81629           ##
+## Swap operation count : 82007           ##
+[INFO] worker_id = 5, HPWL = 183793
+###########################################
+## Worker ID: 11                         ##
+## cooling_rate: 0.981           ##
+## Eelapsed Time: 1.085           second ##
+## Flip operation count : 3375            ##
+## Move operation count : 81996           ##
+## Swap operation count : 81629           ##
+[INFO] worker_id = 11, HPWL = 183793
+###########################################
+## Worker ID: 14                         ##
+## cooling_rate: 0.985           ##
+## Eelapsed Time: 1.084           second ##
+## Flip operation count : 3342            ##
+## Move operation count : 82102           ##
+## Swap operation count : 81556           ##
+[INFO] worker_id = 14, HPWL = 183793
+###########################################
+## Worker ID: 13                         ##
+## cooling_rate: 0.984           ##
+## Eelapsed Time: 1.084           second ##
+## Flip operation count : 3312            ##
+## Move operation count : 81424           ##
+## Swap operation count : 82264           ##
+[INFO] worker_id = 13, HPWL = 183793
+###########################################
+## Worker ID: 6                          ##
+## cooling_rate: 0.974           ##
+## Eelapsed Time: 1.098           second ##
+## Flip operation count : 3388            ##
+## Move operation count : 81713           ##
+## Swap operation count : 81899           ##
+[INFO] worker_id = 6, HPWL = 183793
+###########################################
+## Worker ID: 2                          ##
+## cooling_rate: 0.968           ##
+## Eelapsed Time: 1.093           second ##
+## Flip operation count : 3373            ##
+## Move operation count : 81489           ##
+## Swap operation count : 82138           ##
+[INFO] worker_id = 2, HPWL = 183793
+###########################################
+## Worker ID: 4                          ##
+## cooling_rate: 0.971           ##
+## Eelapsed Time: 1.083           second ##
+## Flip operation count : 3379            ##
+## Move operation count : 81947           ##
+## Swap operation count : 81674           ##
+[INFO] worker_id = 4, HPWL = 183793
+###########################################
+## Worker ID: 7                          ##
+## cooling_rate: 0.975           ##
+## Eelapsed Time: 1.103           second ##
+## Flip operation count : 3322            ##
+## Move operation count : 81895           ##
+## Swap operation count : 81783           ##
+[INFO] worker_id = 7, HPWL = 183793
+###########################################
+## Worker ID: 3                          ##
+## cooling_rate: 0.970           ##
+## Eelapsed Time: 1.313           second ##
+## Flip operation count : 3246            ##
+## Move operation count : 81824           ##
+## Swap operation count : 81930           ##
+[INFO] worker_id = 3, HPWL = 183793
+###########################################
+## Worker ID: 8                          ##
+## cooling_rate: 0.977           ##
+## Eelapsed Time: 1.098           second ##
+## Flip operation count : 3311            ##
+## Move operation count : 82019           ##
+## Swap operation count : 81670           ##
+[INFO] worker_id = 8, HPWL = 183793
+###########################################
+## Worker ID: 1                          ##
+## cooling_rate: 0.967           ##
+## Eelapsed Time: 1.113           second ##
+## Flip operation count : 3244            ##
+## Move operation count : 82188           ##
+## Swap operation count : 81568           ##
+[INFO] worker_id = 1, HPWL = 183793
+###########################################
+## Worker ID: 0                          ##
+## cooling_rate: 0.965           ##
+## Eelapsed Time: 1.099           second ##
+## Flip operation count : 3374            ##
+## Move operation count : 81690           ##
+## Swap operation count : 81936           ##
+[INFO] worker_id = 0, HPWL = 183793
+###########################################
+## Worker ID: 12                         ##
+## cooling_rate: 0.982           ##
+## Eelapsed Time: 1.103           second ##
+## Flip operation count : 3302            ##
+## Move operation count : 81845           ##
+## Swap operation count : 81853           ##
+[INFO] worker_id = 12, HPWL = 183793
+###########################################
+## Worker ID: 9                          ##
+## cooling_rate: 0.978           ##
+## Eelapsed Time: 1.093           second ##
+## Flip operation count : 3259            ##
+## Move operation count : 81771           ##
+## Swap operation count : 81970           ##
+[INFO] worker_id = 9, HPWL = 183793
+###########################################
+## Worker ID: 15                         ##
+## cooling_rate: 0.987           ##
+## Eelapsed Time: 1.096           second ##
+## Flip operation count : 3259            ##
+## Move operation count : 81863           ##
+## Swap operation count : 81878           ##
+[INFO] worker_id = 15, HPWL = 183793
+###########################################
+## Worker ID: 10                         ##
+## cooling_rate: 0.979           ##
+## Eelapsed Time: 1.080           second ##
+## Flip operation count : 3309            ##
+## Move operation count : 81708           ##
+## Swap operation count : 81983           ##
+[INFO] worker_id = 10, HPWL = 183793
+###########################################
+## Worker ID: 19                         ##
+## cooling_rate: 0.992           ##
+## Eelapsed Time: 1.095           second ##
+## Flip operation count : 3298            ##
+## Move operation count : 81696           ##
+## Swap operation count : 82006           ##
+[INFO] worker_id = 19, HPWL = 184897
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+********************* the current results after iteration 668 *********************
+###########################################
+## Worker ID: 7                          ##
+## cooling_rate: 0.975           ##
+## Eelapsed Time: 1.088           second ##
+## Flip operation count : 3214            ##
+## Move operation count : 81557           ##
+## Swap operation count : 82229           ##
+[INFO] worker_id = 7, HPWL = 183793
+###########################################
+## Worker ID: 19                         ##
+## cooling_rate: 0.992           ##
+## Eelapsed Time: 1.098           second ##
+## Flip operation count : 3373            ##
+## Move operation count : 81642           ##
+## Swap operation count : 81985           ##
+[INFO] worker_id = 19, HPWL = 183793
+###########################################
+## Worker ID: 10                         ##
+## cooling_rate: 0.979           ##
+## Eelapsed Time: 1.104           second ##
+## Flip operation count : 3452            ##
+## Move operation count : 81621           ##
+## Swap operation count : 81927           ##
+[INFO] worker_id = 10, HPWL = 183793
+###########################################
+## Worker ID: 15                         ##
+## cooling_rate: 0.987           ##
+## Eelapsed Time: 1.100           second ##
+## Flip operation count : 3227            ##
+## Move operation count : 82067           ##
+## Swap operation count : 81706           ##
+[INFO] worker_id = 15, HPWL = 183793
+###########################################
+## Worker ID: 9                          ##
+## cooling_rate: 0.978           ##
+## Eelapsed Time: 1.089           second ##
+## Flip operation count : 3332            ##
+## Move operation count : 81766           ##
+## Swap operation count : 81902           ##
+[INFO] worker_id = 9, HPWL = 183793
+###########################################
+## Worker ID: 12                         ##
+## cooling_rate: 0.982           ##
+## Eelapsed Time: 1.115           second ##
+## Flip operation count : 3244            ##
+## Move operation count : 81901           ##
+## Swap operation count : 81855           ##
+[INFO] worker_id = 12, HPWL = 183793
+###########################################
+## Worker ID: 0                          ##
+## cooling_rate: 0.965           ##
+## Eelapsed Time: 1.103           second ##
+## Flip operation count : 3242            ##
+## Move operation count : 81785           ##
+## Swap operation count : 81973           ##
+[INFO] worker_id = 0, HPWL = 183793
+###########################################
+## Worker ID: 1                          ##
+## cooling_rate: 0.967           ##
+## Eelapsed Time: 1.110           second ##
+## Flip operation count : 3283            ##
+## Move operation count : 81849           ##
+## Swap operation count : 81868           ##
+[INFO] worker_id = 1, HPWL = 183793
+###########################################
+## Worker ID: 8                          ##
+## cooling_rate: 0.977           ##
+## Eelapsed Time: 1.080           second ##
+## Flip operation count : 3376            ##
+## Move operation count : 81646           ##
+## Swap operation count : 81978           ##
+[INFO] worker_id = 8, HPWL = 183793
+###########################################
+## Worker ID: 3                          ##
+## cooling_rate: 0.970           ##
+## Eelapsed Time: 1.091           second ##
+## Flip operation count : 3348            ##
+## Move operation count : 81543           ##
+## Swap operation count : 82109           ##
+[INFO] worker_id = 3, HPWL = 183793
+###########################################
+## Worker ID: 17                         ##
+## cooling_rate: 0.989           ##
+## Eelapsed Time: 1.087           second ##
+## Flip operation count : 3338            ##
+## Move operation count : 81751           ##
+## Swap operation count : 81911           ##
+[INFO] worker_id = 17, HPWL = 183793
+###########################################
+## Worker ID: 4                          ##
+## cooling_rate: 0.971           ##
+## Eelapsed Time: 1.101           second ##
+## Flip operation count : 3411            ##
+## Move operation count : 81770           ##
+## Swap operation count : 81819           ##
+[INFO] worker_id = 4, HPWL = 183793
+###########################################
+## Worker ID: 2                          ##
+## cooling_rate: 0.968           ##
+## Eelapsed Time: 1.117           second ##
+## Flip operation count : 3369            ##
+## Move operation count : 81909           ##
+## Swap operation count : 81722           ##
+[INFO] worker_id = 2, HPWL = 183793
+###########################################
+## Worker ID: 6                          ##
+## cooling_rate: 0.974           ##
+## Eelapsed Time: 1.118           second ##
+## Flip operation count : 3288            ##
+## Move operation count : 82344           ##
+## Swap operation count : 81368           ##
+[INFO] worker_id = 6, HPWL = 183793
+###########################################
+## Worker ID: 13                         ##
+## cooling_rate: 0.984           ##
+## Eelapsed Time: 1.080           second ##
+## Flip operation count : 3333            ##
+## Move operation count : 81728           ##
+## Swap operation count : 81939           ##
+[INFO] worker_id = 13, HPWL = 183793
+###########################################
+## Worker ID: 14                         ##
+## cooling_rate: 0.985           ##
+## Eelapsed Time: 1.082           second ##
+## Flip operation count : 3281            ##
+## Move operation count : 81638           ##
+## Swap operation count : 82081           ##
+[INFO] worker_id = 14, HPWL = 183793
+###########################################
+## Worker ID: 11                         ##
+## cooling_rate: 0.981           ##
+## Eelapsed Time: 1.101           second ##
+## Flip operation count : 3331            ##
+## Move operation count : 81831           ##
+## Swap operation count : 81838           ##
+[INFO] worker_id = 11, HPWL = 183793
+###########################################
+## Worker ID: 5                          ##
+## cooling_rate: 0.972           ##
+## Eelapsed Time: 1.126           second ##
+## Flip operation count : 3333            ##
+## Move operation count : 81758           ##
+## Swap operation count : 81909           ##
+[INFO] worker_id = 5, HPWL = 183793
+###########################################
+## Worker ID: 16                         ##
+## cooling_rate: 0.988           ##
+## Eelapsed Time: 1.087           second ##
+## Flip operation count : 3355            ##
+## Move operation count : 81817           ##
+## Swap operation count : 81828           ##
+[INFO] worker_id = 16, HPWL = 183793
+###########################################
+## Worker ID: 18                         ##
+## cooling_rate: 0.991           ##
+## Eelapsed Time: 1.339           second ##
+## Flip operation count : 3307            ##
+## Move operation count : 81779           ##
+## Swap operation count : 81914           ##
+[INFO] worker_id = 18, HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+********************* the current results after iteration 835 *********************
+###########################################
+## Worker ID: 17                         ##
+## cooling_rate: 0.989           ##
+## Eelapsed Time: 1.104           second ##
+## Flip operation count : 3344            ##
+## Move operation count : 81400           ##
+## Swap operation count : 82256           ##
+[INFO] worker_id = 17, HPWL = 183793
+###########################################
+## Worker ID: 18                         ##
+## cooling_rate: 0.991           ##
+## Eelapsed Time: 1.102           second ##
+## Flip operation count : 3332            ##
+## Move operation count : 81653           ##
+## Swap operation count : 82015           ##
+[INFO] worker_id = 18, HPWL = 183793
+###########################################
+## Worker ID: 16                         ##
+## cooling_rate: 0.988           ##
+## Eelapsed Time: 1.090           second ##
+## Flip operation count : 3391            ##
+## Move operation count : 81896           ##
+## Swap operation count : 81713           ##
+[INFO] worker_id = 16, HPWL = 183793
+###########################################
+## Worker ID: 5                          ##
+## cooling_rate: 0.972           ##
+## Eelapsed Time: 1.115           second ##
+## Flip operation count : 3330            ##
+## Move operation count : 82157           ##
+## Swap operation count : 81513           ##
+[INFO] worker_id = 5, HPWL = 183793
+###########################################
+## Worker ID: 11                         ##
+## cooling_rate: 0.981           ##
+## Eelapsed Time: 1.092           second ##
+## Flip operation count : 3344            ##
+## Move operation count : 81889           ##
+## Swap operation count : 81767           ##
+[INFO] worker_id = 11, HPWL = 183793
+###########################################
+## Worker ID: 14                         ##
+## cooling_rate: 0.985           ##
+## Eelapsed Time: 1.091           second ##
+## Flip operation count : 3257            ##
+## Move operation count : 81968           ##
+## Swap operation count : 81775           ##
+[INFO] worker_id = 14, HPWL = 183793
+###########################################
+## Worker ID: 13                         ##
+## cooling_rate: 0.984           ##
+## Eelapsed Time: 1.079           second ##
+## Flip operation count : 3391            ##
+## Move operation count : 82131           ##
+## Swap operation count : 81478           ##
+[INFO] worker_id = 13, HPWL = 183793
+###########################################
+## Worker ID: 6                          ##
+## cooling_rate: 0.974           ##
+## Eelapsed Time: 1.117           second ##
+## Flip operation count : 3401            ##
+## Move operation count : 81723           ##
+## Swap operation count : 81876           ##
+[INFO] worker_id = 6, HPWL = 183793
+###########################################
+## Worker ID: 2                          ##
+## cooling_rate: 0.968           ##
+## Eelapsed Time: 1.118           second ##
+## Flip operation count : 3325            ##
+## Move operation count : 81748           ##
+## Swap operation count : 81927           ##
+[INFO] worker_id = 2, HPWL = 183793
+###########################################
+## Worker ID: 4                          ##
+## cooling_rate: 0.971           ##
+## Eelapsed Time: 1.083           second ##
+## Flip operation count : 3310            ##
+## Move operation count : 81968           ##
+## Swap operation count : 81722           ##
+[INFO] worker_id = 4, HPWL = 183793
+###########################################
+## Worker ID: 7                          ##
+## cooling_rate: 0.975           ##
+## Eelapsed Time: 1.314           second ##
+## Flip operation count : 3287            ##
+## Move operation count : 81844           ##
+## Swap operation count : 81869           ##
+[INFO] worker_id = 7, HPWL = 183793
+###########################################
+## Worker ID: 3                          ##
+## cooling_rate: 0.970           ##
+## Eelapsed Time: 1.088           second ##
+## Flip operation count : 3343            ##
+## Move operation count : 81870           ##
+## Swap operation count : 81787           ##
+[INFO] worker_id = 3, HPWL = 183793
+###########################################
+## Worker ID: 8                          ##
+## cooling_rate: 0.977           ##
+## Eelapsed Time: 1.100           second ##
+## Flip operation count : 3345            ##
+## Move operation count : 82130           ##
+## Swap operation count : 81525           ##
+[INFO] worker_id = 8, HPWL = 183793
+###########################################
+## Worker ID: 1                          ##
+## cooling_rate: 0.967           ##
+## Eelapsed Time: 1.119           second ##
+## Flip operation count : 3406            ##
+## Move operation count : 81761           ##
+## Swap operation count : 81833           ##
+[INFO] worker_id = 1, HPWL = 183793
+###########################################
+## Worker ID: 0                          ##
+## cooling_rate: 0.965           ##
+## Eelapsed Time: 1.088           second ##
+## Flip operation count : 3412            ##
+## Move operation count : 81729           ##
+## Swap operation count : 81859           ##
+[INFO] worker_id = 0, HPWL = 183793
+###########################################
+## Worker ID: 12                         ##
+## cooling_rate: 0.982           ##
+## Eelapsed Time: 1.086           second ##
+## Flip operation count : 3394            ##
+## Move operation count : 81947           ##
+## Swap operation count : 81659           ##
+[INFO] worker_id = 12, HPWL = 183793
+###########################################
+## Worker ID: 9                          ##
+## cooling_rate: 0.978           ##
+## Eelapsed Time: 1.074           second ##
+## Flip operation count : 3321            ##
+## Move operation count : 81948           ##
+## Swap operation count : 81731           ##
+[INFO] worker_id = 9, HPWL = 183793
+###########################################
+## Worker ID: 15                         ##
+## cooling_rate: 0.987           ##
+## Eelapsed Time: 1.077           second ##
+## Flip operation count : 3333            ##
+## Move operation count : 82092           ##
+## Swap operation count : 81575           ##
+[INFO] worker_id = 15, HPWL = 183793
+###########################################
+## Worker ID: 10                         ##
+## cooling_rate: 0.979           ##
+## Eelapsed Time: 1.090           second ##
+## Flip operation count : 3336            ##
+## Move operation count : 81812           ##
+## Swap operation count : 81852           ##
+[INFO] worker_id = 10, HPWL = 183793
+###########################################
+## Worker ID: 19                         ##
+## cooling_rate: 0.992           ##
+## Eelapsed Time: 1.091           second ##
+## Flip operation count : 3266            ##
+## Move operation count : 81465           ##
+## Swap operation count : 82269           ##
+[INFO] worker_id = 19, HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 183793
+[INFO] Norm HPWL = 186454
+[INFO] Note that there may be minor differences in HPWL due to y-direction calculation.
+[INFO] We only consider x-direction HPWL
+[INFO] HPWL before packing: 191.984
+[INFO] HPWL after packing: 186.454
+[INFO] Running time:   8 seconds

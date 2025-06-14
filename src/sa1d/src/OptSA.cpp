@@ -36,6 +36,8 @@
 #include "odb/dbTypes.h"
 #include "sa1d/Objects.h"
 #include "sa1d/OptSA.h"
+#include "sa1d/VertexOrdering.h"
+#include "sa1d/BestOrderings.h"
 #include "Worker.h"
 
 #include <cfloat>
@@ -482,9 +484,62 @@ void OptSA::runSA()
   std::vector<int> cell_order;
   std::vector<odb::dbOrientType> orients;
   
-  if (incremantal_flag_ == true) {
-    cellOrdering(cell_order, orients);
-    logger_->report("[INFO] Finish initial cell ordering");
+  // INTEGRATION POINT: Best orderings initialization (priority over single custom ordering)
+  BestOrderingsResult best_orderings_result;
+  std::vector<BestOrderingsInterface::WorkerInitData> worker_init_data;
+  
+  if (use_best_orderings_) {
+    if (logger_) {
+      logger_->info(utl::SA1D, 215, "Computing best orderings for worker initialization...");
+    }
+    
+    best_orderings_result = computeBestOrderings();
+    if (best_orderings_result.success) {
+      worker_init_data = best_orderings_->prepareWorkerInitialization(best_orderings_result, num_workers_);
+      
+      if (logger_) {
+        logger_->info(utl::SA1D, 216, "Best orderings initialization complete: {} algorithms tested, {} top orderings ready",
+                     best_orderings_result.algorithms_tested, best_orderings_result.top_orderings.size());
+      }
+    } else {
+      if (logger_) {
+        logger_->warn(utl::SA1D, 217, "Best orderings failed: {}, falling back to default initialization", 
+                     best_orderings_result.error_message);
+      }
+      use_best_orderings_ = false;  // Fall back to default
+    }
+  }
+  
+  // INTEGRATION POINT: Single custom vertex ordering initialization (if best orderings not used)
+  else if (use_custom_ordering_) {
+    if (logger_) {
+      logger_->info(utl::SA1D, 109, "Computing custom vertex ordering...");
+    }
+    
+    auto ordering_result = computeCustomOrdering();
+    if (ordering_result.success) {
+      initializeCellOrderingFromCustom(ordering_result);
+      
+      // Get the initialized ordering
+      cellOrdering(cell_order, orients);
+      if (logger_) {
+        logger_->info(utl::SA1D, 110, "Custom ordering initialization complete");
+      }
+    } else {
+      if (logger_) {
+        logger_->warn(utl::SA1D, 111, "Custom ordering failed: {}, using default initialization", 
+                     ordering_result.error_message);
+      }
+      use_custom_ordering_ = false;  // Fall back to default
+    }
+  }
+  
+  // Default initialization (existing code) - only if neither best orderings nor custom ordering used
+  if (!use_best_orderings_ && !use_custom_ordering_) {
+    if (incremantal_flag_ == true) {
+      cellOrdering(cell_order, orients);
+      logger_->report("[INFO] Finish initial cell ordering");
+    }
   }
  
   // Initialize the workers
@@ -521,7 +576,18 @@ void OptSA::runSA()
 
     std::cout << "set the move prob correctly" << std::endl;
 
-    if (incremantal_flag_) {
+    // ENHANCED WORKER INITIALIZATION: Use best orderings if available
+    if (use_best_orderings_ && worker_id < static_cast<int>(worker_init_data.size()) && 
+        worker_init_data[worker_id].use_ordering) {
+      // Initialize with best ordering (all workers get one when best orderings enabled)
+      const auto& init_data = worker_init_data[worker_id];
+      worker->initCellOrder(init_data.cell_ordering, init_data.orientations);
+      
+      if (logger_) {
+        logger_->info(utl::SA1D, 218, "Worker {} initialized with {} ordering", 
+                     worker_id, init_data.algorithm_name);
+      }
+    } else if (incremantal_flag_) {
       worker->initCellOrder(cell_order, orients);
     } else {
       worker->initCellOrderRandom();
@@ -595,6 +661,158 @@ void OptSA::runSA()
   }
     
   updateOpenDB(workers[0]->getCellLocs());
+}
+
+// --------------------------------------------------------------------------
+// Vertex Ordering Integration
+// --------------------------------------------------------------------------
+
+void OptSA::setVertexOrderingMethod(const VertexOrderingParams& params) {
+  if (!vertex_ordering_params_) {
+    vertex_ordering_params_ = std::make_unique<VertexOrderingParams>();
+  }
+  *vertex_ordering_params_ = params;
+  use_custom_ordering_ = true;
+  
+  if (vertex_ordering_params_->verbose && logger_) {
+    logger_->info(utl::SA1D, 105, "Vertex ordering method set to: {}", 
+                 VertexOrderingInterface::orderingMethodToString(params.method));
+  }
+}
+
+void OptSA::enableCustomOrdering(bool enable) {
+  use_custom_ordering_ = enable;
+  if (enable && !vertex_ordering_) {
+    vertex_ordering_ = std::make_unique<VertexOrderingInterface>(this);
+  }
+}
+
+VertexOrderingResult OptSA::computeCustomOrdering() {
+  if (!vertex_ordering_) {
+    vertex_ordering_ = std::make_unique<VertexOrderingInterface>(this);
+  }
+  
+  if (!vertex_ordering_params_) {
+    vertex_ordering_params_ = std::make_unique<VertexOrderingParams>();
+  }
+  
+  return vertex_ordering_->computeOrdering(*vertex_ordering_params_);
+}
+
+void OptSA::initializeCellOrderingFromCustom(const VertexOrderingResult& ordering_result) {
+  if (!ordering_result.success || ordering_result.cell_ordering.empty()) {
+    if (logger_) {
+      logger_->warn(utl::SA1D, 106, "Custom ordering failed or empty, falling back to default initialization");
+    }
+    return;
+  }
+  
+  if (vertex_ordering_params_ && vertex_ordering_params_->verbose && logger_) {
+    logger_->info(utl::SA1D, 107, "Initializing SA1D with custom ordering: {} cells, algorithm: {}",
+                 ordering_result.cell_ordering.size(), ordering_result.algorithm_used);
+  }
+  
+  // Use the ordering to initialize cell locations
+  updateCellLocationsFromOrdering(ordering_result.cell_ordering, ordering_result.orientations);
+}
+
+void OptSA::updateCellLocationsFromOrdering(const std::vector<int>& cell_ordering, 
+                                           const std::vector<odb::dbOrientType>& orientations) {
+  if (cell_ordering.size() != cells_.size()) {
+    if (logger_) {
+      logger_->error(utl::SA1D, 202, "Cell ordering size mismatch: expected {}, got {}", 
+                    cells_.size(), cell_ordering.size());
+    }
+    return;
+  }
+  
+  // Place cells left-to-right according to ordering
+  int current_x = core_llx_;
+  
+  for (size_t pos = 0; pos < cell_ordering.size(); ++pos) {
+    int cell_id = cell_ordering[pos];
+    if (cell_id >= 0 && cell_id < static_cast<int>(cells_.size())) {
+      auto& cell = cells_[cell_id];
+      if (cell.db_inst) {
+        // Set position and orientation
+        cell.db_inst->setLocation(current_x, core_lly_);
+        
+        if (pos < orientations.size()) {
+          cell.db_inst->setOrient(orientations[pos]);
+        }
+        
+        // Advance X position by cell width  
+        current_x += cell.getWidth();
+      }
+    }
+  }
+  
+  if (vertex_ordering_params_ && vertex_ordering_params_->verbose && logger_) {
+    logger_->info(utl::SA1D, 108, "Placed {} cells using custom ordering", cell_ordering.size());
+  }
+}
+
+// --------------------------------------------------------------------------
+// Best Orderings Integration (SAIT Multi-Algorithm)
+// --------------------------------------------------------------------------
+
+void OptSA::setBestOrderingsParams(const BestOrderingsParams& params) {
+  if (!best_orderings_params_) {
+    best_orderings_params_ = std::make_unique<BestOrderingsParams>();
+  }
+  *best_orderings_params_ = params;
+  
+  if (best_orderings_params_->verbose && logger_) {
+    logger_->info(utl::SA1D, 210, "Best orderings parameters set: {} algorithms, top {}", 
+                 best_orderings_params_->include_advanced_methods ? "8-11" : "6-8",
+                 best_orderings_params_->top_count);
+  }
+}
+
+void OptSA::enableBestOrderings(bool enable) {
+  use_best_orderings_ = enable;
+  if (enable && !best_orderings_) {
+    best_orderings_ = std::make_unique<BestOrderingsInterface>(this);
+  }
+  
+  if (enable && logger_) {
+    logger_->info(utl::SA1D, 211, "Best orderings enabled - will use top orderings for worker initialization");
+  }
+}
+
+BestOrderingsResult OptSA::computeBestOrderings() {
+  if (!best_orderings_) {
+    best_orderings_ = std::make_unique<BestOrderingsInterface>(this);
+  }
+  
+  if (!best_orderings_params_) {
+    best_orderings_params_ = std::make_unique<BestOrderingsParams>();
+  }
+  
+  return best_orderings_->computeBestOrderings(*best_orderings_params_);
+}
+
+void OptSA::initializeWorkersFromBestOrderings(const BestOrderingsResult& result) {
+  if (!result.success || result.top_orderings.empty()) {
+    if (logger_) {
+      logger_->warn(utl::SA1D, 212, "Best orderings failed or empty, workers will use default initialization");
+    }
+    return;
+  }
+  
+  // Store the result for worker initialization during runSA()
+  // This will be used in the worker initialization loop
+  
+  if (logger_) {
+    logger_->info(utl::SA1D, 213, "Best orderings computed: {} top solutions ready for worker initialization", 
+                 result.top_orderings.size());
+    
+    for (size_t i = 0; i < result.top_orderings.size(); ++i) {
+      const auto& info = result.top_orderings[i];
+      logger_->info(utl::SA1D, 214, "  {}. {} (peak cutwidth: {}, {:.1f}% improvement)", 
+                   i + 1, info.algorithm_name, info.final_peak_cutwidth, info.improvement_percentage);
+    }
+  }
 }
 
 }  // namespace sa1d

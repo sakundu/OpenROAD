@@ -15,6 +15,9 @@ read_def ${def_dir}/ArtNet.def
 
 setSAParams -json_file "./setSAParam.json" 
 
+enable_best_orderings true
+set_best_orderings_params -verbose -use_parallel -include_advanced -apply_refinement
+
 opt_sa_1d
 
 check_placement
