@@ -36,6 +36,8 @@
 #include "odb/dbTypes.h"
 #include "sa1d/Objects.h"
 #include "sa1d/OptSA.h"
+#include "sa1d/VertexOrdering.h"
+#include "sa1d/BestOrderings.h"
 #include "Worker.h"
 
 #include <cfloat>
@@ -307,7 +309,14 @@ void OptSA::makeCells()
     // Create a new Cell object directly in the vector
     cells_.emplace_back();
     auto& cell = cells_.back(); // Get a reference to the newly added Cell
-    odb::dbIntProperty::create(db_inst, "cell_id", cell_id++);
+    
+    // Set or update cell_id property
+    auto existing_prop = odb::dbIntProperty::find(db_inst, "cell_id");
+    if (existing_prop) {
+      existing_prop->setValue(cell_id++);
+    } else {
+      odb::dbIntProperty::create(db_inst, "cell_id", cell_id++);
+    }
     cell.db_inst = db_inst;
     // Handle the Master object
     auto cell_master = db_inst->getMaster();
@@ -320,8 +329,15 @@ void OptSA::makeCells()
       auto mterm_loc = mterm->getBBox();
       auto mterm_x = (mterm_loc.xMin() + mterm_loc.xMax())/2;
       auto mterm_y = (mterm_loc.yMin() + mterm_loc.yMax())/2;
-      odb::dbIntProperty::create(mterm, "mterm_id",
-        static_cast<int>(mterm_locs.size()));
+      
+      // Set or update mterm_id property
+      auto mterm_prop = odb::dbIntProperty::find(mterm, "mterm_id");
+      if (mterm_prop) {
+        mterm_prop->setValue(static_cast<int>(mterm_locs.size()));
+      } else {
+        odb::dbIntProperty::create(mterm, "mterm_id",
+          static_cast<int>(mterm_locs.size()));
+      }
       mterm_locs.emplace_back(mterm_x, mterm_y);
     }
     cell.nets.clear();
@@ -333,7 +349,8 @@ void OptSA::makeCells()
 
 void OptSA::makeNets()
 { 
-  // First allocate total number of nets in the vector
+  // First clear existing nets and allocate total number of nets in the vector
+  nets_.clear();
   nets_.reserve(block_->getNets().size());
   int net_id = 0;
   for (const auto& db_net : block_->getNets()) {
@@ -342,7 +359,14 @@ void OptSA::makeNets()
       continue; 
     }
 
-    odb::dbIntProperty::create(db_net, "net_id", net_id);
+    // Set or update net_id property
+    auto net_prop = odb::dbIntProperty::find(db_net, "net_id");
+    if (net_prop) {
+      net_prop->setValue(net_id);
+    } else {
+      odb::dbIntProperty::create(db_net, "net_id", net_id);
+    }
+    
     // Create a new Net object directly in the vector
     nets_.emplace_back();
     auto& net = nets_.back(); // Get a reference to the newly added Net
@@ -373,6 +397,14 @@ void OptSA::importDb()
   
   if (!block_) {
     logger_->error(utl::SA1D, 2, "No block found in the database");
+  }
+  
+  // Check if database is already imported by verifying cells/nets count matches DB
+  if (!cells_.empty() && !nets_.empty() && 
+      cells_.size() == block_->getInsts().size()) {
+    logger_->info(utl::SA1D, 220, "Database already imported: {} cells, {} nets", 
+                 cells_.size(), nets_.size());
+    return;
   }
 
   site_count_ = 0;
@@ -436,6 +468,8 @@ void OptSA::updateOpenDB(const CellLocMap& cell_locs)
     auto& cell_loc = cell_locs[cell_id];
     db_inst->setOrient(cell_loc.orient);
     db_inst->setLocation(cell_loc.x, cell_loc.y);
+    // Set placement status to PLACED after SA optimization
+    db_inst->setPlacementStatus(odb::dbPlacementStatus::PLACED);
   }
 }
 
@@ -486,7 +520,28 @@ void OptSA::runSA()
   std::vector<int> cell_order;
   std::vector<odb::dbOrientType> orients;
   
-  if (incremantal_flag_ == true) {
+  // Best orderings integration - compute and prepare worker initialization
+  BestOrderingsResult best_orderings_result;
+  std::vector<BestOrderingsInterface::WorkerInitData> worker_init_data;
+  bool use_best_orderings = false;
+  
+  if (use_best_orderings_ && best_orderings_) {
+    // Check if SA1D database is ready
+    if (cells_.empty() || nets_.empty()) {
+      logger_->warn(utl::SA1D, 216, "SA1D database not ready for best orderings, falling back to incremental/random initialization");
+    } else {
+      best_orderings_result = computeBestOrderings();
+      if (best_orderings_result.success && !best_orderings_result.top_orderings.empty()) {
+        worker_init_data = best_orderings_->prepareWorkerInitialization(best_orderings_result, num_workers_);
+        use_best_orderings = true;
+        logger_->info(utl::SA1D, 215, "Best orderings will be used for worker initialization");
+      } else {
+        logger_->warn(utl::SA1D, 217, "Best orderings failed, falling back to incremental/random initialization");
+      }
+    }
+  }
+  
+  if (!use_best_orderings && incremantal_flag_ == true) {
     cellOrdering(cell_order, orients);
     logger_->report("[INFO] Finish initial cell ordering");
   }
@@ -523,7 +578,18 @@ void OptSA::runSA()
 
     std::cout << "set the move prob correctly" << std::endl;
 
-    if (incremantal_flag_) {
+    // Initialize worker with best ordering, incremental, or random
+    if (use_best_orderings) {
+      const auto& init_data = worker_init_data[worker_id];
+      if (init_data.use_ordering && !init_data.cell_ordering.empty()) {
+        worker->initCellOrder(init_data.cell_ordering, init_data.orientations);
+        logger_->info(utl::SA1D, 217, "Worker {} initialized with {} ordering", 
+                     worker_id, init_data.algorithm_name);
+      } else {
+        worker->initCellOrderRandom();
+        logger_->info(utl::SA1D, 218, "Worker {} initialized with random ordering", worker_id);
+      }
+    } else if (incremantal_flag_) {
       worker->initCellOrder(cell_order, orients);
     } else {
       worker->initCellOrderRandom();
@@ -603,6 +669,170 @@ void OptSA::runSA()
   logger_->report("[INFO] Initial Norm Overlap: {}", workers[0]->getNormOverlap());
     
   updateOpenDB(workers[0]->getCellLocs());
+}
+
+// --------------------------------------------------------------------------
+// Vertex Ordering Integration
+// --------------------------------------------------------------------------
+
+void OptSA::setVertexOrderingMethod(const VertexOrderingParams& params) {
+  if (!vertex_ordering_params_) {
+    vertex_ordering_params_ = std::make_unique<VertexOrderingParams>();
+  }
+  *vertex_ordering_params_ = params;
+  use_custom_ordering_ = true;
+  
+  if (vertex_ordering_params_->verbose && logger_) {
+    logger_->info(utl::SA1D, 105, "Vertex ordering method set to: {}", 
+                 VertexOrderingInterface::orderingMethodToString(params.method));
+  }
+}
+
+void OptSA::enableCustomOrdering(bool enable) {
+  use_custom_ordering_ = enable;
+  if (enable && !vertex_ordering_) {
+    vertex_ordering_ = std::make_unique<VertexOrderingInterface>(this);
+  }
+}
+
+VertexOrderingResult OptSA::computeCustomOrdering() {
+  if (!vertex_ordering_) {
+    vertex_ordering_ = std::make_unique<VertexOrderingInterface>(this);
+  }
+  
+  if (!vertex_ordering_params_) {
+    vertex_ordering_params_ = std::make_unique<VertexOrderingParams>();
+  }
+  
+  return vertex_ordering_->computeOrdering(*vertex_ordering_params_);
+}
+
+void OptSA::initializeCellOrderingFromCustom(const VertexOrderingResult& ordering_result) {
+  if (!ordering_result.success || ordering_result.cell_ordering.empty()) {
+    if (logger_) {
+      logger_->warn(utl::SA1D, 106, "Custom ordering failed or empty, falling back to default initialization");
+    }
+    return;
+  }
+  
+  if (vertex_ordering_params_ && vertex_ordering_params_->verbose && logger_) {
+    logger_->info(utl::SA1D, 107, "Initializing SA1D with custom ordering: {} cells, algorithm: {}",
+                 ordering_result.cell_ordering.size(), ordering_result.algorithm_used);
+  }
+  
+  // Use the ordering to initialize cell locations
+  updateCellLocationsFromOrdering(ordering_result.cell_ordering, ordering_result.orientations);
+}
+
+void OptSA::updateCellLocationsFromOrdering(const std::vector<int>& cell_ordering, 
+                                           const std::vector<odb::dbOrientType>& orientations) {
+  if (cell_ordering.size() != cells_.size()) {
+    if (logger_) {
+      logger_->error(utl::SA1D, 202, "Cell ordering size mismatch: expected {}, got {}", 
+                    cells_.size(), cell_ordering.size());
+    }
+    return;
+  }
+  
+  // Place cells left-to-right according to ordering
+  int current_x = core_llx_;
+  
+  for (size_t pos = 0; pos < cell_ordering.size(); ++pos) {
+    int cell_id = cell_ordering[pos];
+    if (cell_id >= 0 && cell_id < static_cast<int>(cells_.size())) {
+      auto& cell = cells_[cell_id];
+      if (cell.db_inst) {
+        // Set position and orientation
+        cell.db_inst->setLocation(current_x, core_lly_);
+        
+        if (pos < orientations.size()) {
+          cell.db_inst->setOrient(orientations[pos]);
+        }
+        
+        // Set placement status to PLACED after custom ordering
+        cell.db_inst->setPlacementStatus(odb::dbPlacementStatus::PLACED);
+        
+        // Advance X position by cell width  
+        current_x += cell.getWidth();
+      }
+    }
+  }
+  
+  if (vertex_ordering_params_ && vertex_ordering_params_->verbose && logger_) {
+    logger_->info(utl::SA1D, 108, "Placed {} cells using custom ordering", cell_ordering.size());
+  }
+}
+
+// --------------------------------------------------------------------------
+// Best Orderings Integration (SAIT Multi-Algorithm)
+// --------------------------------------------------------------------------
+
+void OptSA::setBestOrderingsParams(const BestOrderingsParams& params) {
+  if (!best_orderings_params_) {
+    best_orderings_params_ = std::make_unique<BestOrderingsParams>();
+  }
+  *best_orderings_params_ = params;
+  
+  if (best_orderings_params_->verbose && logger_) {
+    logger_->info(utl::SA1D, 210, "Best orderings parameters set: {} algorithms, top {}", 
+                 best_orderings_params_->include_advanced_methods ? "8-11" : "6-8",
+                 best_orderings_params_->top_count);
+  }
+}
+
+void OptSA::enableBestOrderings(bool enable) {
+  use_best_orderings_ = enable;
+  if (enable && !best_orderings_) {
+    best_orderings_ = std::make_unique<BestOrderingsInterface>(this);
+  }
+  
+  if (enable && logger_) {
+    logger_->info(utl::SA1D, 211, "Best orderings enabled - will use top orderings for worker initialization");
+  }
+}
+
+BestOrderingsResult OptSA::computeBestOrderings() {
+  if (!best_orderings_) {
+    best_orderings_ = std::make_unique<BestOrderingsInterface>(this);
+  }
+  
+  if (!best_orderings_params_) {
+    best_orderings_params_ = std::make_unique<BestOrderingsParams>();
+  }
+  
+  // Ensure SA1D database is initialized before computing best orderings
+  if (cells_.empty() || nets_.empty()) {
+    if (logger_) {
+      logger_->info(utl::SA1D, 218, "Initializing SA1D database for best orderings computation");
+    }
+    importDb();
+    if (logger_) {
+      logger_->info(utl::SA1D, 219, "SA1D database initialized: {} cells, {} nets", 
+                   cells_.size(), nets_.size());
+    }
+  }
+  
+  return best_orderings_->computeBestOrderings(*best_orderings_params_);
+}
+
+void OptSA::initializeWorkersFromBestOrderings(const BestOrderingsResult& result) {
+  if (!result.success || result.top_orderings.empty()) {
+    if (logger_) {
+      logger_->warn(utl::SA1D, 212, "Best orderings failed or empty, workers will use default initialization");
+    }
+    return;
+  }
+  
+  if (logger_) {
+    logger_->info(utl::SA1D, 213, "Best orderings computed: {} top solutions ready for worker initialization", 
+                 result.top_orderings.size());
+    
+    for (size_t i = 0; i < result.top_orderings.size(); ++i) {
+      const auto& info = result.top_orderings[i];
+      logger_->info(utl::SA1D, 214, "  {}. {} (peak cutwidth: {}, {:.1f}% improvement)", 
+                   i + 1, info.algorithm_name, info.final_peak_cutwidth, info.improvement_percentage);
+    }
+  }
 }
 
 }  // namespace sa1d

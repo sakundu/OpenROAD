@@ -51,6 +51,16 @@ namespace utl {
 class Logger;
 }
 
+// Forward declarations for vertex ordering integration
+namespace sa1d {
+class VertexOrderingInterface;
+struct VertexOrderingParams;
+struct VertexOrderingResult;
+class BestOrderingsInterface;
+struct BestOrderingsParams;
+struct BestOrderingsResult;
+}
+
 namespace sa1d {
 
 using std::map;
@@ -226,6 +236,22 @@ class OptSA
   int getCoreLLX() const { return core_llx_; }
   int getCoreLLY() const { return core_lly_; }
 
+  // Vertex ordering methods
+  void setVertexOrderingMethod(const VertexOrderingParams& params);
+  void enableCustomOrdering(bool enable);
+  VertexOrderingResult computeCustomOrdering();
+  void initializeCellOrderingFromCustom(const VertexOrderingResult& ordering_result);
+  
+  // Best orderings methods (SAIT multi-algorithm approach)
+  void setBestOrderingsParams(const BestOrderingsParams& params);
+  void enableBestOrderings(bool enable);
+  BestOrderingsResult computeBestOrderings();
+  void initializeWorkersFromBestOrderings(const BestOrderingsResult& result);
+  
+  // Public methods for VertexOrdering integration
+  void cellOrdering(std::vector<int>& cell_order, 
+    std::vector<odb::dbOrientType>& orients);
+
  private:  
   Logger* logger_ = nullptr;
   dbDatabase* db_ = nullptr;
@@ -282,12 +308,22 @@ class OptSA
   int core_lly_;
   dbOrientType orient_;
 
+  // Vertex ordering integration
+  std::unique_ptr<VertexOrderingInterface> vertex_ordering_;
+  std::unique_ptr<VertexOrderingParams> vertex_ordering_params_;
+  bool use_custom_ordering_ = false;
+  
+  // Best orderings integration (SAIT multi-algorithm)
+  std::unique_ptr<BestOrderingsInterface> best_orderings_;
+  std::unique_ptr<BestOrderingsParams> best_orderings_params_;
+  bool use_best_orderings_ = false;
+
   void importDb();
   void makeCells();
   void makeNets();
   void updateOpenDB(const CellLocMap& cell_locs); 
-  void cellOrdering(std::vector<int>& cell_order, 
-    std::vector<odb::dbOrientType>& orients);
+  void updateCellLocationsFromOrdering(const std::vector<int>& cell_ordering, 
+                                      const std::vector<odb::dbOrientType>& orientations);
 };
 
 
