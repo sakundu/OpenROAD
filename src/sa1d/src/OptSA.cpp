@@ -258,7 +258,7 @@ void OptSA::checkParams()
   
   // checking cooling rate
   float cooling_rate = std::exp(std::log(min_temp_ / max_temp_) / max_iter_);
-  if (cooling_rate >= cooling_rate_) {
+  if (cooling_rate <= cooling_rate_) {
     logger_->report("[Params] reset the cooling_rate to {}", cooling_rate);
     cooling_rate_ = cooling_rate;
   } else {
@@ -457,6 +457,10 @@ void OptSA::reportPackHPWL()
   logger_->report("[INFO] We only consider x-direction HPWL");
   logger_->report("[INFO] HPWL before packing: {}", block_->dbuToMicrons(hpwl_db));
   logger_->report("[INFO] HPWL after packing: {}", block_->dbuToMicrons(hpwl));
+  
+  // Report peak overlap information
+  int peak_overlap = worker.getPeakOverlap();
+  logger_->report("[INFO] Peak Net Overlap after packing: {}", peak_overlap);
 
   // Check total cell width
   int total_width = 0;
@@ -489,13 +493,11 @@ void OptSA::runSA()
  
   // Initialize the workers
   std::vector<std::unique_ptr<SAWorker> > workers;
-  // try to workers with different cooling rate
-  float delta_cooling_rate = (0.995 - cooling_rate_) / (num_workers_ / 2 + 1);
   for (int worker_id = 0; worker_id < num_workers_; worker_id++) {
     std::unique_ptr<SAWorker> worker = std::make_unique<SAWorker>(this, logger_, worker_id);
     worker->setRandomSeed(seed_ + worker_id);
     worker->setTemp(max_temp_); // Initial Temperature
-    worker->setCoolingRate(cooling_rate_ + (worker_id - num_workers_ / 2) * delta_cooling_rate);
+    worker->setCoolingRate(cooling_rate_);
     worker->setNumMovePerIter(num_move_per_iter_);
     worker->setMaxIter(static_cast<int>(max_iter_ * sync_freq_));
     //worker->setSaveFlag(true);
@@ -593,6 +595,12 @@ void OptSA::runSA()
       }
     }
   }
+  
+  // Report final optimization results
+  logger_->report("[INFO] ===== Final Optimization Results =====");
+  logger_->report("[INFO] Best worker HPWL: {}", workers[0]->getTotalHPWL());
+  logger_->report("[INFO] Best worker Peak Overlap: {}", workers[0]->getPeakOverlap());
+  logger_->report("[INFO] Initial Norm Overlap: {}", workers[0]->getNormOverlap());
     
   updateOpenDB(workers[0]->getCellLocs());
 }

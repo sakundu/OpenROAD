@@ -44,6 +44,7 @@ add_library(sa1d_lib
   src/Objects.cpp
   src/OptSA.cpp
   src/Worker.cpp
+  src/NetOverlap.cpp
 )
 
 target_link_libraries(sa1d_lib

@@ -43,6 +43,7 @@
 #include "odb/dbTypes.h"
 #include "sa1d/Objects.h"
 #include "sa1d/OptSA.h"
+#include "sa1d/NetOverlap.h"
 
 namespace sa1d {
 
@@ -145,6 +146,12 @@ class SAWorker
 
     void setSaveFlag(bool flag) { save_flag_ = flag; }
     
+    // Overlap-related methods
+    void setOverlapWeight(float weight) { overlap_weight_ = weight; }
+    void setEnableOverlap(bool enable) { enable_overlap_ = enable; }
+    int getPeakOverlap() const { return peak_overlap_; }
+    float getNormOverlap() const { return norm_overlap_; }
+    
   private:
     OptSA* opt_;
     Logger* logger_;
@@ -168,6 +175,14 @@ class SAWorker
     int num_nets_;
     int move_count_ = 3;
     float norm_hpwl_ = 0.0;
+    
+    // Overlap-related members
+    NetOverlapCalculator overlap_calc_;
+    int peak_overlap_ = 0;
+    float overlap_weight_ = 1.0; // Default weight for overlap
+    bool enable_overlap_ = true; // Default enable overlap
+    float norm_overlap_ = 1.0; // Initial peak overlap for normalization
+    
     std::mt19937 rng_;  // Random number generator
     std::uniform_real_distribution<float> distribution_;
     std::vector<int> cell_order_;
@@ -207,6 +222,9 @@ class SAWorker
     // we can calculate the delta HPWL for a cell perspective
     void updateDeltaHPWLUtil(int cell_id);   
     int updateDeltaHPWL(int net_id);
+    
+    // Overlap-related helper function
+    int computeDeltaOverlap();
 
     bool save_flag_ = false;
     std::vector<float> cost_vec_;

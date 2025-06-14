@@ -119,6 +119,14 @@ void SAWorker::initCellOrderRandom()
   }
   updateCellLocs(cell_orient);
   norm_hpwl_ = static_cast<float>(getTotalHPWL());
+  
+  // Initialize overlap normalization
+  if (enable_overlap_) {
+    peak_overlap_ = overlap_calc_.computePeakOverlap(net_hpwl_);
+    norm_overlap_ = static_cast<float>(std::max(1, peak_overlap_)); // Avoid division by 0
+    logger_->report("[INFO] Norm Overlap = {}", static_cast<int>(norm_overlap_));
+  }
+  
   logger_->report("[INFO] Norm HPWL = {}", static_cast<int>(norm_hpwl_));
 }
 
@@ -130,6 +138,14 @@ void SAWorker::initCellOrder(
   cell_order_ = cell_order;
   updateCellLocs(cell_orients);
   norm_hpwl_ = static_cast<float>(getTotalHPWL());
+  
+  // Initialize overlap normalization
+  if (enable_overlap_) {
+    peak_overlap_ = overlap_calc_.computePeakOverlap(net_hpwl_);
+    norm_overlap_ = static_cast<float>(std::max(1, peak_overlap_)); // Avoid division by 0
+    logger_->report("[INFO] Norm Overlap = {}", static_cast<int>(norm_overlap_));
+  }
+  
   logger_->report("[INFO] Norm HPWL = {}", static_cast<int>(norm_hpwl_));
 }
 
@@ -480,6 +496,18 @@ int SAWorker::updateDeltaHPWL(int net_id)
   return net_hpwl.getDeltaHPWL();
 }
 
+int SAWorker::computeDeltaOverlap()
+{
+  if (!enable_overlap_ || overlap_weight_ <= 0.0) {
+    return 0;
+  }
+  
+  int old_peak = peak_overlap_;
+  int new_peak = overlap_calc_.computeIncrementalOverlap(affected_nets_, net_hpwl_);
+  peak_overlap_ = new_peak; // Update current peak overlap
+  return new_peak - old_peak;
+}
+
 
 int SAWorker::flipCell(int id)
 {
@@ -564,8 +592,24 @@ void SAWorker::run()
           logger_->error(utl::SA1D, 4, "Invalid move type selected.");
       }
 
-      bool accept_flag = delta_hpwl <= 0.0 || 
-        distribution_(rng_) < safeExp(-1.0 * delta_hpwl / norm_hpwl_ / temp_);
+      // Compute delta overlap
+      int delta_overlap = computeDeltaOverlap();
+      
+      // Calculate acceptance probability with normalized terms
+      bool accept_flag = false;
+      if (enable_overlap_ && overlap_weight_ > 0.0) {
+        // Multi-objective cost with normalized terms
+        float normalized_delta_hpwl = static_cast<float>(delta_hpwl) / norm_hpwl_;
+        float normalized_delta_overlap = static_cast<float>(delta_overlap) / norm_overlap_;
+        float total_normalized_delta = normalized_delta_hpwl + overlap_weight_ * normalized_delta_overlap;
+        
+        accept_flag = total_normalized_delta <= 0.0 || 
+          distribution_(rng_) < safeExp(-1.0 * total_normalized_delta / temp_);
+      } else {
+        // Original HPWL-only acceptance
+        accept_flag = delta_hpwl <= 0.0 || 
+          distribution_(rng_) < safeExp(-1.0 * delta_hpwl / norm_hpwl_ / temp_);
+      }
       if (accept_flag == false) {
         // Reject the move
         switch (move_type) {
@@ -581,6 +625,11 @@ void SAWorker::run()
           default:
             break;
         }
+        
+        // Restore peak overlap if it was changed
+        if (enable_overlap_ && overlap_weight_ > 0.0 && delta_overlap != 0) {
+          peak_overlap_ -= delta_overlap; // Revert the change
+        }
       } else {
         accept_count_++;
         curr_hpwl += delta_hpwl;
@@ -589,34 +638,6 @@ void SAWorker::run()
       if (save_flag_ == true) {
         cost_vec_.push_back(curr_hpwl);
       }
-      
-      /*
-      if (false) {// for debug only
-        auto net_hpwl = net_hpwl_; 
-        if (curr_hpwl != getTotalHPWL()) {
-          std::cout << "iter = " << iter << " move_id = " << move_id << " selected cell id = " << id1 << " " << id2 << " "
-                    << "accept_flag = " << accept_flag << std::endl;
-          for (int i = 0; i < num_nets_; i++) {
-            if (net_hpwl_[i].hpwl != net_hpwl[i].hpwl) {
-              std::cout << "net hpwl mismatch at index = " << i << " " << net_hpwl_[i].hpwl << " " << net_hpwl[i].hpwl << " "
-                        << "new lx = " << net_hpwl_[i].lx << " old lx =  " << net_hpwl[i].lx << " "
-                        << "new ux = " << net_hpwl_[i].ux << " old ux =  " << net_hpwl[i].ux << std::endl;
-            }
-          }
-                    
-          logger_->error(sa1d::SA1D, 5, "curr_hpwl does not match !!!");
-        }
-
-        auto cell_order = getFinalOrdering();
-        auto orients = getFinalOrients();
-        initCellOrder(cell_order, orients);
-        if (curr_hpwl != getTotalHPWL()) {
-          std::cout << "iter = " << iter << " move_id = " << move_id << " selected cell id = " << id1 << " " << id2 << " "
-                    << "accept_flag = " << accept_flag << std::endl;
-          logger_->error(sa1d::SA1D, 6, "the updated location or flip operation is wrong !!!");
-        }
-      }
-      */
     }
     temp_ = temp_ * cooling_rate_;
   }
