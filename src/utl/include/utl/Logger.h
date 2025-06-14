@@ -60,6 +60,7 @@ class Progress;
   X(RCX)                \
   X(RMP)                \
   X(RSZ)                \
+  X(SA1D)               \
   X(STA)                \
   X(STT)                \
   X(TAP)                \
