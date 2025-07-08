@@ -108,6 +108,13 @@ public:
     return target;
   }
   
+  // Multi-height cell support
+  GridY getCellHeightInRows(const dpl::Node* cell) const;
+  bool isMultiHeightCell(const dpl::Node* cell) const;
+  bool rowsAvailable(GridY start_row, GridY height) const {
+    return start_row.v >= 0 && (start_row.v + height.v) <= row_count_;
+  }
+  
   // Site information access
   const std::map<dbSite*, dbOrientType>& getSitesAt(GridX x, GridY y) const;
   dbOrientType getValidOrientation(dbSite* site, GridX x, GridY y) const;
@@ -153,6 +160,12 @@ public:
   // Pixel access
   bool isOccupied(GridX x, GridY y) const;
   int getCellAt(GridX x, GridY y) const;
+  
+  // Multi-height cell support
+  bool canPlaceMultiHeight(int cell_id, GridX x, GridY y, 
+                          GridX width, GridY height) const;
+  void placeMultiHeightCell(int cell_id, GridX x, GridY y,
+                           GridX width, GridY height);
   
   // Modifications (for single worker)
   void placeCell(int cell_id, GridX x, GridY y, 

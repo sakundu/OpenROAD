@@ -182,7 +182,12 @@ void SAWorker::initFromDPL(dpl::Network* network,
                             node->getLeft().v, node->getBottom().v);
             }*/
             
-            grid_->placeCell(i, gx, gy, gw, gh);
+            // Use appropriate placement method based on cell height
+            if (grid_info_->isMultiHeightCell(node)) {
+                grid_->placeMultiHeightCell(i, gx, gy, gw, gh);
+            } else {
+                grid_->placeCell(i, gx, gy, gw, gh);
+            }
         }
     }
     
@@ -563,6 +568,11 @@ bool SAWorker::tryMove(int cell_id)
         return false;
     }
     
+    // Check if multi-height and delegate to specialized handler
+    if (grid_info_->isMultiHeightCell(node)) {
+        return tryMoveMultiHeight(cell_id);
+    }
+    
     // Save current state
     state_.cells[cell_id].prev_x = state_.cells[cell_id].x;
     state_.cells[cell_id].prev_y = state_.cells[cell_id].y;
@@ -636,6 +646,12 @@ bool SAWorker::trySwap(int cell1_id, int cell2_id)
     if (gw1 != gw2 || gh1 != gh2) {
         // Can't simply swap cells of different sizes
         return false;
+    }
+    
+    // Check if either is multi-height and delegate to specialized handler
+    if (grid_info_->isMultiHeightCell(node1) || grid_info_->isMultiHeightCell(node2)) {
+        // Both must be same height (checked above), so safe to swap
+        return trySwapMultiHeight(cell1_id, cell2_id);
     }
     
     // Save current states
@@ -740,17 +756,22 @@ bool SAWorker::tryFlip(int cell_id)
         return false;
     }
     
-    // Only flip single-height cells
-    if (!grid_info_->isSingleHeightCell(node)) {
-        return false;
-    }
-    
     // Get current grid position
     GridY gy = grid_info_->gridSnapDownY(state_.cells[cell_id].y);
+    GridY cell_height = grid_info_->gridHeight(node);
     
-    // Check if row supports Y symmetry
-    if (!grid_info_->isRowYSymmetric(gy)) {
-        return false;
+    // For multi-height cells, check Y symmetry for ALL spanned rows
+    if (grid_info_->isMultiHeightCell(node)) {
+        for (GridY row = gy; row.v < gy.v + cell_height.v; ++row) {
+            if (!grid_info_->isRowYSymmetric(row)) {
+                return false;  // At least one row doesn't support Y flipping
+            }
+        }
+    } else {
+        // Single-height cell - just check the one row
+        if (!grid_info_->isRowYSymmetric(gy)) {
+            return false;
+        }
     }
     
     // Save current state
@@ -762,18 +783,20 @@ bool SAWorker::tryFlip(int cell_id)
     odb::dbOrientType current_orient = state_.cells[cell_id].orient;
     odb::dbOrientType flipped_orient;
     
+    // Y-axis flipping is safe for multi-height cells because power/ground
+    // connections remain at the same vertical positions (top/bottom of cell)
     switch (current_orient.getValue()) {
         case odb::dbOrientType::Value::R0:
-            flipped_orient = odb::dbOrientType::MY;
+            flipped_orient = odb::dbOrientType::MY;  // Y-axis flip
             break;
         case odb::dbOrientType::Value::R180:
-            flipped_orient = odb::dbOrientType::MX;
+            flipped_orient = odb::dbOrientType::MX;  // Y-axis flip
             break;
         case odb::dbOrientType::Value::MY:
-            flipped_orient = odb::dbOrientType::R0;
+            flipped_orient = odb::dbOrientType::R0;  // Y-axis flip back
             break;
         case odb::dbOrientType::Value::MX:
-            flipped_orient = odb::dbOrientType::R180;
+            flipped_orient = odb::dbOrientType::R180;  // Y-axis flip back
             break;
         default:
             // Can't flip other orientations
@@ -826,6 +849,12 @@ bool SAWorker::tryChainMove(int cell_id)
     // Skip non-movable cells
     if (node->getType() != dpl::Node::CELL || node->isFixed()) {
         return false;
+    }
+    
+    // Skip multi-height cells in chain moves for v0
+    if (grid_info_->isMultiHeightCell(node)) {
+        // Fall back to simple move for multi-height cells
+        return tryMove(cell_id);
     }
     
     // Temperature-based early termination: skip chain moves at low temperatures
@@ -909,8 +938,8 @@ bool SAWorker::tryRippleLeft(int cell_id, GridPt target_pos, int max_chain_lengt
         // Check if this is a multi-height cell
         GridY blocking_height = grid_info_->gridHeight(blocking_node);
         GridY seed_height = grid_info_->gridHeight(seed_node);
-        if (blocking_height.v > seed_height.v) {
-            // Can't handle multi-height cells in chain for now
+        if (blocking_height.v > 1 || seed_height.v > 1) {
+            // Can't handle multi-height cells in chain for v0
             return false;
         }
         
@@ -1007,8 +1036,8 @@ bool SAWorker::tryRippleRight(int cell_id, GridPt target_pos, int max_chain_leng
         // Check if this is a multi-height cell
         GridY blocking_height = grid_info_->gridHeight(blocking_node);
         GridY seed_height = grid_info_->gridHeight(seed_node);
-        if (blocking_height.v > seed_height.v) {
-            // Can't handle multi-height cells in chain for now
+        if (blocking_height.v > 1 || seed_height.v > 1) {
+            // Can't handle multi-height cells in chain for v0
             return false;
         }
         
@@ -1602,7 +1631,13 @@ void SAWorker::copyStateFrom(const SAWorker& other)
 
 void SAWorker::applyToDPL(dpl::Network* network)
 {
+    utl::Logger* logger = sa2d_->getLogger();
+    logger->info(utl::SA2D, 350, "Worker {} applying best solution with HPWL: {:.1f} u",
+                worker_id_, 
+                sa2d_->getBlock()->dbuToMicrons(best_state_.total_hpwl));
+    
     // Apply best solution back to DPL network
+    int cells_updated = 0;
     for (int i = 0; i < network_->getNumNodes(); i++) {
         dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
         if (node->getType() == dpl::Node::CELL) {
@@ -1610,8 +1645,11 @@ void SAWorker::applyToDPL(dpl::Network* network)
             node->setLeft(best_state_.cells[i].x);
             node->setBottom(best_state_.cells[i].y);
             node->setOrient(best_state_.cells[i].orient);
+            cells_updated++;
         }
     }
+    
+    logger->info(utl::SA2D, 351, "Updated {} cells in DPL network", cells_updated);
 }
 
 bool SAWorker::tryRegionShuffle(int region_size)
@@ -1794,6 +1832,191 @@ void SAWorker::applySwapToGrid(int cell1_id, int cell2_id)
     
     grid_->placeCell(cell1_id, gx1, gy1, gw, gh);
     grid_->placeCell(cell2_id, gx2, gy2, gw, gh);
+}
+
+// Multi-height cell operations
+
+bool SAWorker::tryMoveMultiHeight(int cell_id)
+{
+    dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(cell_id));
+    
+    // Get cell height in rows
+    GridY cell_height = grid_info_->getCellHeightInRows(node);
+    GridX cell_width = grid_info_->gridPaddedWidth(node);
+    
+    // Save current state
+    state_.cells[cell_id].prev_x = state_.cells[cell_id].x;
+    state_.cells[cell_id].prev_y = state_.cells[cell_id].y;
+    state_.cells[cell_id].prev_orient = state_.cells[cell_id].orient;
+    
+    // Generate new position within displacement limits
+    GridPt new_pos = generateRandomPosition(cell_id);
+    
+    // Ensure we don't go off the top
+    if (new_pos.y.v + cell_height.v > grid_info_->getRowCount()) {
+        new_pos.y = GridY{grid_info_->getRowCount() - cell_height.v};
+    }
+    
+    // Check legality for multi-height cell
+    if (!canPlaceMultiHeightCell(cell_id, new_pos.x, new_pos.y)) {
+        illegal_moves_++;
+        return false;
+    }
+    
+    // Update position temporarily (multi-height cells typically keep orientation)
+    state_.cells[cell_id].x = grid_info_->gridToDbuX(new_pos.x);
+    state_.cells[cell_id].y = grid_info_->gridYToDbu(new_pos.y);
+    // Keep current orientation for multi-height cells
+    
+    // Calculate cost change
+    std::vector<int> affected_nets = getAffectedNets(cell_id);
+    int64_t delta = calcDeltaHPWL(affected_nets);
+    
+    if (acceptMove(delta, temp_)) {
+        // Update grid occupancy
+        grid_->placeMultiHeightCell(cell_id, new_pos.x, new_pos.y, 
+                                   cell_width, cell_height);
+        
+        // Update HPWL cache and total
+        updateHPWLCache(affected_nets);
+        state_.total_hpwl += delta;
+        
+        accepted_moves_++;
+        accepted_single_moves_++;
+        return true;
+    } else {
+        // Restore previous state
+        state_.cells[cell_id].x = state_.cells[cell_id].prev_x;
+        state_.cells[cell_id].y = state_.cells[cell_id].prev_y;
+        state_.cells[cell_id].orient = state_.cells[cell_id].prev_orient;
+        
+        rejected_moves_++;
+        return false;
+    }
+}
+
+bool SAWorker::trySwapMultiHeight(int cell1_id, int cell2_id)
+{
+    dpl::Node* node1 = const_cast<dpl::Node*>(network_->getNode(cell1_id));
+    
+    // Verify they have same dimensions (should be checked by caller)
+    GridX width = grid_info_->gridPaddedWidth(node1);
+    GridY height = grid_info_->getCellHeightInRows(node1);
+    
+    // Save current states
+    state_.cells[cell1_id].prev_x = state_.cells[cell1_id].x;
+    state_.cells[cell1_id].prev_y = state_.cells[cell1_id].y;
+    state_.cells[cell1_id].prev_orient = state_.cells[cell1_id].orient;
+    
+    state_.cells[cell2_id].prev_x = state_.cells[cell2_id].x;
+    state_.cells[cell2_id].prev_y = state_.cells[cell2_id].y;
+    state_.cells[cell2_id].prev_orient = state_.cells[cell2_id].orient;
+    
+    // Get current positions
+    GridX x1 = grid_info_->gridX(state_.cells[cell1_id].x);
+    GridY y1 = grid_info_->gridSnapDownY(state_.cells[cell1_id].y);
+    GridX x2 = grid_info_->gridX(state_.cells[cell2_id].x);
+    GridY y2 = grid_info_->gridSnapDownY(state_.cells[cell2_id].y);
+    
+    // Skip if already in same position
+    if (x1 == x2 && y1 == y2) {
+        return false;
+    }
+    
+    // Remove both cells from grid
+    grid_->removeCell(cell1_id);
+    grid_->removeCell(cell2_id);
+    
+    // Check if swap is legal (multi-height specific)
+    bool legal1 = grid_->canPlaceMultiHeight(cell1_id, x2, y2, width, height);
+    bool legal2 = grid_->canPlaceMultiHeight(cell2_id, x1, y1, width, height);
+    
+    if (!legal1 || !legal2) {
+        // Restore grid state
+        grid_->placeMultiHeightCell(cell1_id, x1, y1, width, height);
+        grid_->placeMultiHeightCell(cell2_id, x2, y2, width, height);
+        
+        illegal_moves_++;
+        return false;
+    }
+    
+    // Perform swap in state
+    state_.cells[cell1_id].x = grid_info_->gridToDbuX(x2);
+    state_.cells[cell1_id].y = grid_info_->gridYToDbu(y2);
+    // Keep orientations unchanged for multi-height cells
+    
+    state_.cells[cell2_id].x = grid_info_->gridToDbuX(x1);
+    state_.cells[cell2_id].y = grid_info_->gridYToDbu(y1);
+    // Keep orientations unchanged for multi-height cells
+    
+    // Calculate cost change
+    std::set<int> affected_nets_set;
+    auto nets1 = getAffectedNets(cell1_id);
+    auto nets2 = getAffectedNets(cell2_id);
+    affected_nets_set.insert(nets1.begin(), nets1.end());
+    affected_nets_set.insert(nets2.begin(), nets2.end());
+    
+    std::vector<int> affected_nets(affected_nets_set.begin(), affected_nets_set.end());
+    int64_t delta = calcDeltaHPWL(affected_nets);
+    
+    if (acceptMove(delta, temp_)) {
+        // Update grid with new positions
+        grid_->placeMultiHeightCell(cell1_id, x2, y2, width, height);
+        grid_->placeMultiHeightCell(cell2_id, x1, y1, width, height);
+        
+        // Update HPWL cache and total
+        updateHPWLCache(affected_nets);
+        state_.total_hpwl += delta;
+        
+        accepted_moves_++;
+        accepted_swaps_++;
+        return true;
+    } else {
+        // Restore previous state
+        state_.cells[cell1_id].x = state_.cells[cell1_id].prev_x;
+        state_.cells[cell1_id].y = state_.cells[cell1_id].prev_y;
+        state_.cells[cell1_id].orient = state_.cells[cell1_id].prev_orient;
+        
+        state_.cells[cell2_id].x = state_.cells[cell2_id].prev_x;
+        state_.cells[cell2_id].y = state_.cells[cell2_id].prev_y;
+        state_.cells[cell2_id].orient = state_.cells[cell2_id].prev_orient;
+        
+        // Restore grid state
+        grid_->placeMultiHeightCell(cell1_id, x1, y1, width, height);
+        grid_->placeMultiHeightCell(cell2_id, x2, y2, width, height);
+        
+        rejected_moves_++;
+        return false;
+    }
+}
+
+bool SAWorker::canPlaceMultiHeightCell(int cell_id, GridX x, GridY y)
+{
+    const dpl::Node* node = network_->getNode(cell_id);
+    GridY height = grid_info_->getCellHeightInRows(node);
+    GridX width = grid_info_->gridPaddedWidth(node);
+    
+    // Check row boundaries
+    if (!grid_info_->rowsAvailable(y, height)) {
+        return false;
+    }
+    
+    // Check site alignment (x must be valid for ALL rows)
+    if (x.v < 0 || x.v + width.v > grid_info_->getRowSiteCount()) {
+        return false;
+    }
+    
+    // For multi-height, check site compatibility in bottom row only (v0 simplification)
+    if (height.v > 1) {
+        odb::dbSite* cell_site = node->getSite();
+        const auto& available_sites = grid_info_->getSitesAt(x, y);
+        if (available_sites.find(cell_site) == available_sites.end()) {
+            return false;
+        }
+    }
+    
+    // Check no overlaps across all spanned rows
+    return grid_->canPlaceMultiHeight(cell_id, x, y, width, height);
 }
 
 }  // namespace sa2d 

@@ -195,7 +195,12 @@ private:
     // Move operations with full legality
     bool tryMove(int cell_id);
     bool trySwap(int cell1_id, int cell2_id);
-    bool tryFlip(int cell_id);  // New flip operation
+    bool tryFlip(int cell_id);  // Y-axis flip - supports multi-height cells
+    
+    // Multi-height cell operations
+    bool tryMoveMultiHeight(int cell_id);
+    bool trySwapMultiHeight(int cell1_id, int cell2_id);
+    bool canPlaceMultiHeightCell(int cell_id, GridX x, GridY y);
     
     // Chain/ripple move operations
     bool tryChainMove(int cell_id);

@@ -132,6 +132,9 @@ public:
     // Control
     void stop() { should_stop_ = true; }
     
+    // Getters for debugging
+    int64_t getGlobalBestCost() const { return global_best_cost_; }
+    
 private:
     SA2D* sa2d_;
     std::vector<std::unique_ptr<SAWorker>> workers_;

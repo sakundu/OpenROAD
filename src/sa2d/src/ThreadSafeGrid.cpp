@@ -224,6 +224,24 @@ bool ImmutableGridInfo::isSingleHeightCell(const dpl::Node* cell) const
     return gridHeight(cell).v == 1;
 }
 
+GridY ImmutableGridInfo::getCellHeightInRows(const dpl::Node* cell) const
+{
+    if (arch_) {
+        return GridY{arch_->getCellHeightInRows(cell)};
+    }
+    // Fallback: calculate based on uniform row height if available
+    if (uniform_row_height_.has_value() && uniform_row_height_.value() > 0) {
+        return GridY{std::max(1, divCeil(cell->getHeight().v, uniform_row_height_.value()))};
+    }
+    // Default to single height
+    return GridY{1};
+}
+
+bool ImmutableGridInfo::isMultiHeightCell(const dpl::Node* cell) const
+{
+    return getCellHeightInRows(cell).v > 1;
+}
+
 ////////////////////////////////////////////////////////////////////
 // WorkerGrid implementation
 
@@ -322,6 +340,39 @@ void WorkerGrid::copyFrom(const WorkerGrid& other)
   
   // Copy location tracking
   cell_locations_ = other.cell_locations_;
+}
+
+bool WorkerGrid::canPlaceMultiHeight(int cell_id, GridX x, GridY y,
+                                    GridX width, GridY height) const
+{
+  // Check bounds
+  if (x.v < 0 || y.v < 0 || 
+      x.v + width.v > static_cast<int>(pixels_[0].size()) ||
+      y.v + height.v > static_cast<int>(pixels_.size())) {
+    return false;
+  }
+  
+  // Check all rows the cell would span
+  for (int row = y.v; row < y.v + height.v; ++row) {
+    for (int col = x.v; col < x.v + width.v; ++col) {
+      if (pixels_[row][col].cell_id != -1 && 
+          pixels_[row][col].cell_id != cell_id) {
+        // Occupied by another cell
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+void WorkerGrid::placeMultiHeightCell(int cell_id, GridX x, GridY y,
+                                     GridX width, GridY height)
+{
+  // First remove if already placed
+  removeCell(cell_id);
+  
+  // Place in all spanned rows (same as placeCell but explicit for clarity)
+  placeCell(cell_id, x, y, width, height);
 }
 
 }  // namespace sa2d 

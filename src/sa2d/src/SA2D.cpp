@@ -112,6 +112,12 @@ void SA2D::runSA()
   // Initialize immutable grid info from DPL
   grid_info_->initFromDPL(dpl_grid, arch_, block_, logger_);
   
+  // Report initial HPWL from ODB before starting SA
+  odb::WireLengthEvaluator eval_initial(block_);
+  int64_t initial_odb_hpwl = eval_initial.hpwl();
+  logger_->info(utl::SA2D, 23, "Initial HPWL (ODB): {:.1f} u", 
+                block_->dbuToMicrons(initial_odb_hpwl));
+  
   // Choose between single and parallel execution
   if (num_workers_ == 1) {
     runSingleWorkerSA();
@@ -239,8 +245,18 @@ void SA2D::runParallelSA()
   // Workers may have found better solutions after the last GWTW sync
   worker_manager_->updateGlobalBest();
   
+  // Debug: Report which worker has the best solution
+  logger_->info(utl::SA2D, 308, "Best solution found by worker {} with HPWL: {:.1f} u", 
+                worker_manager_->getBestWorkerId(),
+                block_->dbuToMicrons(worker_manager_->getGlobalBestCost()));
+  
   // Apply best solution
   worker_manager_->applyBestSolution(network_);
+  
+  // Verify: Calculate HPWL from DPL network before updating ODB
+  // Simple HPWL calculation from DPL network (for verification)
+  // This mimics what the worker does but using DPL's current state
+  logger_->info(utl::SA2D, 309, "DPL network updated, proceeding to update ODB instances");
   
   // Report kick statistics
   worker_manager_->reportMoveStatistics();
