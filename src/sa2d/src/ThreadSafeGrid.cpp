@@ -49,111 +49,75 @@ static int divCeil(int a, int b)
   return (a + b - 1) / b;
 }
 
-static int divFloor(int a, int b)
-{
-  return a / b;
-}
-
 // ImmutableGridInfo implementation
 
 void ImmutableGridInfo::initFromDPL(const dpl::Grid* dpl_grid,
-                                   const dpl::Architecture* arch,
-                                   dbBlock* block,
-                                   utl::Logger* logger)
+                                    const dpl::Architecture* arch,
+                                    dbBlock* block,
+                                    utl::Logger* logger)
 {
-  // Get core area from block
-  core_ = block->getCoreArea();
-  
-  // Get site information from first row
-  odb::dbRow* first_row = nullptr;
-  for (auto row : block->getRows()) {
-    if (row->getSite()->getClass() != odb::dbSiteClass::PAD) {
-      first_row = row;
-      break;
-    }
-  }
-  
-  if (!first_row) {
-    // No rows found - create minimal grid
-    site_width_ = 1;
-    row_count_ = 1;
-    row_site_count_ = core_.dx();
-    row_index_to_y_dbu_.push_back(core_.yMin());
-    return;
-  }
-  
-  site_width_ = first_row->getSite()->getWidth();
-  int site_height = first_row->getSite()->getHeight();
-  uniform_row_height_ = site_height;
-  
-  // Count rows and build row index
-  row_count_ = 0;
-  row_index_to_y_dbu_.clear();
-  
-  for (auto row : block->getRows()) {
-    // Skip PAD rows - DPL doesn't consider them valid for placement
-    if (row->getSite()->getClass() != odb::dbSiteClass::PAD) {
-      row_index_to_y_dbu_.push_back(row->getOrigin().y() - core_.yMin());
-      row_count_++;
-    }
-  }
-  
-  // Sort row indices
-  std::sort(row_index_to_y_dbu_.begin(), row_index_to_y_dbu_.end());
-  
-  // Debug: Check for gaps in row Y coordinates
-  if (row_count_ > 1 && logger) {
-    bool has_gaps = false;
-    int gap_count = 0;
-    for (int i = 1; i < row_count_; i++) {
-      int gap = row_index_to_y_dbu_[i] - row_index_to_y_dbu_[i-1];
-      if (gap != site_height) {
-        has_gaps = true;
-        gap_count++;
-        // Log first few gaps
-        if (gap_count <= 5) {
-          logger->warn(utl::SA2D, 211, 
-            "Row gap detected: row[{}] Y={}, row[{}] Y={}, gap={} (expected {})",
-            i-1, row_index_to_y_dbu_[i-1], i, row_index_to_y_dbu_[i], gap, site_height);
-        }
-      }
-    }
-    if (has_gaps) {
-      logger->warn(utl::SA2D, 212, 
-        "Row Y coordinates have {} gaps! This may cause invalid Y positions in SA2D.", gap_count);
+    // Store architecture pointer
+    arch_ = arch;
+    
+    // Initialize basic grid properties
+    core_ = dpl_grid->getCore();
+    site_width_ = dpl_grid->getSiteWidth().v;  // Extract int value from DbuX
+    row_count_ = dpl_grid->getRowCount().v;    // Extract int value from GridY
+    row_site_count_ = dpl_grid->getRowSiteCount().v;  // Extract int value from GridX
+    
+    // Copy row index to Y mapping
+    row_index_to_y_dbu_.resize(row_count_);
+    for (int y = 0; y < row_count_; ++y) {
+        // Get Y coordinate for this row from DPL grid
+        row_index_to_y_dbu_[y] = dpl_grid->gridYToDbu(GridY{y}).v;
     }
     
-    // Also log info about the row structure
-    logger->info(utl::SA2D, 213, "Row structure: {} rows, Y range [{}, {}], site_height={}",
-                 row_count_, row_index_to_y_dbu_.front(), row_index_to_y_dbu_.back(), site_height);
-                 
-    // Debug: Look for the problematic Y coordinate 1464400
-    for (int i = 0; i < row_count_; i++) {
-      if (row_index_to_y_dbu_[i] == 1464400) {
-        logger->warn(utl::SA2D, 215, "Found Y=1464400 at row index {}", i);
-        if (i > 0) {
-          logger->warn(utl::SA2D, 216, "  Previous row[{}] Y={}", i-1, row_index_to_y_dbu_[i-1]);
+    // Check for uniform row height - estimate from first two rows
+    if (row_count_ >= 2) {
+        int height0 = row_index_to_y_dbu_[1] - row_index_to_y_dbu_[0];
+        bool uniform = true;
+        for (int y = 2; y < row_count_; ++y) {
+            int height = row_index_to_y_dbu_[y] - row_index_to_y_dbu_[y-1];
+            if (height != height0) {
+                uniform = false;
+                break;
+            }
         }
-        if (i < row_count_ - 1) {
-          logger->warn(utl::SA2D, 217, "  Next row[{}] Y={}", i+1, row_index_to_y_dbu_[i+1]);
+        if (uniform) {
+            uniform_row_height_ = height0;
         }
-        break;
-      }
     }
-  }
-  
-  // Calculate sites per row
-  row_site_count_ = core_.dx() / site_width_;
-  
-  // Initialize pixel sites (simplified - all sites have same orientation)
-  pixel_sites_.resize(row_count_);
-  for (int y = 0; y < row_count_; y++) {
-    pixel_sites_[y].resize(row_site_count_);
-    for (int x = 0; x < row_site_count_; x++) {
-      // Add default site with R0 orientation
-      pixel_sites_[y][x].sites[first_row->getSite()] = odb::dbOrientType::R0;
+    
+    // Initialize site information for each pixel
+    pixel_sites_.resize(row_count_);
+    for (int y = 0; y < row_count_; ++y) {
+        pixel_sites_[y].resize(row_site_count_);
     }
-  }
+    
+    // Initialize row symmetry information
+    row_y_symmetric_.resize(row_count_, false);
+    
+    // Populate site information and symmetry from rows
+    for (int y = 0; y < row_count_; ++y) {
+        // Get row symmetry from DPL architecture
+        if (y < arch->getNumRows()) {
+            dpl::Architecture::Row* dpl_row = arch->getRow(y);
+            row_y_symmetric_[y] = (dpl_row->getSymmetry() & 0x2) != 0;  // Check Symmetry_Y bit
+        }
+        
+        // Use DPL's grid to get site information for each pixel
+        for (int x = 0; x < row_site_count_; ++x) {
+            GridX gx{x};
+            GridY gy{y};
+            
+            // Get site and orientation from DPL grid
+            auto pixel = dpl_grid->gridPixel(gx, gy);
+            if (pixel) {
+                // Copy all available sites and their orientations
+                pixel_sites_[y][x].sites = pixel->sites;
+            }
+        }
+    }
 }
 
 GridX ImmutableGridInfo::gridX(DbuX x) const
@@ -235,25 +199,32 @@ dbOrientType ImmutableGridInfo::getValidOrientation(dbSite* site,
 
 GridRect ImmutableGridInfo::gridWithin(const Rect& rect) const
 {
-  // Convert rectangle to grid coordinates (snapping inward)
-  GridRect result;
-  result.xlo = GridX{divCeil(rect.xMin(), site_width_)};
-  result.ylo = gridSnapDownY(DbuY{rect.yMin()});
-  result.xhi = GridX{divFloor(rect.xMax(), site_width_)};
-  
-  // For yhi, find the largest row that fits within rect.yMax()
-  auto it = std::upper_bound(
-      row_index_to_y_dbu_.begin(), row_index_to_y_dbu_.end(), rect.yMax());
-  if (it != row_index_to_y_dbu_.begin()) {
-    --it;
-    result.yhi = GridY{static_cast<int>(it - row_index_to_y_dbu_.begin())};
-  } else {
-    result.yhi = GridY{0};
-  }
-  
-  return result;
+    GridX xlo = gridX(DbuX{rect.xMin()});
+    GridX xhi = gridX(DbuX{rect.xMax()});
+    GridY ylo = gridSnapDownY(DbuY{rect.yMin()});
+    GridY yhi = gridSnapDownY(DbuY{rect.yMax()});
+    
+    return GridRect{xlo, ylo, xhi, yhi};
 }
 
+bool ImmutableGridInfo::isRowYSymmetric(GridY y) const
+{
+    if (y.v >= 0 && y.v < row_count_) {
+        return row_y_symmetric_[y.v];
+    }
+    return false;
+}
+
+bool ImmutableGridInfo::isSingleHeightCell(const dpl::Node* cell) const
+{
+    if (arch_) {
+        return arch_->isSingleHeightCell(cell);
+    }
+    // Fallback: assume single height if cell height equals one row
+    return gridHeight(cell).v == 1;
+}
+
+////////////////////////////////////////////////////////////////////
 // WorkerGrid implementation
 
 WorkerGrid::WorkerGrid(const ImmutableGridInfo* info)

@@ -60,10 +60,17 @@ void WorkerManager::initializeWorkers(dpl::Network* network,
                                     float max_temp,
                                     float cooling_rate,
                                     int max_iter,
-                                    int move_budget)
+                                    int move_budget,
+                                    int moves_per_iter,
+                                    int kick_interval,
+                                    float kick_threshold,
+                                    int kick_strength,
+                                    float kick_temp_multiplier,
+                                    bool enable_kicks,
+                                    bool enable_chain_moves,
+                                    int chain_move_interval,
+                                    int chain_moves_per_round)
 {
-    utl::Logger* logger = sa2d_->getLogger();
-    
     // Seed GWTW RNG
     gwtw_rng_.seed(seed + 1000);  // Different from worker seeds
     
@@ -84,11 +91,28 @@ void WorkerManager::initializeWorkers(dpl::Network* network,
         worker->setCoolingRate(cooling_rate);
         worker->setMaxIter(max_iter);
         worker->setMoveBudget(move_budget);
+        worker->setMovesPerIter(moves_per_iter);
+        
+        // Set LSMC parameters
+        worker->setKickInterval(kick_interval);
+        worker->setKickThreshold(kick_threshold);
+        worker->setKickStrength(kick_strength);
+        worker->setKickTempMultiplier(kick_temp_multiplier);
+        worker->setEnableKicks(enable_kicks);
+        
+        // Chain move control
+        worker->setEnableChainMoves(enable_chain_moves);
+        worker->setChainMoveInterval(chain_move_interval);
+        worker->setChainMovesPerRound(chain_moves_per_round);
         
         workers_.push_back(std::move(worker));
     }
     
-    logger->info(utl::SA2D, 401, "Initialized {} workers for parallel SA", workers_.size());
+    // Initialize global best cost with the best of all workers
+    std::vector<int64_t> initial_costs = getWorkerCosts();
+    global_best_cost_ = *std::min_element(initial_costs.begin(), initial_costs.end());
+    best_worker_id_ = std::distance(initial_costs.begin(), 
+                                   std::min_element(initial_costs.begin(), initial_costs.end()));
 }
 
 void WorkerManager::runWorkers(int iterations)
@@ -111,8 +135,6 @@ void WorkerManager::runWorkers(int iterations)
 
 void WorkerManager::performGWTW()
 {
-    utl::Logger* logger = sa2d_->getLogger();
-    
     // 1. Collect costs from all workers
     std::vector<std::pair<int64_t, int>> worker_costs;
     worker_costs.reserve(workers_.size());
@@ -153,44 +175,92 @@ void WorkerManager::performGWTW()
         workers_[loser_id]->copyStateFrom(*workers_[winner_id]);
     }
     
-    // 5. Update global best
-    if (worker_costs[0].first < global_best_cost_) {
-        global_best_cost_ = worker_costs[0].first;
-        best_worker_id_ = worker_costs[0].second;
-        
-        logger->info(utl::SA2D, 402, "New global best: HPWL = {:.1f} u (worker {})",
-                    sa2d_->getBlock()->dbuToMicrons(global_best_cost_),
-                    best_worker_id_);
+    // 5. Update global best - check ALL workers' best solutions, not just current
+    // This ensures we track the best solution ever found across all workers
+    for (size_t i = 0; i < workers_.size(); ++i) {
+        int64_t worker_best = workers_[i]->getBestCost();
+        if (worker_best < global_best_cost_) {
+            global_best_cost_ = worker_best;
+            best_worker_id_ = static_cast<int>(i);
+        }
     }
-    
-    // Log GWTW results
-    logger->info(utl::SA2D, 403, "GWTW: {} winners, best cost = {:.1f} u, worst cost = {:.1f} u",
-                num_winners,
-                sa2d_->getBlock()->dbuToMicrons(worker_costs[0].first),
-                sa2d_->getBlock()->dbuToMicrons(worker_costs.back().first));
 }
 
-void WorkerManager::reportProgress(int iteration)
+void WorkerManager::updateGlobalBest()
+{
+    // Find the worker with the best solution after all iterations complete
+    // This is critical because workers may have found better solutions after the last GWTW sync
+    
+    int64_t best_cost = std::numeric_limits<int64_t>::max();
+    int best_id = -1;
+    
+    for (size_t i = 0; i < workers_.size(); ++i) {
+        // Get the best cost from each worker (not current cost)
+        int64_t worker_best = workers_[i]->getBestCost();
+        if (worker_best < best_cost) {
+            best_cost = worker_best;
+            best_id = static_cast<int>(i);
+        }
+    }
+    
+    // Update global tracking
+    if (best_id >= 0) {
+        global_best_cost_ = best_cost;
+        best_worker_id_ = best_id;
+    }
+}
+
+void WorkerManager::reportProgress(int iteration, int total_iterations)
 {
     utl::Logger* logger = sa2d_->getLogger();
     
-    // Collect current costs
-    std::vector<int64_t> costs = getWorkerCosts();
-    
-    // Calculate statistics
-    int64_t min_cost = *std::min_element(costs.begin(), costs.end());
-    int64_t max_cost = *std::max_element(costs.begin(), costs.end());
-    double avg_cost = 0;
-    for (int64_t cost : costs) {
-        avg_cost += cost;
+    // Print header on first iteration
+    if (iteration == 0) {
+        logger->info(utl::SA2D, 410, "");
+        logger->info(utl::SA2D, 411, "Iteration    Progress    Temperature    Current HPWL    Best HPWL    Accept Rate");
+        logger->info(utl::SA2D, 412, "---------    --------    -----------    ------------    ---------    -----------");
     }
-    avg_cost /= costs.size();
     
-    logger->info(utl::SA2D, 404, "Iteration {}: min={:.1f} u, avg={:.1f} u, max={:.1f} u",
-                iteration,
-                sa2d_->getBlock()->dbuToMicrons(min_cost),
-                sa2d_->getBlock()->dbuToMicrons(avg_cost),
-                sa2d_->getBlock()->dbuToMicrons(max_cost));
+    // Report at regular intervals (every 10% or every 100 iterations, whichever is smaller)
+    int report_interval = std::min(100, std::max(1, total_iterations / 10));
+    
+    if (iteration % report_interval == 0 || iteration == total_iterations - 1) {
+        // Collect statistics from all workers
+        std::vector<int64_t> costs = getWorkerCosts();
+        int64_t min_cost = *std::min_element(costs.begin(), costs.end());
+        
+        // Get temperature from first worker (all should be similar)
+        float current_temp = workers_[0]->getCurrentTemp();
+        
+        // Calculate average accept rate
+        double total_accept_rate = 0.0;
+        for (const auto& worker : workers_) {
+            total_accept_rate += worker->getAcceptRate();
+        }
+        double avg_accept_rate = total_accept_rate / workers_.size();
+        
+        // Calculate progress percentage
+        int progress = (iteration * 100) / total_iterations;
+        
+        // Update global best to ensure we show the true best found so far
+        // Check all workers' best solutions
+        for (size_t i = 0; i < workers_.size(); ++i) {
+            int64_t worker_best = workers_[i]->getBestCost();
+            if (worker_best < global_best_cost_) {
+                global_best_cost_ = worker_best;
+                best_worker_id_ = static_cast<int>(i);
+            }
+        }
+        
+        // Format the output in aligned columns
+        logger->info(utl::SA2D, 413, "{:>9}    {:>7}%    {:>11.2e}    {:>12.1f}    {:>9.1f}    {:>10.1f}%",
+                    iteration,
+                    progress,
+                    current_temp,
+                    sa2d_->getBlock()->dbuToMicrons(min_cost),
+                    sa2d_->getBlock()->dbuToMicrons(global_best_cost_),
+                    avg_accept_rate * 100.0);
+    }
 }
 
 std::vector<int64_t> WorkerManager::getWorkerCosts() const
@@ -208,9 +278,30 @@ std::vector<int64_t> WorkerManager::getWorkerCosts() const
 void WorkerManager::applyBestSolution(dpl::Network* network)
 {
     if (best_worker_id_ >= 0 && best_worker_id_ < static_cast<int>(workers_.size())) {
-        utl::Logger* logger = sa2d_->getLogger();
-        logger->info(utl::SA2D, 405, "Applying best solution from worker {}", best_worker_id_);
         workers_[best_worker_id_]->applyToDPL(network);
+    }
+}
+
+void WorkerManager::reportMoveStatistics()
+{
+    utl::Logger* logger = sa2d_->getLogger();
+    
+    // Aggregate kick statistics from all workers
+    int total_kick_attempts = 0;
+    int total_kick_accepted = 0;
+    int total_swaps_applied = 0;
+    
+    for (const auto& worker : workers_) {
+        total_kick_attempts += worker->getKickAttempts();
+        total_kick_accepted += worker->getKickAccepted();
+        total_swaps_applied += worker->getTotalSwapsApplied();
+    }
+    
+    if (total_kick_attempts > 0) {
+        logger->info(utl::SA2D, 331, "Aggregate LSMC kicks: {} attempted, {} accepted ({:.1f}% success), {} total swaps",
+                    total_kick_attempts, total_kick_accepted,
+                    100.0 * total_kick_accepted / total_kick_attempts,
+                    total_swaps_applied);
     }
 }
 

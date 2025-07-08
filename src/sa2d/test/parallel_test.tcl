@@ -20,22 +20,14 @@ sa2d_set_num_workers 40          ;
 sa2d_set_max_temp 100.0
 sa2d_set_min_temp 0.0001
 sa2d_set_cooling_rate 0.95
-sa2d_set_max_iter 5000          ;# More iterations to see GWTW effect
-sa2d_set_move_budget 200000000   ;# Larger budget for parallel
-sa2d_set_gwtw_interval 100       ;# Sync every 50 iterations
+sa2d_set_moves_per_iter 10000   ;
+sa2d_set_max_iter 1500          ;# More iterations to see GWTW effect
+sa2d_set_move_budget 10000000   ;# Larger budget for parallel
+sa2d_set_gwtw_interval 300       ;# Sync every 50 iterations
 sa2d_set_elite_ratio 0.25       ;# Top 25% are winners (1 worker)
-sa2d_set_seed 456
+sa2d_set_seed 42
 sa2d_set_max_displacement 10 5
-
-# Show configured parameters
-puts "  Workers: 4"
-puts "  Temperature: 100.0 -> 1.0"
-puts "  Cooling rate: 0.95"
-puts "  Max iterations: 200"
-puts "  Move budget: 20M"
-puts "  GWTW interval: 50"
-puts "  Elite ratio: 0.25 (1 winner)"
-puts "  Max displacement: (10, 5) sites"
+sa2d_set_enable_kicks 0
 
 # Run parallel SA2D optimization
 puts "\n4. Running parallel SA2D optimization..."

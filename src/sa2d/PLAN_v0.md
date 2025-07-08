@@ -4,7 +4,7 @@
 
 Version 0 of SA2D focuses on implementing a basic simulated annealing placer that:
 - Reuses existing DPL infrastructure (not copying, but directly using)
-- Implements only basic moves (single cell move, swap)
+- Implements basic moves (single cell move, swap, **and flip**)
 - **Simplified legalization**: Only overlap, row alignment, site alignment, and site orientation checks
 - Single objective: HPWL minimization
 - Follows sa1d implementation pattern
@@ -220,6 +220,7 @@ private:
     // Move operations with full legality
     bool tryMove(int cell_id);
     bool trySwap(int cell1_id, int cell2_id);
+    bool tryFlip(int cell_id);  // Flip cell orientation for HPWL improvement
     
     // Legality checking using WorkerGrid
     bool canPlaceCell(int cell_id, GridX x, GridY y);
@@ -256,12 +257,26 @@ private:
 
 **TCL Interface** (following DPL pattern):
 ```tcl
-sa2d_detailed_placement
-    [-max_displacement disp|{disp_x disp_y}]  # in microns
-    [-max_temp temp]
-    [-cooling_rate rate]
-    [-max_iter iterations]
-    [-seed seed]
+# Basic usage
+sa2d_simple_place \
+    -max_displacement 50 \
+    -max_temp 10.0 \
+    -cooling_rate 0.95 \
+    -max_iter 100 \
+    -seed 42
+
+# Disable chain moves for faster runtime
+sa2d_set_enable_chain_moves 0
+sa2d_simple_place \
+    -max_displacement 50 \
+    -max_temp 10.0
+
+# Or reduce chain move frequency
+sa2d_set_chain_move_interval 100  # Every 100 iterations instead of 50
+sa2d_set_chain_moves_per_round 3  # Only 3 chain moves per round
+sa2d_simple_place \
+    -max_displacement 50 \
+    -max_temp 10.0
 ```
 
 **Conversion in TCL**:
@@ -327,6 +342,28 @@ void SAWorker::initFromDPL(const dpl::Network* network,
 ```
 
 ### 2. Move Operations with Full Legality
+
+**Move Type Distribution:**
+- 70% single cell moves
+- 15% cell swaps
+- 15% cell flips
+
+Chain/ripple moves are now separate periodic operations (not part of regular move mix).
+
+**Chain Move Strategy (Periodic Operation):**
+- Executed periodically every N iterations (default: 50)
+- Only performed at temperatures > 1.0
+- Performs M chain moves per round (default: 5)
+- Can be disabled via `sa2d_set_enable_chain_moves 0`
+- Interval controlled by `sa2d_set_chain_move_interval N`
+- Moves per round controlled by `sa2d_set_chain_moves_per_round M`
+
+**Chain Move Optimizations:**
+- Not part of regular move distribution (huge performance gain)
+- Periodic execution reduces overhead dramatically
+- Skip entirely at temperatures < 1.0
+- Proper grid validation ensures no overlaps
+- Early termination if target position is free
 
 **Single Cell Move with Displacement Limits:**
 ```cpp
@@ -408,6 +445,115 @@ GridPt SAWorker::generateRandomPosition(int cell_id) {
     return GridPt{new_x, new_y};
 }
 ```
+
+**Cell Flipping (Following DPL Pattern):**
+```cpp
+bool SAWorker::tryFlip(int cell_id) {
+    const dpl::Node* node = network_->getNode(cell_id);
+    
+    // Only flip single-height cells
+    if (!grid_info_->isSingleHeightCell(node)) {
+        return false;
+    }
+    
+    // Check if row supports Y symmetry
+    GridY gy = grid_info_->gridSnapDownY(state_.cells[cell_id].y);
+    if (!grid_info_->isRowYSymmetric(gy)) {
+        return false;
+    }
+    
+    // Calculate flipped orientation
+    dbOrientType current = state_.cells[cell_id].orient;
+    dbOrientType flipped;
+    switch (current) {
+        case dbOrientType::R0:   flipped = dbOrientType::MY; break;
+        case dbOrientType::R180: flipped = dbOrientType::MX; break;
+        case dbOrientType::MY:   flipped = dbOrientType::R0; break;
+        case dbOrientType::MX:   flipped = dbOrientType::R180; break;
+        default: return false;  // Can't flip other orientations
+    }
+    
+    // Calculate HPWL change (only accept improvements)
+    state_.cells[cell_id].orient = flipped;
+    int64_t delta = calcDeltaHPWL(getAffectedNets(cell_id));
+    
+    if (delta < 0) {
+        // Accept flip - improves HPWL
+        updateHPWLCache(getAffectedNets(cell_id));
+        state_.total_hpwl += delta;
+        return true;
+    } else {
+        // Reject flip - restore orientation
+        state_.cells[cell_id].orient = current;
+        return false;
+    }
+}
+```
+
+**Chain/Ripple Moves (Following DPL Pattern):**
+```cpp
+bool SAWorker::tryChainMove(int cell_id) {
+    // Generate target position
+    GridPt target_pos = generateRandomPosition(cell_id);
+    
+    // If position is free, just do regular move
+    if (!grid_->isOccupied(target_pos.x, target_pos.y)) {
+        return tryMove(cell_id);
+    }
+    
+    // Try ripple in both directions
+    bool left_success = tryRippleLeft(cell_id, target_pos);
+    bool right_success = tryRippleRight(cell_id, target_pos);
+    
+    return left_success || right_success;
+}
+
+bool SAWorker::tryRippleLeft(int cell_id, GridPt target_pos, int max_chain_length) {
+    std::vector<ChainedMove> chain;
+    
+    // Build chain by shifting cells left
+    GridX curr_x = target_pos.x;
+    for (int i = 0; i < max_chain_length; ++i) {
+        int blocking_cell = grid_->getCellAt(curr_x, target_pos.y);
+        if (blocking_cell == -1) break;  // Found space
+        
+        if (network_->getNode(blocking_cell)->isFixed()) {
+            return false;  // Can't move fixed cells
+        }
+        
+        // Add to chain
+        ChainedMove move;
+        move.cell_id = blocking_cell;
+        // ... calculate new position ...
+        chain.push_back(move);
+        
+        curr_x = move.new_pos.x;  // Move to next position
+    }
+    
+    // Validate entire chain (displacement limits, no overlaps)
+    if (!validateChain(chain)) return false;
+    
+    // Calculate total HPWL change
+    int64_t total_delta = calculateChainDelta(chain);
+    
+    // SA acceptance
+    if (acceptMove(total_delta, temp_)) {
+        executeChain(chain);
+        return true;
+    }
+    
+    return false;
+}
+```
+
+Key features of chain moves:
+- Adaptive chain length: 3 at high temp (>10°), 2 at low temp
+- Bidirectional rippling (left and right)
+- Simplified validation without temporary grid (performance optimization)
+- Combined HPWL calculation for all affected cells
+- Respects displacement limits for each cell in chain
+- Handles multi-height cells appropriately
+- Temperature-dependent usage (disabled below 1.0°)
 
 ### 3. Simplified Legality Checking (v0)
 
@@ -528,6 +674,7 @@ void SAWorker::applyToDPL(dpl::DetailedMgr* mgr) {
 - [ ] Implement state initialization from DPL
 - [ ] Implement move generation with displacement limits
 - [ ] Implement legality checking with site orientation
+- [x] Implement cell flipping for HPWL improvement (like DPL)
 - [ ] Test grid operations
 - [ ] Test basic moves
 

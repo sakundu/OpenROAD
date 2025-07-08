@@ -76,7 +76,20 @@ public:
   void setCoolingRate(float cooling_rate) { cooling_rate_ = cooling_rate; }
   void setMaxIter(int max_iter) { max_iter_ = max_iter; }
   void setMoveBudget(int move_budget) { move_budget_ = move_budget; }
+  void setMovesPerIter(int moves_per_iter) { moves_per_iter_ = moves_per_iter; }
   void setSeed(int seed) { seed_ = seed; }
+  
+  // LSMC (Large Step Markov Chain) parameters
+  void setKickInterval(int interval) { kick_interval_ = interval; }
+  void setKickThreshold(float threshold) { kick_threshold_ = threshold; }
+  void setKickStrength(int strength) { kick_strength_ = strength; }
+  void setKickTempMultiplier(float multiplier) { kick_temp_multiplier_ = multiplier; }
+  void setEnableKicks(bool enable) { enable_kicks_ = enable; }
+  
+  // Chain move control
+  void setEnableChainMoves(bool enable) { enable_chain_moves_ = enable; }
+  void setChainMoveInterval(int interval) { chain_move_interval_ = interval; }
+  void setChainMovesPerRound(int moves) { chain_moves_per_round_ = moves; }
   
   // Displacement parameters (following DPL pattern)
   void setMaxDisplacement(int max_displacement_x, int max_displacement_y);
@@ -112,14 +125,25 @@ private:
   std::unique_ptr<WorkerManager> worker_manager_;
   
   // SA parameters
-  int num_workers_ = 1;
-  int num_threads_ = 1;  // For future OpenMP support
+  int num_workers_ = 1;  // Default: single worker
+  int num_threads_ = 1;  // Default: single thread
   float max_temp_ = 100.0;
   float min_temp_ = 1e-6;
   float cooling_rate_ = 0.95;
   int max_iter_ = 1000;
   int move_budget_ = 100000;
+  int moves_per_iter_ = 10000;  // Fixed moves per iteration
   int seed_ = 0;
+  
+  // LSMC (Large Step Markov Chain) parameters
+  int kick_interval_ = 100;  // Iterations between kicks
+  float kick_threshold_ = 0.05f;  // Threshold for kick
+  int kick_strength_ = 10;  // Number of moves to apply
+  float kick_temp_multiplier_ = 1.5f;  // Multiplier for temperature during kick
+  bool enable_kicks_ = true;  // Enable/disable kicks
+  bool enable_chain_moves_ = true; // Enable/disable chain moves
+  int chain_move_interval_ = 50; // Iterations between chain moves
+  int chain_moves_per_round_ = 5; // Chain moves per round
   
   // Parallel SA parameters
   int gwtw_interval_ = 100;  // Iterations between GWTW sync

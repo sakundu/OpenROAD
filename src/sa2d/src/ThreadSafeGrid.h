@@ -93,6 +93,9 @@ public:
   DbuY gridYToDbu(GridY y) const;
   DbuX gridToDbuX(GridX x) const;  // Remove site_width parameter
   
+  // Get row height (uniform height if available, otherwise must compute per-row)
+  std::optional<int> getUniformRowHeight() const { return uniform_row_height_; }
+  
   // Check if a GridY is valid (corresponds to an actual row)
   bool isValidGridY(GridY y) const { 
     return y.v >= 0 && y.v < row_count_; 
@@ -112,6 +115,10 @@ public:
   // Grid boundary operations
   GridRect gridWithin(const Rect& rect) const;
   
+  // Row information access
+  bool isRowYSymmetric(GridY y) const;
+  bool isSingleHeightCell(const dpl::Node* cell) const;
+  
 private:
   // Immutable after initialization
   Rect core_;
@@ -126,6 +133,10 @@ private:
     std::map<dbSite*, dbOrientType> sites;  // Available sites and their orientations
   };
   std::vector<std::vector<PixelSiteInfo>> pixel_sites_;  // [y][x]
+  
+  // Row symmetry information
+  std::vector<bool> row_y_symmetric_;  // [y] = true if row supports Y symmetry
+  const dpl::Architecture* arch_{nullptr};  // Cached pointer for cell height queries
 };
 
 // Mutable pixel state per worker

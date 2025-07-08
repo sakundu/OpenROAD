@@ -86,7 +86,7 @@ public:
     WorkerManager(int num_workers, SA2D* sa2d);
     ~WorkerManager();
     
-    // Worker lifecycle
+    // Public methods
     void initializeWorkers(dpl::Network* network, 
                           const ImmutableGridInfo* grid_info,
                           int seed,
@@ -95,23 +95,42 @@ public:
                           float max_temp,
                           float cooling_rate,
                           int max_iter,
-                          int move_budget);
+                          int move_budget,
+                          int moves_per_iter,
+                          int kick_interval,
+                          float kick_threshold,
+                          int kick_strength,
+                          float kick_temp_multiplier,
+                          bool enable_kicks,
+                          bool enable_chain_moves,
+                          int chain_move_interval,
+                          int chain_moves_per_round);
+    
     void runWorkers(int iterations);
+    void performGWTW();
+    
+    // Update global best after all workers complete
+    void updateGlobalBest();
+    
+    // Reporting
+    void reportProgress(int iteration, int total_iterations);
+    void reportMoveStatistics();
+    
+    // Apply best solution
     void applyBestSolution(dpl::Network* network);
     
-    // GWTW synchronization
-    void performGWTW();
-    void setGWTWInterval(int interval) { gwtw_interval_ = interval; }
-    void setEliteRatio(float ratio) { elite_ratio_ = ratio; }
-    
-    // Progress monitoring
-    void reportProgress(int iteration);
+    // Get aggregate costs
     std::vector<int64_t> getWorkerCosts() const;
     int64_t getBestCost() const { return global_best_cost_; }
     int getBestWorkerId() const { return best_worker_id_; }
+    SAWorker* getBestWorker() const { return best_worker_id_ >= 0 ? workers_[best_worker_id_].get() : nullptr; }
+    
+    // GWTW configuration
+    void setGWTWInterval(int interval) { gwtw_interval_ = interval; }
+    void setEliteRatio(float ratio) { elite_ratio_ = ratio; }
     
     // Control
-    void stop() { should_stop_.store(true); }
+    void stop() { should_stop_ = true; }
     
 private:
     SA2D* sa2d_;

@@ -1736,6 +1736,10 @@ void set_cooling_rate(float cooling_rate) {
   getSA2D()->setCoolingRate(cooling_rate);
 }
 
+void set_moves_per_iter(int moves_per_iter) {
+  getSA2D()->setMovesPerIter(moves_per_iter);
+}
+
 void set_max_iter(int max_iter) {
   getSA2D()->setMaxIter(max_iter);
 }
@@ -1758,6 +1762,39 @@ void set_seed(int seed) {
 
 void set_max_displacement(int max_displacement_x, int max_displacement_y) {
   getSA2D()->setMaxDisplacement(max_displacement_x, max_displacement_y);
+}
+
+// LSMC parameters
+void set_kick_interval(int interval) {
+  getSA2D()->setKickInterval(interval);
+}
+
+void set_kick_threshold(float threshold) {
+  getSA2D()->setKickThreshold(threshold);
+}
+
+void set_kick_strength(int strength) {
+  getSA2D()->setKickStrength(strength);
+}
+
+void set_kick_temp_multiplier(float multiplier) {
+  getSA2D()->setKickTempMultiplier(multiplier);
+}
+
+void set_enable_kicks(bool enable) {
+  getSA2D()->setEnableKicks(enable);
+}
+
+void set_enable_chain_moves(bool enable) {
+  getSA2D()->setEnableChainMoves(enable);
+}
+
+void set_chain_move_interval(int interval) {
+  getSA2D()->setChainMoveInterval(interval);
+}
+
+void set_chain_moves_per_round(int moves) {
+  getSA2D()->setChainMovesPerRound(moves);
 }
 
 void run() {
@@ -1880,6 +1917,18 @@ SWIG_AsVal_float SWIG_TCL_DECL_ARGS_2(Tcl_Obj * obj, float *val)
     }
   }  
   return res;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_bool SWIG_TCL_DECL_ARGS_2(Tcl_Obj *obj, bool *val)
+{
+  int v;
+  if (Tcl_GetBooleanFromObj(0, obj, &v) == TCL_OK) {
+    if (val) *val = v ? true : false;
+    return SWIG_OK;
+  }
+  return SWIG_TypeError;
 }
 
 #ifdef __cplusplus
@@ -2073,6 +2122,51 @@ _wrap_set_cooling_rate(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int
   {
     try {
       sa2d::set_cooling_rate(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_moves_per_iter(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_moves_per_iter moves_per_iter ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_moves_per_iter" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = static_cast< int >(val1);
+  {
+    try {
+      sa2d::set_moves_per_iter(arg1); 
     }
     catch (std::bad_alloc &) {
       fprintf(stderr, "Error: out of memory.");
@@ -2382,6 +2476,366 @@ fail:
 
 
 SWIGINTERN int
+_wrap_set_kick_interval(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_kick_interval interval ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_kick_interval" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = static_cast< int >(val1);
+  {
+    try {
+      sa2d::set_kick_interval(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_kick_threshold(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  float arg1 ;
+  float val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_kick_threshold threshold ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_float SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_kick_threshold" "', argument " "1"" of type '" "float""'");
+  } 
+  arg1 = static_cast< float >(val1);
+  {
+    try {
+      sa2d::set_kick_threshold(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_kick_strength(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_kick_strength strength ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_kick_strength" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = static_cast< int >(val1);
+  {
+    try {
+      sa2d::set_kick_strength(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_kick_temp_multiplier(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  float arg1 ;
+  float val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_kick_temp_multiplier multiplier ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_float SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_kick_temp_multiplier" "', argument " "1"" of type '" "float""'");
+  } 
+  arg1 = static_cast< float >(val1);
+  {
+    try {
+      sa2d::set_kick_temp_multiplier(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_enable_kicks(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_enable_kicks enable ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_bool SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_enable_kicks" "', argument " "1"" of type '" "bool""'");
+  } 
+  arg1 = static_cast< bool >(val1);
+  {
+    try {
+      sa2d::set_enable_kicks(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_enable_chain_moves(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_enable_chain_moves enable ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_bool SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_enable_chain_moves" "', argument " "1"" of type '" "bool""'");
+  } 
+  arg1 = static_cast< bool >(val1);
+  {
+    try {
+      sa2d::set_enable_chain_moves(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_chain_move_interval(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_chain_move_interval interval ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_chain_move_interval" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = static_cast< int >(val1);
+  {
+    try {
+      sa2d::set_chain_move_interval(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_chain_moves_per_round(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_chain_moves_per_round moves ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_chain_moves_per_round" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = static_cast< int >(val1);
+  {
+    try {
+      sa2d::set_chain_moves_per_round(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
 _wrap_run(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   if (SWIG_GetArgs(interp, objc, objv,":sa2d::run ") == TCL_ERROR) SWIG_fail;
   {
@@ -2424,12 +2878,21 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "set_max_temp", (swig_wrapper_func) _wrap_set_max_temp, NULL},
     { SWIG_prefix "set_min_temp", (swig_wrapper_func) _wrap_set_min_temp, NULL},
     { SWIG_prefix "set_cooling_rate", (swig_wrapper_func) _wrap_set_cooling_rate, NULL},
+    { SWIG_prefix "set_moves_per_iter", (swig_wrapper_func) _wrap_set_moves_per_iter, NULL},
     { SWIG_prefix "set_max_iter", (swig_wrapper_func) _wrap_set_max_iter, NULL},
     { SWIG_prefix "set_move_budget", (swig_wrapper_func) _wrap_set_move_budget, NULL},
     { SWIG_prefix "set_gwtw_interval", (swig_wrapper_func) _wrap_set_gwtw_interval, NULL},
     { SWIG_prefix "set_elite_ratio", (swig_wrapper_func) _wrap_set_elite_ratio, NULL},
     { SWIG_prefix "set_seed", (swig_wrapper_func) _wrap_set_seed, NULL},
     { SWIG_prefix "set_max_displacement", (swig_wrapper_func) _wrap_set_max_displacement, NULL},
+    { SWIG_prefix "set_kick_interval", (swig_wrapper_func) _wrap_set_kick_interval, NULL},
+    { SWIG_prefix "set_kick_threshold", (swig_wrapper_func) _wrap_set_kick_threshold, NULL},
+    { SWIG_prefix "set_kick_strength", (swig_wrapper_func) _wrap_set_kick_strength, NULL},
+    { SWIG_prefix "set_kick_temp_multiplier", (swig_wrapper_func) _wrap_set_kick_temp_multiplier, NULL},
+    { SWIG_prefix "set_enable_kicks", (swig_wrapper_func) _wrap_set_enable_kicks, NULL},
+    { SWIG_prefix "set_enable_chain_moves", (swig_wrapper_func) _wrap_set_enable_chain_moves, NULL},
+    { SWIG_prefix "set_chain_move_interval", (swig_wrapper_func) _wrap_set_chain_move_interval, NULL},
+    { SWIG_prefix "set_chain_moves_per_round", (swig_wrapper_func) _wrap_set_chain_moves_per_round, NULL},
     { SWIG_prefix "run", (swig_wrapper_func) _wrap_run, NULL},
     {0, 0, 0}
 };
