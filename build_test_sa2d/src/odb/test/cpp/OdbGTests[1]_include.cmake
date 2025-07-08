@@ -1,0 +1,5 @@
+if(EXISTS "/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/src/odb/test/cpp/OdbGTests[1]_tests.cmake")
+  include("/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/src/odb/test/cpp/OdbGTests[1]_tests.cmake")
+else()
+  add_test(OdbGTests_NOT_BUILT OdbGTests_NOT_BUILT)
+endif()

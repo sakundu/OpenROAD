@@ -1,0 +1,2 @@
+/home/tool/binutils/binutils-2.27/bin/ar qc sa1d.a CMakeFiles/sa1d.dir/CMakeFiles/sa1d.dir/OptSATCL_wrap.cxx.o "CMakeFiles/sa1d.dir/sa1d-tclInitVar.cc.o" CMakeFiles/sa1d.dir/src/MakeOptSA.cpp.o
+/home/tool/binutils/binutils-2.27/bin/ranlib sa1d.a

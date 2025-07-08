@@ -1,0 +1,5 @@
+if(EXISTS "/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/src/odb/test/cpp/scan/TestScanChain[1]_tests.cmake")
+  include("/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/src/odb/test/cpp/scan/TestScanChain[1]_tests.cmake")
+else()
+  add_test(TestScanChain_NOT_BUILT TestScanChain_NOT_BUILT)
+endif()

@@ -82,6 +82,11 @@ struct DecapCell;
 struct IRDrop;
 ////////////////////////////////////////////////////////////////
 
+namespace sa2d {
+class SA2D;
+class SAWorker;
+}  // namespace sa2d
+
 class Opendp
 {
  public:
@@ -138,6 +143,11 @@ class Opendp
   Journal* getJournal() const;
   void setJournal(Journal* journal);
 
+  // Access for SA2D integration
+  Grid* getGrid() const { return grid_.get(); }
+  Architecture* getArchitecture() const { return arch_.get(); }
+  Network* getNetwork() const { return network_.get(); }
+
  private:
   using bgPoint
       = boost::geometry::model::d2::point_xy<int,
@@ -157,6 +167,8 @@ class Opendp
 
   friend class OpendpTest_IsPlaced_Test;
   friend class Graphics;
+  friend class sa2d::SA2D;
+  friend class sa2d::SAWorker;
   void findDisplacementStats();
   DbuPt pointOffMacro(const Node& cell);
   void convertDbToCell(dbInst* db_inst, Node& cell);

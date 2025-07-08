@@ -1,0 +1,2 @@
+/home/tool/binutils/binutils-2.27/bin/ar qc sa2d.a CMakeFiles/sa2d.dir/CMakeFiles/sa2d.dir/SA2DTCL_wrap.cxx.o "CMakeFiles/sa2d.dir/sa2d-tclInitVar.cc.o" CMakeFiles/sa2d.dir/src/MakeSA2D.cpp.o CMakeFiles/sa2d.dir/src/SA2D.cpp.o CMakeFiles/sa2d.dir/src/ThreadSafeGrid.cpp.o CMakeFiles/sa2d.dir/src/Worker.cpp.o CMakeFiles/sa2d.dir/src/WorkerManager.cpp.o
+/home/tool/binutils/binutils-2.27/bin/ranlib sa2d.a

@@ -1,0 +1,5 @@
+if(EXISTS "/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/src/dpl/test/dpl_test[1]_tests.cmake")
+  include("/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/src/dpl/test/dpl_test[1]_tests.cmake")
+else()
+  add_test(dpl_test_NOT_BUILT dpl_test_NOT_BUILT)
+endif()

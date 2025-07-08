@@ -271,6 +271,7 @@ add_subdirectory(dft)
 add_subdirectory(mpl)
 add_subdirectory(par)
 add_subdirectory(sa1d)
+add_subdirectory(sa2d)
 
 ################################################################
 
@@ -334,6 +335,7 @@ target_link_libraries(openroad
   mpl
   par
   sa1d
+  sa2d
   ${ABC_LIBRARY}
   ${TCL_LIBRARY}
   ${CMAKE_THREAD_LIBS_INIT}

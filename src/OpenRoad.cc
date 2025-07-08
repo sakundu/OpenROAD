@@ -51,6 +51,7 @@
 #include "rmp/MakeRestructure.h"
 #include "rsz/MakeResizer.hh"
 #include "sa1d/MakeOptSA.h"
+#include "sa2d/MakeSA2D.h"
 #include "sta/VerilogReader.hh"
 #include "sta/VerilogWriter.hh"
 #include "stt/MakeSteinerTreeBuilder.h"
@@ -118,6 +119,7 @@ OpenRoad::~OpenRoad()
   deleteSteinerTreeBuilder(stt_builder_);
   dft::deleteDft(dft_);
   deleteOptSA(optsa_);
+  deleteSA2D(sa2d_);
   delete logger_;
   delete verilog_reader_;
 }
@@ -189,6 +191,7 @@ void OpenRoad::init(Tcl_Interp* tcl_interp,
   stt_builder_ = stt::makeSteinerTreeBuilder();
   dft_ = dft::makeDft();
   optsa_ = makeOptSA();
+  sa2d_ = makeSA2D();
 
   // Init components.
   Ord_Init(tcl_interp);
@@ -257,6 +260,7 @@ void OpenRoad::init(Tcl_Interp* tcl_interp,
   initSteinerTreeBuilder(stt_builder_, db_, logger_, tcl_interp);
   dft::initDft(dft_, db_, sta_, logger_, tcl_interp);
   initOptSA(this);
+  initSA2D(this);
 
   // Import exported commands to global namespace.
   Tcl_Eval(tcl_interp, "sta::define_sta_cmds");

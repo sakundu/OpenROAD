@@ -118,6 +118,10 @@ namespace sa1d {
 class OptSA;
 }
 
+namespace sa2d {
+class SA2D;
+}
+
 namespace ord {
 
 using std::string;
@@ -167,6 +171,7 @@ class OpenRoad
   stt::SteinerTreeBuilder* getSteinerTreeBuilder() { return stt_builder_; }
   dft::Dft* getDft() { return dft_; }
   sa1d::OptSA* getOptSA() { return optsa_; }
+  sa2d::SA2D* getSA2D() { return sa2d_; }
 
   // Return the bounding box of the db rows.
   odb::Rect getCore();
@@ -261,6 +266,7 @@ class OpenRoad
   stt::SteinerTreeBuilder* stt_builder_ = nullptr;
   dft::Dft* dft_ = nullptr;
   sa1d::OptSA* optsa_ = nullptr;
+  sa2d::SA2D* sa2d_ = nullptr;
 
   int threads_ = 1;
 

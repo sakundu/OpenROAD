@@ -1,0 +1,1 @@
+/home/tool/gcc/gcc-12.2.0/bin/c++ -O3 -DNDEBUG CMakeFiles/sta.dir/app/Main.cc.o -o sta  sta_swig.a libOpenSTA.a -ltcl -pthread /home/tool/cudd/cudd-3.0.0/lib/libcudd.a /usr/lib64/libz.so /usr/lib64/libtclreadline.so 

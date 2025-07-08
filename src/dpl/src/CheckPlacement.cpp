@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2020-2025, The OpenROAD Authors
 
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <functional>
@@ -50,6 +51,32 @@ void Opendp::checkPlacement(const bool verbose,
       // Site alignment check
       if (cell->getLeft() % grid_->getSiteWidth() != 0
           || row_coords.find(cell->getBottom().v) == row_coords.end()) {
+        // Debug: Print the specific misaligned cell
+        if (verbose || site_align_failures.empty()) {
+          bool x_aligned = (cell->getLeft() % grid_->getSiteWidth() == 0);
+          bool y_valid = (row_coords.find(cell->getBottom().v) != row_coords.end());
+          logger_->warn(DPL, 999, "Site alignment failure: {} at ({}, {}), width={}, site_width={}, x_aligned={}, y_valid={}",
+                       cell->name(), 
+                       cell->getLeft().v, 
+                       cell->getBottom().v,
+                       cell->getWidth().v,
+                       grid_->getSiteWidth().v,
+                       x_aligned,
+                       y_valid);
+          if (!y_valid) {
+            // Find nearest valid Y coordinates
+            std::vector<int> sorted_y_coords(row_coords.begin(), row_coords.end());
+            std::sort(sorted_y_coords.begin(), sorted_y_coords.end());
+            auto it = std::lower_bound(sorted_y_coords.begin(), sorted_y_coords.end(), cell->getBottom().v);
+            if (it != sorted_y_coords.end()) {
+              logger_->warn(DPL, 998, "  Next valid Y >= {} is {}", cell->getBottom().v, *it);
+            }
+            if (it != sorted_y_coords.begin()) {
+              --it;
+              logger_->warn(DPL, 997, "  Previous valid Y < {} is {}", cell->getBottom().v, *it);
+            }
+          }
+        }
         site_align_failures.push_back(cell.get());
         continue;
       }

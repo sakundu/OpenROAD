@@ -1,0 +1,36 @@
+# CMake generated Testfile for 
+# Source directory: /home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/src
+# Build directory: /home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/src
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+subdirs("ifp")
+subdirs("pad")
+subdirs("odb")
+subdirs("sta")
+subdirs("dbSta")
+subdirs("rsz")
+subdirs("stt")
+subdirs("gpl")
+subdirs("dpl")
+subdirs("exa")
+subdirs("fin")
+subdirs("ppl")
+subdirs("rmp")
+subdirs("cts")
+subdirs("grt")
+subdirs("tap")
+subdirs("rcx")
+subdirs("psm")
+subdirs("ant")
+subdirs("gui")
+subdirs("drt")
+subdirs("upf")
+subdirs("utl")
+subdirs("dst")
+subdirs("pdn")
+subdirs("dft")
+subdirs("mpl")
+subdirs("par")
+subdirs("sa1d")
+subdirs("sa2d")
