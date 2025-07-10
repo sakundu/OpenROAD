@@ -1797,6 +1797,10 @@ void set_chain_moves_per_round(int moves) {
   getSA2D()->setChainMovesPerRound(moves);
 }
 
+void set_enable_slides(bool enable) {
+  getSA2D()->setEnableSlides(enable);
+}
+
 void run() {
   getSA2D()->runSA();
 }
@@ -2836,6 +2840,51 @@ fail:
 
 
 SWIGINTERN int
+_wrap_set_enable_slides(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_enable_slides enable ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_bool SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_enable_slides" "', argument " "1"" of type '" "bool""'");
+  } 
+  arg1 = static_cast< bool >(val1);
+  {
+    try {
+      sa2d::set_enable_slides(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
 _wrap_run(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   if (SWIG_GetArgs(interp, objc, objv,":sa2d::run ") == TCL_ERROR) SWIG_fail;
   {
@@ -2893,6 +2942,7 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "set_enable_chain_moves", (swig_wrapper_func) _wrap_set_enable_chain_moves, NULL},
     { SWIG_prefix "set_chain_move_interval", (swig_wrapper_func) _wrap_set_chain_move_interval, NULL},
     { SWIG_prefix "set_chain_moves_per_round", (swig_wrapper_func) _wrap_set_chain_moves_per_round, NULL},
+    { SWIG_prefix "set_enable_slides", (swig_wrapper_func) _wrap_set_enable_slides, NULL},
     { SWIG_prefix "run", (swig_wrapper_func) _wrap_run, NULL},
     {0, 0, 0}
 };

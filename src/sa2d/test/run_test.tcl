@@ -17,14 +17,15 @@ sa2d_set_max_temp 100.0
 sa2d_set_min_temp 1e-18
 sa2d_set_cooling_rate 0.995
 sa2d_set_moves_per_iter 10000   ;
-sa2d_set_max_iter 2100          ;# More iterations to see GWTW effect
+sa2d_set_max_iter 500          ;# More iterations to see GWTW effect
 sa2d_set_move_budget 10000000   ;# Larger budget for parallel
-sa2d_set_gwtw_interval 300       ;# Sync every 50 iterations
+sa2d_set_gwtw_interval 100       ;# Sync every 50 iterations
 sa2d_set_elite_ratio 0.25       ;# Top 25% are winners (1 worker)
 sa2d_set_seed 42
 sa2d_set_max_displacement 0.5 0.75
 sa2d_set_enable_kicks 0
 sa2d_set_enable_chain_moves 1
+sa2d_set_enable_slides 0
 
 # Run parallel SA2D optimization
 puts "\n4. Running parallel SA2D optimization..."

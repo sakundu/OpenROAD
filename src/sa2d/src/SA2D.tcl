@@ -295,6 +295,20 @@ proc sa2d_set_chain_moves_per_round { args } {
   sa2d::set_chain_moves_per_round $moves
 }
 
+sta::define_cmd_args "sa2d_set_enable_slides" {enable}
+proc sa2d_set_enable_slides { args } {
+  sta::parse_key_args "sa2d_set_enable_slides" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 118 "sa2d_set_enable_slides requires one argument."
+  }
+  
+  set enable [lindex $args 0]
+  sa2d::set_enable_slides $enable
+}
+
 # Basic SA2D placement command
 # This runs simulated annealing to optimize placement
 # Options:

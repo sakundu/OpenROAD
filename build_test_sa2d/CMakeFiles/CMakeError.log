@@ -381,3 +381,23 @@ gmake[1]: Leaving directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-P
 Source file was:
 int main(void) { return 0; }
 
+Performing C SOURCE FILE Test C_COMPILER_SUPPORTS__-std=c++17 failed with the following output:
+Change Dir: /home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-mxCs4j
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_bc63a/fast && gmake[1]: Entering directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-mxCs4j'
+/usr/bin/gmake  -f CMakeFiles/cmTC_bc63a.dir/build.make CMakeFiles/cmTC_bc63a.dir/build
+gmake[2]: Entering directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-mxCs4j'
+Building C object CMakeFiles/cmTC_bc63a.dir/src.c.o
+/home/tool/gcc/gcc-12.2.0/bin/gcc   -DC_COMPILER_SUPPORTS__-std=c++17 -std=c++17 -o CMakeFiles/cmTC_bc63a.dir/src.c.o -c /home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-mxCs4j/src.c
+cc1: warning: command-line option '-std=c++17' is valid for C++/ObjC++ but not for C
+<command-line>: warning: ISO C99 requires whitespace after the macro name
+Linking C executable cmTC_bc63a
+/home/tool/cmake/cmake-3.25.1-linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bc63a.dir/link.txt --verbose=1
+/home/tool/gcc/gcc-12.2.0/bin/gcc CMakeFiles/cmTC_bc63a.dir/src.c.o -o cmTC_bc63a 
+gmake[2]: Leaving directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-mxCs4j'
+gmake[1]: Leaving directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-mxCs4j'
+
+
+Source file was:
+int main(void) { return 0; }
+

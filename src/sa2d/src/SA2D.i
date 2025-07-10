@@ -95,6 +95,10 @@ void set_chain_moves_per_round(int moves) {
   getSA2D()->setChainMovesPerRound(moves);
 }
 
+void set_enable_slides(bool enable) {
+  getSA2D()->setEnableSlides(enable);
+}
+
 void run() {
   getSA2D()->runSA();
 }

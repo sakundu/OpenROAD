@@ -83,6 +83,7 @@ public:
     void setEnableChainMoves(bool enable) { enable_chain_moves_ = enable; }
     void setChainMoveInterval(int interval) { chain_move_interval_ = interval; }
     void setChainMovesPerRound(int moves) { chain_moves_per_round_ = moves; }
+    void setEnableSlides(bool enable) { enable_slides_ = enable; }
     
     // Main SA run function
     void run();
@@ -187,9 +188,10 @@ private:
     bool enable_kicks_ = true;
     
     // Chain move control  
-    bool enable_chain_moves_ = true;  // Can disable expensive chain moves
+    bool enable_chain_moves_ = true;  // Enable/disable chain moves
     int chain_move_interval_ = 50;    // How often to attempt chain moves  
     int chain_moves_per_round_ = 5;   // Number of chain moves to try when triggered
+    bool enable_slides_ = true; // Enable/disable slide moves
     
     // LSMC tracking
     int stagnation_counter_ = 0;

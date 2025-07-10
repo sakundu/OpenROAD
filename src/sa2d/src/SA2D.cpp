@@ -151,6 +151,7 @@ void SA2D::runSingleWorkerSA()
   worker->setEnableChainMoves(enable_chain_moves_);
   worker->setChainMoveInterval(chain_move_interval_);
   worker->setChainMovesPerRound(chain_moves_per_round_);
+  worker->setEnableSlides(enable_slides_);
   
   // Report initial state
   int64_t initial_hpwl = worker->getTotalHPWL();
@@ -211,7 +212,7 @@ void SA2D::runParallelSA()
                                      kick_interval_, kick_threshold_, kick_strength_,
                                      kick_temp_multiplier_, enable_kicks_,
                                      enable_chain_moves_, chain_move_interval_,
-                                     chain_moves_per_round_);
+                                     chain_moves_per_round_, enable_slides_);
   
   // Report initial state
   auto initial_costs = worker_manager_->getWorkerCosts();

@@ -98,6 +98,9 @@ public:
   void setChainMoveInterval(int interval) { chain_move_interval_ = interval; }
   void setChainMovesPerRound(int moves) { chain_moves_per_round_ = moves; }
   
+  // Enable slide moves
+  void setEnableSlides(bool enable) { enable_slides_ = enable; }
+  
   // DPL integration
   void setDplEngine(dpl::Opendp* dpl) { dpl_ = dpl; }
   
@@ -144,6 +147,7 @@ private:
   bool enable_chain_moves_ = true;
   int chain_move_interval_ = 50;
   int chain_moves_per_round_ = 5;
+  bool enable_slides_ = true; // Default to true
   
   // Parallel SA parameters
   int gwtw_interval_ = 100;  // Iterations between GWTW sync

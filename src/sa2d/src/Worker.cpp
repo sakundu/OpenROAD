@@ -116,7 +116,8 @@ SAWorker::SAWorker(SA2D* sa2d, int worker_id)
       kick_temp_multiplier_(1.5f),
       enable_kicks_(true),
       is_winner_(false),
-      distribution_(0.0, 1.0)
+      distribution_(0.0, 1.0),
+      enable_slides_(true)
 {
 }
 
@@ -1676,8 +1677,8 @@ void SAWorker::run()
                 
                 attempted_swaps_++;
                 trySwap(movable_cells[idx1], movable_cells[idx2]);
-            } else if (rand_val < 0.30) {
-                // 10% slides
+            } else if (rand_val < 0.30 && enable_slides_) {
+                // 10% slides (if enabled)
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx = cell_dist(rng_);
                 trySlide(movable_cells[idx]);
@@ -1855,8 +1856,8 @@ void SAWorker::runParallel(int iterations, SimpleBarrier& sync_barrier,
                 
                 attempted_swaps_++;
                 trySwap(movable_cells[idx1], movable_cells[idx2]);
-            } else if (rand_val < 0.30) {
-                // 10% slides
+            } else if (rand_val < 0.30 && enable_slides_) {
+                // 10% slides (if enabled)
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx = cell_dist(rng_);
                 trySlide(movable_cells[idx]);
@@ -2161,8 +2162,8 @@ bool SAWorker::tryRegionShuffle(int region_size)
         if (!all_swaps_legal) {
             // Restore all original states - swaps would create overlaps
             utl::Logger* logger = sa2d_->getLogger();
-            logger->warn(utl::SA2D, 462, "Worker {} region shuffle would create overlaps! {} swaps rejected",
-                        worker_id_, swap_pairs.size());
+            /*logger->warn(utl::SA2D, 462, "Worker {} region shuffle would create overlaps! {} swaps rejected",
+                        worker_id_, swap_pairs.size());*/
             
             int idx = 0;
             for (const auto& [cell1, cell2] : swap_pairs) {
@@ -2462,8 +2463,8 @@ bool SAWorker::checkGridStateConsistency() {
                 for (GridX x = gx; x.v < gx.v + gw.v; ++x) {
                     int grid_cell = grid_->getCellAt(x, y);
                     if (grid_cell != i) {
-                        logger->warn(utl::SA2D, 467, "Grid inconsistency! Cell {} should be at ({},{}), but grid has cell {}",
-                                    i, x.v, y.v, grid_cell);
+                        /*logger->warn(utl::SA2D, 467, "Grid inconsistency! Cell {} should be at ({},{}), but grid has cell {}",
+                                    i, x.v, y.v, grid_cell);*/
                         consistent = false;
                     }
                 }
