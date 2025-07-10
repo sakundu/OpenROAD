@@ -116,7 +116,8 @@ SAWorker::SAWorker(SA2D* sa2d, int worker_id)
       kick_temp_multiplier_(1.5f),
       enable_kicks_(true),
       is_winner_(false),
-      distribution_(0.0, 1.0)
+      distribution_(0.0, 1.0),
+      enable_slides_(true)
 {
 }
 
@@ -646,24 +647,27 @@ bool SAWorker::trySwap(int cell1_id, int cell2_id)
         return false;
     }
     
-    // Skip if cells have different widths or heights (swap would be complex)
+    // Get cell dimensions
     GridX gw1 = grid_info_->gridPaddedWidth(node1);
     GridY gh1 = grid_info_->gridHeight(node1);
     GridX gw2 = grid_info_->gridPaddedWidth(node2);
     GridY gh2 = grid_info_->gridHeight(node2);
     
-    if (gw1 != gw2 || gh1 != gh2) {
-        // Can't simply swap cells of different sizes
-        return false;
-    }
+    // Check if either is multi-height 
+    bool is_multi_height = grid_info_->isMultiHeightCell(node1) || grid_info_->isMultiHeightCell(node2);
     
-    // Check if either is multi-height and delegate to specialized handler
-    if (grid_info_->isMultiHeightCell(node1) || grid_info_->isMultiHeightCell(node2)) {
-        // Both must be same height (checked above), so safe to swap
+    // For multi-height cells, require same dimensions and use specialized handler
+    if (is_multi_height) {
+        if (gw1 != gw2 || gh1 != gh2) {
+            return false;
+        }
+        // Use specialized multi-height swap function
         return trySwapMultiHeight(cell1_id, cell2_id);
     }
     
-    // Save current states
+    attempted_swaps_++;
+    
+    // Save current state
     state_.cells[cell1_id].prev_x = state_.cells[cell1_id].x;
     state_.cells[cell1_id].prev_y = state_.cells[cell1_id].y;
     state_.cells[cell1_id].prev_orient = state_.cells[cell1_id].orient;
@@ -672,28 +676,169 @@ bool SAWorker::trySwap(int cell1_id, int cell2_id)
     state_.cells[cell2_id].prev_y = state_.cells[cell2_id].y;
     state_.cells[cell2_id].prev_orient = state_.cells[cell2_id].orient;
     
-    // Get grid positions
+    // Get current positions
     GridX gx1 = grid_info_->gridX(state_.cells[cell1_id].x);
     GridY gy1 = grid_info_->gridSnapDownY(state_.cells[cell1_id].y);
-    
     GridX gx2 = grid_info_->gridX(state_.cells[cell2_id].x);
     GridY gy2 = grid_info_->gridSnapDownY(state_.cells[cell2_id].y);
     
-    // Remove both cells from grid
-    grid_->removeCell(cell1_id);
-    grid_->removeCell(cell2_id);
+    // For different-sized cells, check if there's enough space BEFORE removing cells
+    bool legal1 = false;
+    bool legal2 = false;
+    bool is_diff_size = (gw1 != gw2 || gh1 != gh2);
     
-    // Check if swap is legal
-    bool legal1 = canPlaceCell(cell1_id, gx2, gy2);
-    bool legal2 = canPlaceCell(cell2_id, gx1, gy1);
+    if (is_diff_size) {
+        // Different sizes - Phase 1: Simple gap-fitting approach
+        attempted_diff_size_swaps_++;
+        
+        // Debug logging for different-size swaps (only log every 100th attempt)
+        /*if (attempted_diff_size_swaps_ % 100 == 0) {
+            utl::Logger* logger = sa2d_->getLogger();
+            logger->info(utl::SA2D, 460, "Worker {} attempting different-size swap #{}: {} ({}x{}) <-> {} ({}x{})",
+                        worker_id_, attempted_diff_size_swaps_,
+                        network_->getNode(cell1_id)->name(), gw1.v, gh1.v,
+                        network_->getNode(cell2_id)->name(), gw2.v, gh2.v);
+        }*/
+        
+        // Check if cell1 can fit at cell2's position
+        // We need to check if any part of where cell1 would go is occupied by cells OTHER than cell1 and cell2
+        legal1 = true;
+        for (GridY y = gy2; y.v < gy2.v + gh1.v && legal1; ++y) {
+            for (GridX x = gx2; x.v < gx2.v + gw1.v && legal1; ++x) {
+                // Check bounds
+                if (x >= grid_info_->getRowSiteCount() || y >= grid_info_->getRowCount()) {
+                    legal1 = false;
+                    break;
+                }
+                // Check if occupied by another cell (not cell1 or cell2)
+                if (grid_->isOccupied(x, y)) {
+                    int occupant = grid_->getCellAt(x, y);
+                    if (occupant != cell1_id && occupant != cell2_id) {
+                        legal1 = false;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Check if cell2 can fit at cell1's position
+        legal2 = true;
+        for (GridY y = gy1; y.v < gy1.v + gh2.v && legal2; ++y) {
+            for (GridX x = gx1; x.v < gx1.v + gw2.v && legal2; ++x) {
+                // Check bounds
+                if (x >= grid_info_->getRowSiteCount() || y >= grid_info_->getRowCount()) {
+                    legal2 = false;
+                    break;
+                }
+                // Check if occupied by another cell (not cell1 or cell2)
+                if (grid_->isOccupied(x, y)) {
+                    int occupant = grid_->getCellAt(x, y);
+                    if (occupant != cell1_id && occupant != cell2_id) {
+                        legal2 = false;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Now check additional legality constraints if space is available
+        if (legal1) {
+            // Temporarily remove cells to check full legality
+            grid_->removeCell(cell1_id);
+            grid_->removeCell(cell2_id);
+            legal1 = canPlaceCell(cell1_id, gx2, gy2);
+            // Restore cells using appropriate method
+            if (grid_info_->isMultiHeightCell(node1)) {
+                grid_->placeMultiHeightCell(cell1_id, gx1, gy1, gw1, gh1);
+            } else {
+                grid_->placeCell(cell1_id, gx1, gy1, gw1, gh1);
+            }
+            if (grid_info_->isMultiHeightCell(node2)) {
+                grid_->placeMultiHeightCell(cell2_id, gx2, gy2, gw2, gh2);
+            } else {
+                grid_->placeCell(cell2_id, gx2, gy2, gw2, gh2);
+            }
+        }
+        
+        if (legal2) {
+            // Temporarily remove cells to check full legality
+            grid_->removeCell(cell1_id);
+            grid_->removeCell(cell2_id);
+            legal2 = canPlaceCell(cell2_id, gx1, gy1);
+            // Restore cells using appropriate method
+            if (grid_info_->isMultiHeightCell(node1)) {
+                grid_->placeMultiHeightCell(cell1_id, gx1, gy1, gw1, gh1);
+            } else {
+                grid_->placeCell(cell1_id, gx1, gy1, gw1, gh1);
+            }
+            if (grid_info_->isMultiHeightCell(node2)) {
+                grid_->placeMultiHeightCell(cell2_id, gx2, gy2, gw2, gh2);
+            } else {
+                grid_->placeCell(cell2_id, gx2, gy2, gw2, gh2);
+            }
+        }
+    } else {
+        // Same size - use existing simple check
+        grid_->removeCell(cell1_id);
+        grid_->removeCell(cell2_id);
+        legal1 = canPlaceCell(cell1_id, gx2, gy2);
+        legal2 = canPlaceCell(cell2_id, gx1, gy1);
+        
+        if (!legal1 || !legal2) {
+            // Restore grid state using appropriate method
+            if (grid_info_->isMultiHeightCell(node1)) {
+                grid_->placeMultiHeightCell(cell1_id, gx1, gy1, gw1, gh1);
+            } else {
+                grid_->placeCell(cell1_id, gx1, gy1, gw1, gh1);
+            }
+            if (grid_info_->isMultiHeightCell(node2)) {
+                grid_->placeMultiHeightCell(cell2_id, gx2, gy2, gw2, gh2);
+            } else {
+                grid_->placeCell(cell2_id, gx2, gy2, gw2, gh2);
+            }
+        }
+    }
     
     if (!legal1 || !legal2) {
-        // Restore grid state
-        grid_->placeCell(cell1_id, gx1, gy1, gw1, gh1);
-        grid_->placeCell(cell2_id, gx2, gy2, gw2, gh2);
-        
         illegal_moves_++;
         return false;
+    }
+    
+    // CRITICAL: For different-sized cells, we need to check that they won't overlap
+    // AFTER the swap. This can happen if cells were adjacent before the swap.
+    if (is_diff_size) {
+        // Check if the swapped positions would overlap
+        bool would_overlap = false;
+        
+        // Check each position that cell1 would occupy at cell2's location
+        for (GridY y1 = gy2; y1.v < gy2.v + gh1.v && !would_overlap; ++y1) {
+            for (GridX x1 = gx2; x1.v < gx2.v + gw1.v && !would_overlap; ++x1) {
+                // Check against each position that cell2 would occupy at cell1's location
+                for (GridY y2 = gy1; y2.v < gy1.v + gh2.v && !would_overlap; ++y2) {
+                    for (GridX x2 = gx1; x2.v < gx1.v + gw2.v && !would_overlap; ++x2) {
+                        if (x1.v == x2.v && y1.v == y2.v) {
+                            would_overlap = true;
+                            
+                            // Debug log (only log every 100th rejection)
+                            static int overlap_rejection_count = 0;
+                            overlap_rejection_count++;
+                            /*if (overlap_rejection_count % 100 == 0) {
+                                utl::Logger* logger = sa2d_->getLogger();
+                                logger->info(utl::SA2D, 473, "Different-size swap rejected (#{}) - would create overlap at ({},{})! {} and {} were adjacent",
+                                            overlap_rejection_count, x1.v, y1.v,
+                                            network_->getNode(cell1_id)->name(),
+                                            network_->getNode(cell2_id)->name());
+                            }*/
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (would_overlap) {
+            illegal_moves_++;
+            return false;
+        }
     }
     
     // Get orientations for swapped positions
@@ -726,9 +871,25 @@ bool SAWorker::trySwap(int cell1_id, int cell2_id)
     int64_t delta = calcDeltaHPWL(affected_nets);
     
     if (acceptMove(delta, temp_)) {
-        // Update grid with new positions
-        grid_->placeCell(cell1_id, gx2, gy2, gw1, gh1);
-        grid_->placeCell(cell2_id, gx1, gy1, gw2, gh2);
+        // Update grid with new positions using each cell's actual dimensions
+        // For different-sized swaps, we need to remove and re-place both cells
+        if (is_diff_size) {
+            grid_->removeCell(cell1_id);
+            grid_->removeCell(cell2_id);
+        }
+        
+        // Place cells using the appropriate method based on height
+        if (grid_info_->isMultiHeightCell(node1)) {
+            grid_->placeMultiHeightCell(cell1_id, gx2, gy2, gw1, gh1);
+        } else {
+            grid_->placeCell(cell1_id, gx2, gy2, gw1, gh1);
+        }
+        
+        if (grid_info_->isMultiHeightCell(node2)) {
+            grid_->placeMultiHeightCell(cell2_id, gx1, gy1, gw2, gh2);
+        } else {
+            grid_->placeCell(cell2_id, gx1, gy1, gw2, gh2);
+        }
         
         // Update HPWL cache and total
         updateHPWLCache(affected_nets);
@@ -736,6 +897,20 @@ bool SAWorker::trySwap(int cell1_id, int cell2_id)
         
         accepted_moves_++;
         accepted_swaps_++;  // Track swaps separately
+        if (is_diff_size) {
+            accepted_diff_size_swaps_++;  // Track different-size swaps
+            
+            // Debug log successful different-size swap (only log every 10th acceptance)
+            /*if (accepted_diff_size_swaps_ % 10 == 0) {
+                utl::Logger* logger = sa2d_->getLogger();
+                logger->info(utl::SA2D, 461, "Worker {} ACCEPTED different-size swap #{}: {} -> ({},{}) and {} -> ({},{})",
+                            worker_id_, accepted_diff_size_swaps_,
+                            network_->getNode(cell1_id)->name(), gx2.v, gy2.v,
+                            network_->getNode(cell2_id)->name(), gx1.v, gy1.v);
+            }*/
+            
+            // Overlap verification removed - adjacent cell issue fixed
+        }
         return true;
     } else {
         // Restore previous state
@@ -747,9 +922,21 @@ bool SAWorker::trySwap(int cell1_id, int cell2_id)
         state_.cells[cell2_id].y = state_.cells[cell2_id].prev_y;
         state_.cells[cell2_id].orient = state_.cells[cell2_id].prev_orient;
         
-        // Restore grid state
-        grid_->placeCell(cell1_id, gx1, gy1, gw1, gh1);
-        grid_->placeCell(cell2_id, gx2, gy2, gw2, gh2);
+        // Restore grid state with original dimensions if we had removed them
+        if (!is_diff_size) {
+            // Place cells using appropriate method based on height
+            if (grid_info_->isMultiHeightCell(node1)) {
+                grid_->placeMultiHeightCell(cell1_id, gx1, gy1, gw1, gh1);
+            } else {
+                grid_->placeCell(cell1_id, gx1, gy1, gw1, gh1);
+            }
+            
+            if (grid_info_->isMultiHeightCell(node2)) {
+                grid_->placeMultiHeightCell(cell2_id, gx2, gy2, gw2, gh2);
+            } else {
+                grid_->placeCell(cell2_id, gx2, gy2, gw2, gh2);
+            }
+        }
         
         rejected_moves_++;
         return false;
@@ -928,7 +1115,6 @@ bool SAWorker::tryRippleLeft(int cell_id, GridPt target_pos, int max_chain_lengt
     // Build chain by shifting cells left
     GridX curr_x = target_pos.x;
     GridY curr_y = target_pos.y;
-    GridX seed_width = grid_info_->gridPaddedWidth(seed_node);
     
     for (int i = 0; i < max_chain_length; ++i) {
         // Check what's occupying the current position
@@ -1270,6 +1456,85 @@ void SAWorker::revertChain(const std::vector<ChainedMove>& chain)
 void SAWorker::updateBestSolution()
 {
     if (state_.total_hpwl < best_state_.total_hpwl) {
+        // Validate current solution before saving as best
+        WorkerGrid validation_grid(grid_info_);
+        int overlap_count = 0;
+        
+        for (int i = 0; i < network_->getNumNodes(); i++) {
+            const dpl::Node* node = network_->getNode(i);
+            if (node->getType() == dpl::Node::CELL) {
+                GridX gx = grid_info_->gridX(state_.cells[i].x);
+                GridY gy = grid_info_->gridSnapDownY(state_.cells[i].y);
+                GridX gw = grid_info_->gridPaddedWidth(node);
+                GridY gh = grid_info_->gridHeight(node);
+                
+                // Check for overlaps
+                for (GridY y = gy; y.v < gy.v + gh.v; ++y) {
+                    for (GridX x = gx; x.v < gx.v + gw.v; ++x) {
+                        if (validation_grid.isOccupied(x, y)) {
+                            overlap_count++;
+                        }
+                    }
+                }
+                
+                // Place the cell
+                if (grid_info_->isMultiHeightCell(node)) {
+                    validation_grid.placeMultiHeightCell(i, gx, gy, gw, gh);
+                } else {
+                    validation_grid.placeCell(i, gx, gy, gw, gh);
+                }
+            }
+        }
+        
+        if (overlap_count > 0) {
+            utl::Logger* logger = sa2d_->getLogger();
+            /*logger->warn(utl::SA2D, 466, "Worker {} updating best solution WITH {} OVERLAPS! HPWL: {} -> {}",
+                        worker_id_, overlap_count, 
+                        sa2d_->getBlock()->dbuToMicrons(best_state_.total_hpwl),
+                        sa2d_->getBlock()->dbuToMicrons(state_.total_hpwl));*/
+            
+            // Let's find out which cells are overlapping
+            validation_grid.clear();
+            std::vector<std::pair<int, int>> overlapping_pairs;
+            
+            for (int i = 0; i < network_->getNumNodes(); i++) {
+                const dpl::Node* node = network_->getNode(i);
+                if (node->getType() == dpl::Node::CELL) {
+                    GridX gx = grid_info_->gridX(state_.cells[i].x);
+                    GridY gy = grid_info_->gridSnapDownY(state_.cells[i].y);
+                    GridX gw = grid_info_->gridPaddedWidth(node);
+                    GridY gh = grid_info_->gridHeight(node);
+                    
+                    // Check for overlaps with specific cells
+                    for (GridY y = gy; y.v < gy.v + gh.v; ++y) {
+                        for (GridX x = gx; x.v < gx.v + gw.v; ++x) {
+                            if (validation_grid.isOccupied(x, y)) {
+                                int other_cell = validation_grid.getCellAt(x, y);
+                                overlapping_pairs.push_back({i, other_cell});
+                                /*logger->warn(utl::SA2D, 469, "  Overlap: {} ({}x{}) at ({},{}) overlaps with {} at pixel ({},{})",
+                                           node->name(), gw.v, gh.v, gx.v, gy.v,
+                                           network_->getNode(other_cell)->name(), x.v, y.v);*/
+                            }
+                        }
+                    }
+                    
+                    // Place the cell
+                    if (grid_info_->isMultiHeightCell(node)) {
+                        validation_grid.placeMultiHeightCell(i, gx, gy, gw, gh);
+                    } else {
+                        validation_grid.placeCell(i, gx, gy, gw, gh);
+                    }
+                }
+            }
+            
+            // Check grid consistency
+            checkGridStateConsistency();
+            
+            // CRITICAL: Don't update best solution if it has overlaps!
+            //logger->warn(utl::SA2D, 470, "REJECTING best solution update due to overlaps!");
+            return;  // Don't update best_state_
+        }
+        
         best_state_ = state_;
         best_grid_->copyFrom(*grid_);
     }
@@ -1337,6 +1602,8 @@ void SAWorker::run()
     attempted_flips_ = 0;
     attempted_swaps_ = 0;
     attempted_single_moves_ = 0;
+    attempted_diff_size_swaps_ = 0;
+    accepted_diff_size_swaps_ = 0;
     
     float current_temp = temp_;
     int moves_tried = 0;
@@ -1399,17 +1666,17 @@ void SAWorker::run()
             int old_accepted = accepted_moves_;
             moves_attempted_this_iter++;
             
-            // Randomly choose between single move, swap, and flip
+            // Randomly choose between single move, swap, flip, and slide
             float rand_val = distribution_(rng_);
             
-            if (rand_val < 0.15) {
-                // 15% flips
+            if (rand_val < 0.10) {
+                // 10% flips
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx = cell_dist(rng_);
                 attempted_flips_++;
                 tryFlip(movable_cells[idx]);
-            } else if (rand_val < 0.30 && movable_cells.size() > 1) {
-                // 15% swaps
+            } else if (rand_val < 0.20 && movable_cells.size() > 1) {
+                // 10% swaps
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx1 = cell_dist(rng_);
                 int idx2 = cell_dist(rng_);
@@ -1419,6 +1686,11 @@ void SAWorker::run()
                 
                 attempted_swaps_++;
                 trySwap(movable_cells[idx1], movable_cells[idx2]);
+            } else if (rand_val < 0.30 && enable_slides_) {
+                // 10% slides (if enabled)
+                std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
+                int idx = cell_dist(rng_);
+                trySlide(movable_cells[idx]);
             } else {
                 // 70% single moves
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
@@ -1482,9 +1754,17 @@ void SAWorker::run()
     logger->info(utl::SA2D, 342, "  Swaps: {} attempted, {} accepted ({:.1f}%)", 
                 attempted_swaps_, accepted_swaps_, 
                 attempted_swaps_ > 0 ? 100.0 * accepted_swaps_ / attempted_swaps_ : 0.0);
+    if (attempted_diff_size_swaps_ > 0) {
+        logger->info(utl::SA2D, 345, "    Different-size swaps: {} attempted, {} accepted ({:.1f}%)",
+                    attempted_diff_size_swaps_, accepted_diff_size_swaps_,
+                    100.0 * accepted_diff_size_swaps_ / attempted_diff_size_swaps_);
+    }
     logger->info(utl::SA2D, 343, "  Flips: {} attempted, {} accepted ({:.1f}%)", 
                 attempted_flips_, accepted_flips_, 
                 attempted_flips_ > 0 ? 100.0 * accepted_flips_ / attempted_flips_ : 0.0);
+    logger->info(utl::SA2D, 346, "  Slides: {} attempted, {} accepted ({:.1f}%)", 
+                attempted_slides_, accepted_slides_, 
+                attempted_slides_ > 0 ? 100.0 * accepted_slides_ / attempted_slides_ : 0.0);
     if (attempted_chain_moves_ > 0) {
         logger->info(utl::SA2D, 344, "  Chain moves: {} attempted, {} accepted ({:.1f}%), max chain length: {}, total cells shifted: {}",
                     attempted_chain_moves_, accepted_chain_moves_,
@@ -1511,9 +1791,13 @@ void SAWorker::runParallel(int iterations, SimpleBarrier& sync_barrier,
     accepted_flips_ = 0;
     accepted_swaps_ = 0;
     accepted_single_moves_ = 0;
+    accepted_slides_ = 0;
     attempted_flips_ = 0;
     attempted_swaps_ = 0;
     attempted_single_moves_ = 0;
+    attempted_slides_ = 0;
+    attempted_diff_size_swaps_ = 0;
+    accepted_diff_size_swaps_ = 0;
     // Note: Don't clear affected_nets_cache_ - it remains valid
     
     // Get movable cells
@@ -1561,17 +1845,17 @@ void SAWorker::runParallel(int iterations, SimpleBarrier& sync_barrier,
             int old_accepted = accepted_moves_;
             moves_attempted_this_iter++;
             
-            // Randomly choose between single move, swap, and flip
+            // Randomly choose between single move, swap, flip, and slide
             float rand_val = distribution_(rng_);
             
-            if (rand_val < 0.15) {
-                // 15% flips
+            if (rand_val < 0.10) {
+                // 10% flips
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx = cell_dist(rng_);
                 attempted_flips_++;
                 tryFlip(movable_cells[idx]);
-            } else if (rand_val < 0.30 && movable_cells.size() > 1) {
-                // 15% swaps
+            } else if (rand_val < 0.20 && movable_cells.size() > 1) {
+                // 10% swaps
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx1 = cell_dist(rng_);
                 int idx2 = cell_dist(rng_);
@@ -1581,6 +1865,11 @@ void SAWorker::runParallel(int iterations, SimpleBarrier& sync_barrier,
                 
                 attempted_swaps_++;
                 trySwap(movable_cells[idx1], movable_cells[idx2]);
+            } else if (rand_val < 0.30 && enable_slides_) {
+                // 10% slides (if enabled)
+                std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
+                int idx = cell_dist(rng_);
+                trySlide(movable_cells[idx]);
             } else {
                 // 70% single moves
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
@@ -1636,6 +1925,8 @@ void SAWorker::copyStateFrom(const SAWorker& other)
     accepted_moves_ = 0;
     rejected_moves_ = 0;
     illegal_moves_ = 0;
+    
+    checkGridStateConsistency();
 }
 
 void SAWorker::applyToDPL(dpl::Network* network)
@@ -1644,6 +1935,51 @@ void SAWorker::applyToDPL(dpl::Network* network)
     logger->info(utl::SA2D, 350, "Worker {} applying best solution with HPWL: {:.1f} u",
                 worker_id_, 
                 sa2d_->getBlock()->dbuToMicrons(best_state_.total_hpwl));
+    
+    // First, validate the best solution for overlaps
+    logger->info(utl::SA2D, 463, "Validating best solution for overlaps...");
+    
+    // Create a temporary grid to check for overlaps
+    WorkerGrid validation_grid(grid_info_);
+    std::vector<std::pair<int, int>> overlapping_cells;
+    
+    for (int i = 0; i < network_->getNumNodes(); i++) {
+        dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
+        if (node->getType() == dpl::Node::CELL) {
+            GridX gx = grid_info_->gridX(best_state_.cells[i].x);
+            GridY gy = grid_info_->gridSnapDownY(best_state_.cells[i].y);
+            GridX gw = grid_info_->gridPaddedWidth(node);
+            GridY gh = grid_info_->gridHeight(node);
+            
+            // Check if this placement would overlap
+            bool has_overlap = false;
+            for (GridY y = gy; y.v < gy.v + gh.v && !has_overlap; ++y) {
+                for (GridX x = gx; x.v < gx.v + gw.v && !has_overlap; ++x) {
+                    if (validation_grid.isOccupied(x, y)) {
+                        int other_id = validation_grid.getCellAt(x, y);
+                        overlapping_cells.push_back({i, other_id});
+                        has_overlap = true;
+                        
+                        logger->warn(utl::SA2D, 464, "OVERLAP DETECTED: {} at ({},{}) overlaps with {} at pixel ({},{})",
+                                    node->name(), gx.v, gy.v,
+                                    network_->getNode(other_id)->name(), x.v, y.v);
+                    }
+                }
+            }
+            
+            // Place the cell
+            if (grid_info_->isMultiHeightCell(node)) {
+                validation_grid.placeMultiHeightCell(i, gx, gy, gw, gh);
+            } else {
+                validation_grid.placeCell(i, gx, gy, gw, gh);
+            }
+        }
+    }
+    
+    if (!overlapping_cells.empty()) {
+        logger->warn(utl::SA2D, 465, "Found {} overlaps in best solution before applying to DPL!", 
+                     overlapping_cells.size());
+    }
     
     // Apply best solution back to DPL network
     int cells_updated = 0;
@@ -1773,7 +2109,82 @@ bool SAWorker::tryRegionShuffle(int region_size)
     float kick_temp = temp_ * kick_temp_multiplier_;
     
     if (acceptMove(total_delta, kick_temp)) {
-        // Apply all swaps to grid
+        // CRITICAL: Validate that all swaps can be legally applied together
+        // Create a temporary grid to test the swaps
+        WorkerGrid temp_grid(grid_info_);
+        temp_grid.copyFrom(*grid_);
+        
+        // Try to apply all swaps to temporary grid
+        bool all_swaps_legal = true;
+        for (const auto& [cell1, cell2] : swap_pairs) {
+            // Get cell dimensions
+            const dpl::Node* node1 = network_->getNode(cell1);
+            const dpl::Node* node2 = network_->getNode(cell2);
+            GridX gw1 = grid_info_->gridPaddedWidth(node1);
+            GridY gh1 = grid_info_->gridHeight(node1);
+            GridX gw2 = grid_info_->gridPaddedWidth(node2);
+            GridY gh2 = grid_info_->gridHeight(node2);
+            
+            // Get target positions (after swap)
+            GridX gx1 = grid_info_->gridX(state_.cells[cell1].x);
+            GridY gy1 = grid_info_->gridSnapDownY(state_.cells[cell1].y);
+            GridX gx2 = grid_info_->gridX(state_.cells[cell2].x);
+            GridY gy2 = grid_info_->gridSnapDownY(state_.cells[cell2].y);
+            
+            // Remove cells from temp grid
+            temp_grid.removeCell(cell1);
+            temp_grid.removeCell(cell2);
+            
+            // Check if we can place both cells in their new positions
+            // For single-height cells, manually check space availability
+            bool can_place1 = true;
+            bool can_place2 = true;
+            
+            // Check space for cell1 at its new position
+            for (GridY y = gy1; y.v < gy1.v + gh1.v && can_place1; ++y) {
+                for (GridX x = gx1; x.v < gx1.v + gw1.v && can_place1; ++x) {
+                    if (temp_grid.isOccupied(x, y)) {
+                        can_place1 = false;
+                    }
+                }
+            }
+            
+            // Check space for cell2 at its new position
+            for (GridY y = gy2; y.v < gy2.v + gh2.v && can_place2; ++y) {
+                for (GridX x = gx2; x.v < gx2.v + gw2.v && can_place2; ++x) {
+                    if (temp_grid.isOccupied(x, y)) {
+                        can_place2 = false;
+                    }
+                }
+            }
+            
+            if (!can_place1 || !can_place2) {
+                all_swaps_legal = false;
+                break;
+            }
+            
+            // Place cells in their new positions on temp grid
+            temp_grid.placeCell(cell1, gx1, gy1, gw1, gh1);
+            temp_grid.placeCell(cell2, gx2, gy2, gw2, gh2);
+        }
+        
+        if (!all_swaps_legal) {
+            // Restore all original states - swaps would create overlaps
+            utl::Logger* logger = sa2d_->getLogger();
+            /*logger->warn(utl::SA2D, 462, "Worker {} region shuffle would create overlaps! {} swaps rejected",
+                        worker_id_, swap_pairs.size());*/
+            
+            int idx = 0;
+            for (const auto& [cell1, cell2] : swap_pairs) {
+                state_.cells[cell1] = saved_states[idx++];
+                state_.cells[cell2] = saved_states[idx++];
+            }
+            
+            kick_rejected_++;
+            return false;
+        }
+        
+        // All swaps are legal - apply them to the actual grid
         for (const auto& [cell1, cell2] : swap_pairs) {
             applySwapToGrid(cell1, cell2);
         }
@@ -1828,19 +2239,32 @@ void SAWorker::applySwapToGrid(int cell1_id, int cell2_id)
     grid_->removeCell(cell1_id);
     grid_->removeCell(cell2_id);
     
-    // Get sizes (same for both since we only swap same-sized cells)
+    // Get sizes for each cell (may be different!)
     const dpl::Node* node1 = network_->getNode(cell1_id);
-    GridX gw = grid_info_->gridPaddedWidth(node1);
-    GridY gh = grid_info_->gridHeight(node1);
+    const dpl::Node* node2 = network_->getNode(cell2_id);
+    GridX gw1 = grid_info_->gridPaddedWidth(node1);
+    GridY gh1 = grid_info_->gridHeight(node1);
+    GridX gw2 = grid_info_->gridPaddedWidth(node2);
+    GridY gh2 = grid_info_->gridHeight(node2);
     
-    // Place in swapped positions
+    // Place in swapped positions using each cell's own dimensions
     GridX gx1 = grid_info_->gridX(state_.cells[cell1_id].x);
     GridY gy1 = grid_info_->gridSnapDownY(state_.cells[cell1_id].y);
     GridX gx2 = grid_info_->gridX(state_.cells[cell2_id].x);
     GridY gy2 = grid_info_->gridSnapDownY(state_.cells[cell2_id].y);
     
-    grid_->placeCell(cell1_id, gx1, gy1, gw, gh);
-    grid_->placeCell(cell2_id, gx2, gy2, gw, gh);
+    // Place cells using appropriate method based on height
+    if (grid_info_->isMultiHeightCell(node1)) {
+        grid_->placeMultiHeightCell(cell1_id, gx1, gy1, gw1, gh1);
+    } else {
+        grid_->placeCell(cell1_id, gx1, gy1, gw1, gh1);
+    }
+    
+    if (grid_info_->isMultiHeightCell(node2)) {
+        grid_->placeMultiHeightCell(cell2_id, gx2, gy2, gw2, gh2);
+    } else {
+        grid_->placeCell(cell2_id, gx2, gy2, gw2, gh2);
+    }
 }
 
 // Multi-height cell operations
@@ -2035,6 +2459,194 @@ bool SAWorker::canPlaceMultiHeightCell(int cell_id, GridX x, GridY y)
     
     // Check no overlaps across all spanned rows
     return grid_->canPlaceMultiHeight(cell_id, x, y, width, height);
+}
+
+bool SAWorker::checkGridStateConsistency() {
+    utl::Logger* logger = sa2d_->getLogger();
+    bool consistent = true;
+    
+    // Create a fresh grid from state
+    WorkerGrid check_grid(grid_info_);
+    
+    for (int i = 0; i < network_->getNumNodes(); i++) {
+        const dpl::Node* node = network_->getNode(i);
+        if (node->getType() == dpl::Node::CELL) {
+            GridX gx = grid_info_->gridX(state_.cells[i].x);
+            GridY gy = grid_info_->gridSnapDownY(state_.cells[i].y);
+            GridX gw = grid_info_->gridPaddedWidth(node);
+            GridY gh = grid_info_->gridHeight(node);
+            
+            // Check if cell is where grid thinks it is
+            for (GridY y = gy; y.v < gy.v + gh.v; ++y) {
+                for (GridX x = gx; x.v < gx.v + gw.v; ++x) {
+                    int grid_cell = grid_->getCellAt(x, y);
+                    if (grid_cell != i) {
+                        /*logger->warn(utl::SA2D, 467, "Grid inconsistency! Cell {} should be at ({},{}), but grid has cell {}",
+                                    i, x.v, y.v, grid_cell);*/
+                        consistent = false;
+                    }
+                }
+            }
+            
+            // Place in check grid
+            if (grid_info_->isMultiHeightCell(node)) {
+                check_grid.placeMultiHeightCell(i, gx, gy, gw, gh);
+            } else {
+                check_grid.placeCell(i, gx, gy, gw, gh);
+            }
+        }
+    }
+    
+    return consistent;
+}
+
+bool SAWorker::trySlide(int cell_id)
+{
+    attempted_slides_++;
+    
+    dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(cell_id));
+    
+    // Skip non-movable cells
+    if (node->getType() != dpl::Node::CELL || node->isFixed()) {
+        return false;
+    }
+    
+    // Get current position and dimensions
+    GridX curr_x = grid_info_->gridX(state_.cells[cell_id].x);
+    GridY curr_y = grid_info_->gridSnapDownY(state_.cells[cell_id].y);
+    GridX width = grid_info_->gridPaddedWidth(node);
+    GridY height = grid_info_->gridHeight(node);
+    
+    // Save current state
+    state_.cells[cell_id].prev_x = state_.cells[cell_id].x;
+    state_.cells[cell_id].prev_y = state_.cells[cell_id].y;
+    state_.cells[cell_id].prev_orient = state_.cells[cell_id].orient;
+    
+    // Determine slide range based on displacement limits
+    GridX min_x = curr_x.v > max_displacement_x_ ? GridX{curr_x.v - max_displacement_x_} : GridX{0};
+    GridX max_x{curr_x.v + max_displacement_x_};
+    
+    // Clip to grid bounds
+    max_x = std::min(max_x, GridX{grid_info_->getRowSiteCount() - width.v});
+    
+    // If cell is in a group, further restrict range
+    if (node->inGroup()) {
+        const auto group_rect = grid_info_->gridWithin(node->getGroup()->getBBox());
+        min_x = std::max(min_x, group_rect.xlo);
+        max_x = std::min(max_x, GridX{group_rect.xhi.v - width.v});
+    }
+    
+    // Evaluate positions along the slide path
+    struct SlideCandidate {
+        GridX x;
+        int64_t hpwl;
+        bool is_legal;
+    };
+    
+    std::vector<SlideCandidate> candidates;
+    std::vector<int> affected_nets = getAffectedNets(cell_id);
+    
+    // Calculate current HPWL for comparison
+    int64_t current_hpwl = 0;
+    for (int net_id : affected_nets) {
+        current_hpwl += state_.net_hpwl_cache[net_id];
+    }
+    
+    // Sample positions along the slide path (every few sites to reduce computation)
+    int step = std::max(1, (max_x.v - min_x.v) / 20);  // Evaluate up to 20 positions
+    
+    // Temporarily remove cell from grid for legality checking
+    grid_->removeCell(cell_id);
+    
+    for (GridX test_x = min_x; test_x.v <= max_x.v; test_x.v += step) {
+        // Always include the exact end position
+        if (test_x.v > max_x.v && test_x.v - step < max_x.v) {
+            test_x = max_x;
+        }
+        
+        // Skip current position
+        if (test_x.v == curr_x.v) {
+            continue;
+        }
+        
+        // Check legality at this position
+        bool is_legal = canPlaceCell(cell_id, test_x, curr_y);
+        
+        if (is_legal) {
+            // Calculate HPWL at this position
+            odb::dbOrientType new_orient = getCellOrientation(cell_id, test_x, curr_y);
+            
+            // Temporarily update position
+            state_.cells[cell_id].x = grid_info_->gridToDbuX(test_x);
+            state_.cells[cell_id].y = grid_info_->gridYToDbu(curr_y);
+            state_.cells[cell_id].orient = new_orient;
+            
+            // Calculate new HPWL
+            int64_t new_hpwl = 0;
+            for (int net_id : affected_nets) {
+                new_hpwl += calcNetHPWL(net_id);
+            }
+            
+            candidates.push_back({test_x, new_hpwl, true});
+        }
+    }
+    
+    // Restore cell to grid at original position
+    if (grid_info_->isMultiHeightCell(node)) {
+        grid_->placeMultiHeightCell(cell_id, curr_x, curr_y, width, height);
+    } else {
+        grid_->placeCell(cell_id, curr_x, curr_y, width, height);
+    }
+    
+    // Restore original state
+    state_.cells[cell_id].x = state_.cells[cell_id].prev_x;
+    state_.cells[cell_id].y = state_.cells[cell_id].prev_y;
+    state_.cells[cell_id].orient = state_.cells[cell_id].prev_orient;
+    
+    // Find best candidate
+    if (candidates.empty()) {
+        return false;  // No legal positions found
+    }
+    
+    // Sort by HPWL (ascending)
+    std::sort(candidates.begin(), candidates.end(), 
+              [](const SlideCandidate& a, const SlideCandidate& b) {
+                  return a.hpwl < b.hpwl;
+              });
+    
+    // Use the best position
+    const SlideCandidate& best = candidates[0];
+    int64_t delta = best.hpwl - current_hpwl;
+    
+    // Apply SA acceptance criterion even though we found the best position
+    if (acceptMove(delta, temp_)) {
+        // Remove from old position and place at new position
+        grid_->removeCell(cell_id);
+        
+        // Update state to best position
+        odb::dbOrientType new_orient = getCellOrientation(cell_id, best.x, curr_y);
+        state_.cells[cell_id].x = grid_info_->gridToDbuX(best.x);
+        state_.cells[cell_id].y = grid_info_->gridYToDbu(curr_y);
+        state_.cells[cell_id].orient = new_orient;
+        
+        // Place at new position
+        if (grid_info_->isMultiHeightCell(node)) {
+            grid_->placeMultiHeightCell(cell_id, best.x, curr_y, width, height);
+        } else {
+            grid_->placeCell(cell_id, best.x, curr_y, width, height);
+        }
+        
+        // Update HPWL cache and total
+        updateHPWLCache(affected_nets);
+        state_.total_hpwl += delta;
+        
+        accepted_moves_++;
+        accepted_slides_++;
+        return true;
+    } else {
+        rejected_moves_++;
+        return false;
+    }
 }
 
 }  // namespace sa2d 

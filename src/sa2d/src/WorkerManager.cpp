@@ -69,7 +69,8 @@ void WorkerManager::initializeWorkers(dpl::Network* network,
                                     bool enable_kicks,
                                     bool enable_chain_moves,
                                     int chain_move_interval,
-                                    int chain_moves_per_round)
+                                    int chain_moves_per_round,
+                                    bool enable_slides)
 {
     // Seed GWTW RNG
     gwtw_rng_.seed(seed + 1000);  // Different from worker seeds
@@ -104,6 +105,7 @@ void WorkerManager::initializeWorkers(dpl::Network* network,
         worker->setEnableChainMoves(enable_chain_moves);
         worker->setChainMoveInterval(chain_move_interval);
         worker->setChainMovesPerRound(chain_moves_per_round);
+        worker->setEnableSlides(enable_slides);
         
         workers_.push_back(std::move(worker));
     }

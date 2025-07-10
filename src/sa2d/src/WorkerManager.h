@@ -104,7 +104,8 @@ public:
                           bool enable_kicks,
                           bool enable_chain_moves,
                           int chain_move_interval,
-                          int chain_moves_per_round);
+                          int chain_moves_per_round,
+                          bool enable_slides);
     
     void runWorkers(int iterations);
     void performGWTW();

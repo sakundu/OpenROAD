@@ -86,17 +86,20 @@ public:
   void setKickTempMultiplier(float multiplier) { kick_temp_multiplier_ = multiplier; }
   void setEnableKicks(bool enable) { enable_kicks_ = enable; }
   
-  // Chain move control
-  void setEnableChainMoves(bool enable) { enable_chain_moves_ = enable; }
-  void setChainMoveInterval(int interval) { chain_move_interval_ = interval; }
-  void setChainMovesPerRound(int moves) { chain_moves_per_round_ = moves; }
-  
   // Displacement parameters (following DPL pattern)
   void setMaxDisplacement(int max_displacement_x, int max_displacement_y);
   
   // Parallel SA parameters
   void setGWTWInterval(int interval) { gwtw_interval_ = interval; }
   void setEliteRatio(float ratio) { elite_ratio_ = ratio; }
+  
+  // Enable chain moves
+  void setEnableChainMoves(bool enable) { enable_chain_moves_ = enable; }
+  void setChainMoveInterval(int interval) { chain_move_interval_ = interval; }
+  void setChainMovesPerRound(int moves) { chain_moves_per_round_ = moves; }
+  
+  // Enable slide moves
+  void setEnableSlides(bool enable) { enable_slides_ = enable; }
   
   // DPL integration
   void setDplEngine(dpl::Opendp* dpl) { dpl_ = dpl; }
@@ -141,9 +144,10 @@ private:
   int kick_strength_ = 10;  // Number of moves to apply
   float kick_temp_multiplier_ = 1.5f;  // Multiplier for temperature during kick
   bool enable_kicks_ = true;  // Enable/disable kicks
-  bool enable_chain_moves_ = true; // Enable/disable chain moves
-  int chain_move_interval_ = 50; // Iterations between chain moves
-  int chain_moves_per_round_ = 5; // Chain moves per round
+  bool enable_chain_moves_ = true;
+  int chain_move_interval_ = 50;
+  int chain_moves_per_round_ = 5;
+  bool enable_slides_ = true; // Default to true
   
   // Parallel SA parameters
   int gwtw_interval_ = 100;  // Iterations between GWTW sync
