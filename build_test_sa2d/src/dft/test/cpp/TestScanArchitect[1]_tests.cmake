@@ -1,3 +1,0 @@
-add_test([=[TestScanArchitect.CalculatesChainCountAndMaxLength]=]  /home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/src/dft/test/cpp/TestScanArchitect [==[--gtest_filter=TestScanArchitect.CalculatesChainCountAndMaxLength]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[TestScanArchitect.CalculatesChainCountAndMaxLength]=]  PROPERTIES WORKING_DIRECTORY /home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/src/dft/test/cpp SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-set(  TestScanArchitect_TESTS TestScanArchitect.CalculatesChainCountAndMaxLength)

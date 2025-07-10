@@ -115,6 +115,11 @@ void ImmutableGridInfo::initFromDPL(const dpl::Grid* dpl_grid,
             if (pixel) {
                 // Copy all available sites and their orientations
                 pixel_sites_[y][x].sites = pixel->sites;
+                // Copy validity flag - critical for discontinuous rows!
+                pixel_sites_[y][x].is_valid = pixel->is_valid;
+            } else {
+                // No pixel at this location means invalid
+                pixel_sites_[y][x].is_valid = false;
             }
         }
     }

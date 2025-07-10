@@ -1,1 +1,0 @@
-/home/tool/gcc/gcc-12.2.0/bin/c++ -O3 -DNDEBUG CMakeFiles/abc.dir/src/base/main/main.c.o -o abc  libabc.a -lpthread -lm -ldl -lrt 

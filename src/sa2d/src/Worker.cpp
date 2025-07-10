@@ -156,8 +156,8 @@ void SAWorker::initFromDPL(dpl::Network* network,
             state_.cells[i].y = node->getBottom();
             state_.cells[i].orient = node->getOrient();
             
-            // Check if initial position is site-aligned
-            if (node->getLeft().v % grid_info_->getSiteWidth() != 0) {
+            // Check if initial position is site-aligned (only for standard cells, not blocks/macros)
+            if (node->isStdCell() && node->getLeft().v % grid_info_->getSiteWidth() != 0) {
                 misaligned_initial++;
                 
                 // Get absolute position for debugging
@@ -165,7 +165,7 @@ void SAWorker::initFromDPL(dpl::Network* network,
                 int abs_x, abs_y;
                 inst->getLocation(abs_x, abs_y);
                 
-                logger->warn(utl::SA2D, 206, "Cell {} has misaligned initial X position: core-rel={}, absolute={}, site_width={}, remainder={}",
+                logger->warn(utl::SA2D, 206, "Standard cell {} has misaligned initial X position: core-rel={}, absolute={}, site_width={}, remainder={}",
                             node->name(), node->getLeft().v, abs_x, grid_info_->getSiteWidth(), abs_x % grid_info_->getSiteWidth());
             }
             
@@ -193,7 +193,7 @@ void SAWorker::initFromDPL(dpl::Network* network,
     
     if (misaligned_initial > 0) {
         utl::Logger* logger = sa2d_->getLogger();
-        logger->warn(utl::SA2D, 203, "Found {} cells with misaligned initial positions!", misaligned_initial);
+        logger->warn(utl::SA2D, 203, "Found {} standard cells with misaligned initial positions!", misaligned_initial);
     }
     
     // Initialize net HPWL cache
@@ -341,8 +341,17 @@ bool SAWorker::canPlaceCell(int cell_id, GridX x, GridY y)
         return false;  // Site type not available at this location
     }
     
-    // 4. Check no overlaps
+    // 4. Check all pixels are valid for placement (handles discontinuous rows)
     GridY height = grid_info_->gridHeight(node);
+    for (GridY yi = y; yi < y + height; yi++) {
+        for (GridX xi = x; xi < x + width; xi++) {
+            if (!grid_info_->isPixelValid(xi, yi)) {
+                return false;  // Invalid placement area
+            }
+        }
+    }
+    
+    // 5. Check no overlaps
     for (GridY yi = y; yi < y + height; yi++) {
         for (GridX xi = x; xi < x + width; xi++) {
             if (grid_->isOccupied(xi, yi)) {
@@ -2004,6 +2013,15 @@ bool SAWorker::canPlaceMultiHeightCell(int cell_id, GridX x, GridY y)
     // Check site alignment (x must be valid for ALL rows)
     if (x.v < 0 || x.v + width.v > grid_info_->getRowSiteCount()) {
         return false;
+    }
+    
+    // Check all pixels are valid for placement (handles discontinuous rows)
+    for (GridY yi = y; yi < y + height; yi++) {
+        for (GridX xi = x; xi < x + width; xi++) {
+            if (!grid_info_->isPixelValid(xi, yi)) {
+                return false;  // Invalid placement area
+            }
+        }
     }
     
     // For multi-height, check site compatibility in bottom row only (v0 simplification)

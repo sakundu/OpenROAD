@@ -108,6 +108,14 @@ public:
     return target;
   }
   
+  // Check if a pixel is valid for placement (handles discontinuous rows)
+  bool isPixelValid(GridX x, GridY y) const {
+    if (y.v >= 0 && y.v < row_count_ && x.v >= 0 && x.v < row_site_count_) {
+      return pixel_sites_[y.v][x.v].is_valid;
+    }
+    return false;
+  }
+  
   // Multi-height cell support
   GridY getCellHeightInRows(const dpl::Node* cell) const;
   bool isMultiHeightCell(const dpl::Node* cell) const;
@@ -138,6 +146,7 @@ private:
   // Site information for each pixel
   struct PixelSiteInfo {
     std::map<dbSite*, dbOrientType> sites;  // Available sites and their orientations
+    bool is_valid = false;  // Whether this pixel is valid for placement (from DPL)
   };
   std::vector<std::vector<PixelSiteInfo>> pixel_sites_;  // [y][x]
   
