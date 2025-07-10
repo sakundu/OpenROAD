@@ -295,6 +295,96 @@ proc sa2d_set_chain_moves_per_round { args } {
   sa2d::set_chain_moves_per_round $moves
 }
 
+# Basic SA2D placement command
+# This runs simulated annealing to optimize placement
+# Options:
+#   -seed <value>: Random seed (default: 42)
+#   -max_displacement <value>: Max displacement in microns (default: 50)
+#   -max_temp <value>: Maximum temperature (default: 10.0)
+#   -cooling_rate <value>: Cooling rate (default: 0.95)
+#   -max_iter <value>: Maximum iterations (default: 100)
+#   -move_budget <value>: Total move budget (default: 10000)
+#   -moves_per_iter <value>: Moves per iteration (default: 100)
+#   -num_workers <value>: Number of parallel workers for GWTW (default: 1)
+#   -gwtw_interval <value>: Iterations between GWTW synchronization (default: 50)
+#   -elite_ratio <value>: Fraction of workers considered elite in GWTW (default: 0.2)
+sta::define_cmd_args "sa2d_simple_place" {
+  [-seed seed]
+  [-max_displacement disp]
+  [-max_temp temp]
+  [-cooling_rate rate]
+  [-max_iter iter]
+  [-move_budget budget]
+  [-moves_per_iter moves]
+  [-num_workers workers]
+  [-gwtw_interval interval]
+  [-elite_ratio ratio]
+}
+
+proc sa2d_simple_place { args } {
+  sta::parse_key_args "sa2d_simple_place" args \
+    keys {-seed -max_displacement -max_temp -cooling_rate -max_iter \
+          -move_budget -moves_per_iter -num_workers -gwtw_interval -elite_ratio} \
+    flags {}
+    
+  if { [llength $args] != 0 } {
+    utl::error SA2D 109 "sa2d_simple_place expects no positional arguments."
+  }
+  
+  # Apply parameters if provided
+  if { [info exists keys(-seed)] } {
+    sa2d::set_seed $keys(-seed)
+  }
+  
+  if { [info exists keys(-max_displacement)] } {
+    set disp $keys(-max_displacement)
+    # Handle both single value (same for x and y) and two values
+    if { [llength $disp] == 1 } {
+      sa2d_set_max_displacement $disp $disp
+    } elseif { [llength $disp] == 2 } {
+      sa2d_set_max_displacement [lindex $disp 0] [lindex $disp 1]
+    } else {
+      utl::error SA2D 119 "-max_displacement expects 1 or 2 values"
+    }
+  }
+  
+  if { [info exists keys(-max_temp)] } {
+    sa2d::set_max_temp $keys(-max_temp)
+  }
+  
+  if { [info exists keys(-cooling_rate)] } {
+    sa2d::set_cooling_rate $keys(-cooling_rate)
+  }
+  
+  if { [info exists keys(-max_iter)] } {
+    sa2d::set_max_iter $keys(-max_iter)
+  }
+  
+  if { [info exists keys(-move_budget)] } {
+    sa2d::set_move_budget $keys(-move_budget)
+  }
+  
+  if { [info exists keys(-moves_per_iter)] } {
+    sa2d::set_moves_per_iter $keys(-moves_per_iter)
+  }
+  
+  if { [info exists keys(-num_workers)] } {
+    sa2d::set_num_workers $keys(-num_workers)
+  }
+  
+  if { [info exists keys(-gwtw_interval)] } {
+    sa2d::set_gwtw_interval $keys(-gwtw_interval)
+  }
+  
+  if { [info exists keys(-elite_ratio)] } {
+    sa2d::set_elite_ratio $keys(-elite_ratio)
+  }
+  
+  # Run SA
+  sa2d::run
+}
+
+# Direct SA2D run command (no parameters)
 sta::define_cmd_args "sa2d_run" {}
 proc sa2d_run { args } {
   sta::parse_key_args "sa2d_run" args \
@@ -302,7 +392,7 @@ proc sa2d_run { args } {
     flags {}
     
   if { [llength $args] != 0 } {
-    utl::error SA2D 109 "sa2d_run expects no arguments."
+    utl::error SA2D 120 "sa2d_run expects no arguments."
   }
   
   sa2d::run

@@ -1527,3 +1527,22 @@ gmake[1]: Leaving directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-P
 Source file was:
 int main() { return 0; }
 
+Performing C++ SOURCE FILE Test CXX_COMPILER_SUPPORTS__-std=c++17 succeeded with the following output:
+Change Dir: /home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-VoImVj
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_c9e16/fast && gmake[1]: Entering directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-VoImVj'
+/usr/bin/gmake  -f CMakeFiles/cmTC_c9e16.dir/build.make CMakeFiles/cmTC_c9e16.dir/build
+gmake[2]: Entering directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-VoImVj'
+Building CXX object CMakeFiles/cmTC_c9e16.dir/src.cxx.o
+/home/tool/gcc/gcc-12.2.0/bin/c++   -DCXX_COMPILER_SUPPORTS__-std=c++17 -std=c++17 -o CMakeFiles/cmTC_c9e16.dir/src.cxx.o -c /home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-VoImVj/src.cxx
+<command-line>: warning: ISO C++11 requires whitespace after the macro name
+Linking CXX executable cmTC_c9e16
+/home/tool/cmake/cmake-3.25.1-linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c9e16.dir/link.txt --verbose=1
+/home/tool/gcc/gcc-12.2.0/bin/c++ CMakeFiles/cmTC_c9e16.dir/src.cxx.o -o cmTC_c9e16 
+gmake[2]: Leaving directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-VoImVj'
+gmake[1]: Leaving directory '/home/fetzfs_projects/SAITPlacement/bodhi/SAIT-2D-Placer-v2/OpenROAD/build_test_sa2d/CMakeFiles/CMakeScratch/TryCompile-VoImVj'
+
+
+Source file was:
+int main() { return 0; }
+

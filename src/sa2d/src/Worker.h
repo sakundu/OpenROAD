@@ -125,17 +125,26 @@ public:
     // Apply best solution back to DPL
     void applyToDPL(dpl::Network* network);
     
+    // Debug: Check grid/state consistency
+    bool checkGridStateConsistency();
+    
     // Get move statistics
     int getAcceptedSingleMoves() const { return accepted_single_moves_; }
     int getAcceptedSwaps() const { return accepted_swaps_; }
     int getAcceptedFlips() const { return accepted_flips_; }
+    int getAcceptedSlides() const { return accepted_slides_; }
     int getAcceptedChainMoves() const { return accepted_chain_moves_; }
     int getAttemptedSingleMoves() const { return attempted_single_moves_; }
     int getAttemptedSwaps() const { return attempted_swaps_; }
     int getAttemptedFlips() const { return attempted_flips_; }
+    int getAttemptedSlides() const { return attempted_slides_; }
     int getAttemptedChainMoves() const { return attempted_chain_moves_; }
     int getTotalCellsShifted() const { return total_cells_shifted_; }
     int getMaxChainLength() const { return max_chain_length_; }
+    
+    // Different-size swap statistics
+    int getAttemptedDiffSizeSwaps() const { return attempted_diff_size_swaps_; }
+    int getAcceptedDiffSizeSwaps() const { return accepted_diff_size_swaps_; }
     
     // Get kick statistics
     int getKickAttempts() const { return kick_attempts_; }
@@ -196,6 +205,7 @@ private:
     bool tryMove(int cell_id);
     bool trySwap(int cell1_id, int cell2_id);
     bool tryFlip(int cell_id);  // Y-axis flip - supports multi-height cells
+    bool trySlide(int cell_id);  // Slide cell left/right to best HPWL position
     
     // Multi-height cell operations
     bool tryMoveMultiHeight(int cell_id);
@@ -256,12 +266,18 @@ private:
     int accepted_flips_{0};  // Track successful flips
     int accepted_swaps_{0};  // Track successful swaps
     int accepted_single_moves_{0};  // Track successful single moves
+    int accepted_slides_{0};  // Track successful slide moves
     
     // Attempt counters
     int attempted_flips_{0};
     int attempted_swaps_{0};
     int attempted_single_moves_{0};
+    int attempted_slides_{0};
     int attempted_chain_moves_{0};  // Track chain move attempts
+    
+    // Different-size swap tracking
+    int attempted_diff_size_swaps_{0};
+    int accepted_diff_size_swaps_{0};
     
     // LSMC kick statistics
     int kick_attempts_{0};
