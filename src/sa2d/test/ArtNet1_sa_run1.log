@@ -63,4 +63,117 @@ Components of this program may be licensed under more restrictive licenses which
 [INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx2_ASAP7_75t_R already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
 [INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx2_ASAP7_75t_R.lef, created 1 library cells
 [INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx2_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
-[INFO ODB-0227] LEF file: /home/fetzfs_pr
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx2_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx1_ASAP7_75t_R already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx1_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx2_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx2_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx3_ASAP7_75t_R already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx3_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx3_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx3_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx1_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx1_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx3_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx3_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx1_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx1_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx2_ASAP7_75t_R already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx2_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0127] Reading DEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/def_mh/ArtNet1_placed_mh.def
+[INFO ODB-0128] Design: ArtNet_1000_30_20_45_40_10
+[INFO ODB-0130]     Created 31 pins.
+[INFO ODB-0131]     Created 867 components and 5013 component-terminals.
+[INFO ODB-0132]     Created 2 special nets and 1734 connections.
+[INFO ODB-0133]     Created 986 nets and 3279 connections.
+[INFO ODB-0134] Finished DEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/def_mh/ArtNet1_placed_mh.def
+Placement Analysis
+---------------------------------
+total displacement          0.0 u
+average displacement        0.0 u
+max displacement            0.0 u
+original HPWL            2704.0 u
+legalized HPWL           2787.0 u
+delta HPWL                    3 %
+
+
+3. Configuring SA2D for parallel execution...
+[INFO SA2D-0002] Max displacement set to (18, 29) sites
+
+4. Running parallel SA2D optimization...
+[INFO SA2D-0005] Starting SA2D placement optimization
+[INFO SA2D-0006] Parameters: temp=100.0, cooling=0.998, iter=6000, displacement=(18,29) sites, seed=42
+[INFO SA2D-0023] Initial HPWL (ODB): 2787.0 u
+[INFO SA2D-0301] Running parallel SA with 80 workers
+[INFO SA2D-0303] Initial HPWL: 2778.4 u
+[INFO SA2D-0410] 
+[INFO SA2D-0411] Iteration    Progress    Temperature    Current HPWL    Best HPWL    Accept Rate
+[INFO SA2D-0412] ---------    --------    -----------    ------------    ---------    -----------
+[INFO SA2D-0413]         0          0%       1.00e+02          2778.4       2778.4           0.0%
+[INFO SA2D-0413]       300          5%       5.48e+01          1759.1       1759.1           3.2%
+[INFO SA2D-0413]       600         10%       3.01e+01          1641.2       1641.2           1.9%
+[INFO SA2D-0413]       900         15%       1.65e+01          1590.2       1590.2           1.2%
+[INFO SA2D-0413]      1200         20%       9.05e+00          1560.1       1560.1           0.9%
+[INFO SA2D-0413]      1500         25%       4.96e+00          1538.2       1538.2           0.7%
+[INFO SA2D-0413]      1800         30%       2.72e+00          1528.4       1528.4           0.6%
+[INFO SA2D-0413]      2100         35%       1.49e+00          1518.8       1518.8           0.7%
+[INFO SA2D-0413]      2400         40%       8.19e-01          1515.6       1515.6           0.7%
+[INFO SA2D-0413]      2700         45%       4.49e-01          1513.5       1513.5           0.7%
+[INFO SA2D-0413]      3000         50%       2.46e-01          1511.1       1511.1           0.6%
+[INFO SA2D-0413]      3300         55%       1.35e-01          1507.2       1507.2           0.6%
+[INFO SA2D-0413]      3600         60%       7.41e-02          1506.5       1506.5           0.6%
+[INFO SA2D-0413]      3900         65%       4.07e-02          1505.8       1505.8           0.6%
+[INFO SA2D-0413]      4200         70%       2.23e-02          1504.6       1504.6           0.6%
+[INFO SA2D-0413]      4500         75%       1.22e-02          1503.5       1503.5           0.6%
+[INFO SA2D-0413]      4800         80%       6.71e-03          1503.4       1503.4           0.6%
+[INFO SA2D-0413]      5100         85%       3.68e-03          1502.5       1502.5           0.6%
+[INFO SA2D-0413]      5400         90%       2.02e-03          1502.5       1502.5           0.5%
+[INFO SA2D-0413]      5700         95%       1.11e-03          1502.5       1502.5           0.6%
+[INFO SA2D-0413]      6000        100%       6.07e-04          1502.5       1502.5           2.2%
+[INFO SA2D-0308] Best solution found by worker 0 with HPWL: 1502.5 u
+[INFO SA2D-0350] Worker 0 applying best solution with HPWL: 1502.5 u
+[INFO SA2D-0463] Validating best solution for overlaps...
+[INFO SA2D-0351] Updated 867 cells in DPL network
+[INFO SA2D-0605] Skipping SA2D reordering - will use DPL reordering after SA completes
+[INFO SA2D-0309] DPL network updated, proceeding to update ODB instances
+[INFO SA2D-0331] Aggregate LSMC kicks: 467623 attempted, 0 accepted (0.0% success), 0 total swaps
+[INFO SA2D-0307] 
+[INFO SA2D-0306] Final HPWL: 1502.7 u (improvement: 45.92%)
+[INFO SA2D-0022] SA2D placement optimization completed
+[INFO SA2D-0652] Running DPL reordering optimization only
+Running DPL reordering optimization only.
+[INFO DPL-0401] Setting random seed to 0.
+[INFO DPL-0402] Setting maximum displacement 18 29 to 4860 7830 units.
+[INFO DPL-0320] Collected 31 fixed cells.
+[INFO DPL-0318] Collected 792 single height cells.
+[INFO DPL-0319] Collected 75 multi-height cells spanning 2 rows.
+[INFO DPL-0321] Collected 0 wide cells.
+[INFO DPL-0322] Image (432, 432) - (13662, 13662)
+[INFO DPL-0310] Assigned 792 cells into segments.  Movement in X-direction is 0.000000, movement in Y-direction is 0.000000.
+[INFO DPL-0310] Assigned 75 cells into segments.  Movement in X-direction is 0.000000, movement in Y-direction is 0.000000.
+[INFO DPL-0313] Found 0 cells in wrong regions.
+[INFO DPL-0315] Found 0 row alignment problems.
+[INFO DPL-0314] Found 0 site alignment problems.
+[INFO DPL-0311] Found 0 overlaps between adjacent cells.
+[INFO DPL-0312] Found 0 edge spacing violations and 0 padding violations.
+[INFO DPL-0303] Running algorithm for reordering.
+[INFO DPL-0304] Pass   1 of reordering; objective is 1.472992e+06.
+[INFO DPL-0304] Pass   2 of reordering; objective is 1.467251e+06.
+[INFO DPL-0305] End of reordering; objective is 1.467251e+06, improvement is 2.36 percent.
+[INFO DPL-0380] Cell flipping.
+[INFO DPL-0382] Changed 0 cell orientations for row compatibility.
+[INFO DPL-0383] Performed 36 cell flips.
+[INFO DPL-0384] End of flipping; objective is 1.461192e+06, improvement is 0.41 percent.
+[INFO DPL-0313] Found 0 cells in wrong regions.
+[INFO DPL-0315] Found 0 row alignment problems.
+[INFO DPL-0314] Found 0 site alignment problems.
+[INFO DPL-0311] Found 0 overlaps between adjacent cells.
+[INFO DPL-0312] Found 0 edge spacing violations and 0 padding violations.
+Reordering Results:
+  Initial HPWL: 1502.7 u
+  Final HPWL:   1621.1 u
+  Improvement:  -7.88%
+
+Parallel SA2D runtime: 151.082 seconds
+
+5. Checking final placement...

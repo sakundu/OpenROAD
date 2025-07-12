@@ -35,7 +35,7 @@ sa2d_set_chain_moves_per_round 10      ;# More chain moves per round
 sa2d_set_kick_strength 20              ;# Larger kick regions
 sa2d_set_kick_temp_multiplier 2.5      ;# Higher kick temperature
 sa2d_set_kick_interval 100             ;# More frequent kicks
-sa2d_set_enable_reordering 1           ;
+sa2d_set_enable_reordering 0           ;
 sa2d_set_use_dpl_reordering 1               ;# Enable reordering
 sa2d_set_reorder_window_size 2         ;
 sa2d_set_dpl_reordering_passes 10
