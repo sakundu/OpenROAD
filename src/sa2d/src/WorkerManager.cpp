@@ -70,10 +70,17 @@ void WorkerManager::initializeWorkers(dpl::Network* network,
                                     bool enable_chain_moves,
                                     int chain_move_interval,
                                     int chain_moves_per_round,
-                                    bool enable_slides)
+                                    bool enable_slides,
+                                    bool use_sa1d_operators,
+                                    const std::vector<float>& sa1d_move_probs,
+                                    bool use_best_orderings_1d,
+                                    float sa1d_overlap_weight)
 {
     // Seed GWTW RNG
     gwtw_rng_.seed(seed + 1000);  // Different from worker seeds
+    
+    // Store grid info reference
+    grid_info_ = grid_info;
     
     // Get architecture from SA2D's stored reference
     const dpl::Architecture* arch = nullptr;  // Will be passed through grid_info
@@ -106,6 +113,12 @@ void WorkerManager::initializeWorkers(dpl::Network* network,
         worker->setChainMoveInterval(chain_move_interval);
         worker->setChainMovesPerRound(chain_moves_per_round);
         worker->setEnableSlides(enable_slides);
+        
+        // Set SA1D operator parameters
+        worker->setUseSA1DOperators(use_sa1d_operators);
+        worker->setSA1DMoveProbs(sa1d_move_probs);
+        worker->setUseBestOrderings1D(use_best_orderings_1d);
+        worker->setSA1DOverlapWeight(sa1d_overlap_weight);
         
         workers_.push_back(std::move(worker));
     }
@@ -304,7 +317,18 @@ void WorkerManager::reportMoveStatistics()
                     total_kick_attempts, total_kick_accepted,
                     100.0 * total_kick_accepted / total_kick_attempts,
                     total_swaps_applied);
+        
+        // Report if specialized low-row kick moves were used
+        if (grid_info_ && grid_info_->getRowCount() <= 5) {
+            logger->info(utl::SA2D, 332, "Used specialized kick strategies for {}-row design: horizontal chain swap, row compression, inter-row transfer, sliding window",
+                        grid_info_->getRowCount());
+        }
     }
+    
+    // Report runtime statistics for each worker
+    //for (const auto& worker : workers_) {
+    //    worker->reportRuntimeStatistics();
+    //}
 }
 
 }  // namespace sa2d 

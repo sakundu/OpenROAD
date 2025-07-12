@@ -98,15 +98,43 @@ public:
   void setChainMoveInterval(int interval) { chain_move_interval_ = interval; }
   void setChainMovesPerRound(int moves) { chain_moves_per_round_ = moves; }
   
-  // Enable slide moves
+    // Enable slide moves
   void setEnableSlides(bool enable) { enable_slides_ = enable; }
+  
+  // SA1D operators for single-row scenarios
+  void setUseSA1DOperators(bool enable) { use_sa1d_operators_ = enable; }
+  void setSA1DMoveProbs(const std::vector<float>& probs) { sa1d_move_probs_ = probs; }
+  void setUseBestOrderings1D(bool enable) { use_best_orderings_1d_ = enable; }
+  void setSA1DOverlapWeight(float weight) { sa1d_overlap_weight_ = weight; }
+  
+  // Reordering window size (2-4)
+  void setReorderWindowSize(int size) { reorder_window_size_ = std::min(4, std::max(2, size)); }
+  
+  // DPL improve placement control (includes reordering among other opts)
+  void setUseDPLReordering(bool enable) { use_dpl_reordering_ = enable; }
+  void setReorderingPasses(int passes) { reordering_passes_ = passes; }
+  void setReorderingTolerance(double tol) { reordering_tolerance_ = tol; }
+  void setPreSAReordering(bool enable) { pre_sa_reordering_ = enable; }
+  
+  // Run DPL's improvePlacement (includes MIS, swaps, and reordering)
+  // Note: DPL's public API doesn't support running only reordering
+  void runDPLReorderingOnly();
   
   // DPL integration
   void setDplEngine(dpl::Opendp* dpl) { dpl_ = dpl; }
+    
+    // Reordering control
+    void setEnableReordering(bool enable) { enable_reordering_ = enable; }
+    bool shouldPerformReordering() const { return enable_reordering_; }
+    
+      // Access to internal components (for reordering)
+  const dpl::Architecture* getArchitecture() const { return arch_; }
   
   // Getters for worker access
   utl::Logger* getLogger() const { return logger_; }
   odb::dbBlock* getBlock() const { return block_; }
+  int getReorderWindowSize() const { return reorder_window_size_; }
+  bool getUseDPLReordering() const { return use_dpl_reordering_; }
   
   // Initialize for testing
   void initTestGrid();
@@ -148,6 +176,20 @@ private:
   int chain_move_interval_ = 50;
   int chain_moves_per_round_ = 5;
   bool enable_slides_ = true; // Default to true
+  bool enable_reordering_ = false;  // Disabled by default
+  int reorder_window_size_ = 3;  // Default window size for reordering
+  
+  // SA1D operators for single-row scenarios
+  bool use_sa1d_operators_ = false;  // Enable SA1D operators for single-row scenarios
+  std::vector<float> sa1d_move_probs_ = {0.49f, 0.49f, 0.02f};  // [swap, move, flip]
+  bool use_best_orderings_1d_ = false;  // Use SA1D's best orderings for initialization
+  float sa1d_overlap_weight_ = 1.0f;  // Weight for overlap in SA1D mode
+  
+  // Direct DPL reordering parameters
+  bool use_dpl_reordering_ = false;  // Use DPL's reorderer instead of SA2D's
+  int reordering_passes_ = 5;  // Default from DPL
+  double reordering_tolerance_ = 0.01;  // Default from DPL
+  bool pre_sa_reordering_ = false;  // Run reordering before SA starts
   
   // Parallel SA parameters
   int gwtw_interval_ = 100;  // Iterations between GWTW sync

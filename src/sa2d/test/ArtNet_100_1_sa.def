@@ -1,0 +1,448 @@
+VERSION 5.8 ;
+DIVIDERCHAR "/" ;
+BUSBITCHARS "[]" ;
+DESIGN ArtNet ;
+UNITS DISTANCE MICRONS 1000 ;
+PROPERTYDEFINITIONS
+DESIGN flow_implementation_stage STRING "place_opt" ;
+DESIGN FE_CORE_BOX_LL_X REAL 0.504 ;
+DESIGN FE_CORE_BOX_UR_X REAL 50.4 ;
+DESIGN FE_CORE_BOX_LL_Y REAL 0.504 ;
+DESIGN FE_CORE_BOX_UR_Y REAL 0.756 ;
+COMPONENTPIN designRuleWidth REAL ;
+END PROPERTYDEFINITIONS
+DIEAREA ( 0 0 ) ( 50904 1260 ) ;
+ROW CORE_ROW_0 asap7sc7p5t 504 504 FS DO 924 BY 1 STEP 54 0 ;
+TRACKS X 116 DO 635 STEP 80 LAYER Pad ;
+TRACKS Y 116 DO 15 STEP 80 LAYER Pad ;
+TRACKS X 116 DO 635 STEP 80 LAYER M9 ;
+TRACKS Y 116 DO 15 STEP 80 LAYER M9 ;
+TRACKS X 116 DO 635 STEP 80 LAYER M8 ;
+TRACKS Y 116 DO 15 STEP 80 LAYER M8 ;
+TRACKS X 36 DO 795 STEP 64 LAYER M7 ;
+TRACKS Y 36 DO 20 STEP 64 LAYER M7 ;
+TRACKS X 24 DO 1060 STEP 48 LAYER M6 ;
+TRACKS Y 36 DO 20 STEP 64 LAYER M6 ;
+TRACKS X 24 DO 1060 STEP 48 LAYER M5 ;
+TRACKS Y 27 DO 26 STEP 48 LAYER M5 ;
+TRACKS X 36 DO 1413 STEP 36 LAYER M4 ;
+TRACKS Y 27 DO 26 STEP 48 LAYER M4 ;
+TRACKS X 36 DO 1413 STEP 36 LAYER M3 ;
+TRACKS Y 36 DO 34 STEP 36 LAYER M3 ;
+TRACKS X 36 DO 1413 STEP 36 LAYER M2 ;
+TRACKS Y 9 DO 5 STEP 270 LAYER M2 ;
+TRACKS Y 45 DO 5 STEP 270 LAYER M2 ;
+TRACKS Y 81 DO 5 STEP 270 LAYER M2 ;
+TRACKS Y 117 DO 5 STEP 270 LAYER M2 ;
+TRACKS Y 153 DO 5 STEP 270 LAYER M2 ;
+TRACKS Y 189 DO 5 STEP 270 LAYER M2 ;
+TRACKS Y -36 DO 6 STEP 270 LAYER M2 ;
+TRACKS X 36 DO 1413 STEP 36 LAYER M1 ;
+TRACKS Y 36 DO 34 STEP 36 LAYER M1 ;
+GCELLGRID X 50796 DO 2 STEP 108 ;
+GCELLGRID X 36 DO 142 STEP 360 ;
+GCELLGRID X 0 DO 2 STEP 36 ;
+GCELLGRID Y 9 DO 2 STEP 1251 ;
+GCELLGRID Y 9 DO 1 STEP 2700 ;
+GCELLGRID Y 0 DO 2 STEP 9 ;
+COMPONENTS 100 ;
+    - inst_0 XNOR2xp5_ASAP7_75t_R + PLACED ( 30258 504 ) FS ;
+    - inst_1 CKINVDCx8_ASAP7_75t_R + PLACED ( 32796 504 ) FS ;
+    - inst_10 NAND3x1_ASAP7_75t_R + PLACED ( 28692 504 ) FS ;
+    - inst_11 AOI22x1_ASAP7_75t_R + PLACED ( 28152 504 ) FS ;
+    - inst_12 AOI21xp5_ASAP7_75t_R + PLACED ( 27882 504 ) FS ;
+    - inst_13 A2O1A1O1Ixp25_ASAP7_75t_R + PLACED ( 27396 504 ) FS ;
+    - inst_14 NOR2x1p5_ASAP7_75t_SL + PLACED ( 26208 504 ) FS ;
+    - inst_15 INVxp33_ASAP7_75t_R + PLACED ( 24480 504 ) FS ;
+    - inst_16 OR2x6_ASAP7_75t_SL + PLACED ( 19674 504 ) FS ;
+    - inst_17 BUFx12f_ASAP7_75t_L + PLACED ( 25236 504 ) FS ;
+    - inst_18 XOR2x2_ASAP7_75t_SL + PLACED ( 24642 504 ) FS ;
+    - inst_19 NAND5xp2_ASAP7_75t_SL + PLACED ( 24102 504 ) FS ;
+    - inst_2 OR2x2_ASAP7_75t_L + PLACED ( 29934 504 ) FS ;
+    - inst_20 AOI31xp33_ASAP7_75t_SL + PLACED ( 23130 504 ) S ;
+    - inst_21 OAI21xp5_ASAP7_75t_L + PLACED ( 22860 504 ) FS ;
+    - inst_22 HB2xp67_ASAP7_75t_SL + PLACED ( 22590 504 ) FS ;
+    - inst_23 AO21x1_ASAP7_75t_SL + PLACED ( 22266 504 ) FS ;
+    - inst_24 OR3x1_ASAP7_75t_R + PLACED ( 20322 504 ) FS ;
+    - inst_25 NAND2xp33_ASAP7_75t_L + PLACED ( 20970 504 ) FS ;
+    - inst_26 AND2x4_ASAP7_75t_L + PLACED ( 21186 504 ) FS ;
+    - inst_27 NOR4xp25_ASAP7_75t_SL + PLACED ( 20646 504 ) FS ;
+    - inst_28 A2O1A1Ixp33_ASAP7_75t_SL + PLACED ( 23454 504 ) S ;
+    - inst_29 OR2x2_ASAP7_75t_R + PLACED ( 23778 504 ) FS ;
+    - inst_3 AND2x6_ASAP7_75t_SL + PLACED ( 32148 504 ) FS ;
+    - inst_30 OA22x2_ASAP7_75t_SL + PLACED ( 21726 504 ) FS ;
+    - inst_31 INVx13_ASAP7_75t_SL + PLACED ( 18864 504 ) FS ;
+    - inst_32 NAND2xp67_ASAP7_75t_L + PLACED ( 18540 504 ) FS ;
+    - inst_33 A2O1A1O1Ixp25_ASAP7_75t_SL + PLACED ( 18054 504 ) FS ;
+    - inst_34 NOR2xp67_ASAP7_75t_L + PLACED ( 17352 504 ) FS ;
+    - inst_35 OR4x1_ASAP7_75t_R + PLACED ( 17676 504 ) FS ;
+    - inst_36 NOR2x1p5_ASAP7_75t_L + PLACED ( 43866 504 ) FS ;
+    - inst_37 BUFx4_ASAP7_75t_L + PLACED ( 41328 504 ) FS ;
+    - inst_38 BUFx5_ASAP7_75t_L + PLACED ( 44622 504 ) S ;
+    - inst_39 OAI211xp5_ASAP7_75t_SL + PLACED ( 44298 504 ) FS ;
+    - inst_4 OR2x6_ASAP7_75t_L + PLACED ( 29286 504 ) FS ;
+    - inst_40 AOI221xp5_ASAP7_75t_SL + PLACED ( 42894 504 ) FS ;
+    - inst_41 OAI21x1_ASAP7_75t_L + PLACED ( 42084 504 ) FS ;
+    - inst_42 INVx5_ASAP7_75t_SL + PLACED ( 42516 504 ) FS ;
+    - inst_43 AND3x2_ASAP7_75t_R + PLACED ( 41706 504 ) FS ;
+    - inst_44 BUFx6f_ASAP7_75t_SL + PLACED ( 48672 504 ) FS ;
+    - inst_45 CKINVDCx8_ASAP7_75t_R + PLACED ( 49212 504 ) FS ;
+    - inst_46 XOR2x1_ASAP7_75t_SL + PLACED ( 46080 504 ) FS ;
+    - inst_47 NAND3x1_ASAP7_75t_SL + PLACED ( 45486 504 ) FS ;
+    - inst_48 NOR2x2_ASAP7_75t_R + PLACED ( 48132 504 ) FS ;
+    - inst_49 CKINVDCx11_ASAP7_75t_R + PLACED ( 46728 504 ) FS ;
+    - inst_5 NOR2x1p5_ASAP7_75t_R + PLACED ( 26640 504 ) FS ;
+    - inst_50 AOI33xp33_ASAP7_75t_SL + PLACED ( 45054 504 ) FS ;
+    - inst_51 XNOR2x2_ASAP7_75t_L + PLACED ( 43272 504 ) FS ;
+    - inst_52 NAND2x1_ASAP7_75t_R + PLACED ( 35496 504 ) FS ;
+    - inst_53 AO21x2_ASAP7_75t_SL + PLACED ( 35118 504 ) FS ;
+    - inst_54 XNOR2x2_ASAP7_75t_SL + PLACED ( 33984 504 ) FS ;
+    - inst_55 AO22x2_ASAP7_75t_R + PLACED ( 34578 504 ) FS ;
+    - inst_56 OAI22xp33_ASAP7_75t_SL + PLACED ( 39384 504 ) FS ;
+    - inst_57 OR5x2_ASAP7_75t_L + PLACED ( 39708 504 ) FS ;
+    - inst_58 HB4xp67_ASAP7_75t_SL + PLACED ( 40194 504 ) FS ;
+    - inst_59 BUFx6f_ASAP7_75t_SL + PLACED ( 38304 504 ) FS ;
+    - inst_6 NAND2xp67_ASAP7_75t_L + PLACED ( 27072 504 ) FS ;
+    - inst_60 OR3x4_ASAP7_75t_R + PLACED ( 35820 504 ) FS ;
+    - inst_61 NOR5xp2_ASAP7_75t_L + PLACED ( 36306 504 ) FS ;
+    - inst_62 NAND2xp67_ASAP7_75t_R + PLACED ( 36684 504 ) FS ;
+    - inst_63 NAND2x2_ASAP7_75t_SL + PLACED ( 37008 504 ) FS ;
+    - inst_64 AND3x4_ASAP7_75t_R + PLACED ( 40572 504 ) FS ;
+    - inst_65 AO33x2_ASAP7_75t_R + PLACED ( 38844 504 ) FS ;
+    - inst_66 AND3x4_ASAP7_75t_L + PLACED ( 37548 504 ) FS ;
+    - inst_67 BUFx4_ASAP7_75t_L + PLACED ( 14382 504 ) FS ;
+    - inst_68 NOR5xp2_ASAP7_75t_SL + PLACED ( 7848 504 ) FS ;
+    - inst_69 BUFx12_ASAP7_75t_R + PLACED ( 6984 504 ) FS ;
+    - inst_7 BUFx12_ASAP7_75t_R + PLACED ( 31284 504 ) FS ;
+    - inst_70 AOI321xp33_ASAP7_75t_SL + PLACED ( 8226 504 ) FS ;
+    - inst_71 INVx4_ASAP7_75t_L + PLACED ( 8658 504 ) FS ;
+    - inst_72 CKINVDCx12_ASAP7_75t_SL + PLACED ( 4662 504 ) FS ;
+    - inst_73 XNOR2x2_ASAP7_75t_R + PLACED ( 6390 504 ) FS ;
+    - inst_74 NAND3xp33_ASAP7_75t_R + PLACED ( 8982 504 ) FS ;
+    - inst_75 NOR2x2_ASAP7_75t_R + PLACED ( 10764 504 ) FS ;
+    - inst_76 OAI211xp5_ASAP7_75t_R + PLACED ( 9846 504 ) FS ;
+    - inst_77 AOI21xp5_ASAP7_75t_R + PLACED ( 9576 504 ) FS ;
+    - inst_78 NAND3x1_ASAP7_75t_L + PLACED ( 10170 504 ) FS ;
+    - inst_79 AND3x1_ASAP7_75t_SL + PLACED ( 9252 504 ) FS ;
+    - inst_8 NOR2xp33_ASAP7_75t_R + PLACED ( 31068 504 ) FS ;
+    - inst_80 AOI21xp33_ASAP7_75t_SL + PLACED ( 11304 504 ) FS ;
+    - inst_81 OA21x2_ASAP7_75t_SL + PLACED ( 11574 504 ) FS ;
+    - inst_82 OA21x2_ASAP7_75t_SL + PLACED ( 11952 504 ) FS ;
+    - inst_83 BUFx4_ASAP7_75t_R + PLACED ( 12330 504 ) FS ;
+    - inst_84 BUFx3_ASAP7_75t_L + PLACED ( 6066 504 ) FS ;
+    - inst_85 INVx3_ASAP7_75t_SL + PLACED ( 3744 504 ) FS ;
+    - inst_86 INVx11_ASAP7_75t_L + PLACED ( 2394 504 ) FS ;
+    - inst_87 XOR2x1_ASAP7_75t_R + PLACED ( 3096 504 ) FS ;
+    - inst_88 INVx5_ASAP7_75t_L + PLACED ( 504 504 ) FS ;
+    - inst_89 CKINVDCx9p33_ASAP7_75t_L + PLACED ( 882 504 ) FS ;
+    - inst_9 HB3xp67_ASAP7_75t_SL + PLACED ( 30744 504 ) FS ;
+    - inst_90 NOR2x1_ASAP7_75t_L + PLACED ( 4014 504 ) FS ;
+    - inst_91 NAND2xp67_ASAP7_75t_SL + PLACED ( 4338 504 ) S ;
+    - inst_92 OA33x2_ASAP7_75t_SL + PLACED ( 13356 504 ) FS ;
+    - inst_93 XOR2x1_ASAP7_75t_R + PLACED ( 12708 504 ) FS ;
+    - inst_94 XOR2xp5_ASAP7_75t_L + PLACED ( 13896 504 ) FS ;
+    - inst_95 XOR2x1_ASAP7_75t_L + PLACED ( 16704 504 ) FS ;
+    - inst_96 NAND3xp33_ASAP7_75t_R + PLACED ( 14760 504 ) FS ;
+    - inst_97 AOI222xp33_ASAP7_75t_SL + PLACED ( 15030 504 ) FS ;
+    - inst_98 AND2x4_ASAP7_75t_R + PLACED ( 15570 504 ) FS ;
+    - inst_99 XNOR2x2_ASAP7_75t_R + PLACED ( 16110 504 ) FS ;
+END COMPONENTS
+PINS 40 ;
+    - clk + NET clk + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 25452 1186 ) N ;
+    - net_0 + NET net_0 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 37512 74 ) N ;
+    - net_1 + NET net_1 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 29484 74 ) N ;
+    - net_10 + NET net_10 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 47520 74 ) N ;
+    - net_11 + NET net_11 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 9972 74 ) N ;
+    - net_12 + NET net_12 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 10044 74 ) N ;
+    - net_13 + NET net_13 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 9864 74 ) N ;
+    - net_14 + NET net_14 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M5 ( -12 -167 ) ( 12 167 )
+        + PLACED ( 9864 167 ) N ;
+    - net_15 + NET net_15 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M7 ( -16 -137 ) ( 16 137 )
+        + PLACED ( 30180 137 ) N ;
+    - net_16 + NET net_16 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 44388 74 ) N ;
+    - net_17 + NET net_17 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M5 ( -12 -167 ) ( 12 167 )
+        + PLACED ( 44376 167 ) N ;
+    - net_18 + NET net_18 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 30312 74 ) N ;
+    - net_19 + NET net_19 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 30384 74 ) N ;
+    - net_2 + NET net_2 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 22248 74 ) N ;
+    - net_20 + NET net_20 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 6192 74 ) N ;
+    - net_21 + NET net_21 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 1224 74 ) N ;
+    - net_22 + NET net_22 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M5 ( -12 -167 ) ( 12 167 )
+        + PLACED ( 30312 167 ) N ;
+    - net_23 + NET net_23 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 18828 74 ) N ;
+    - net_24 + NET net_24 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 46008 74 ) N ;
+    - net_25 + NET net_25 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 15228 74 ) N ;
+    - net_26 + NET net_26 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 38052 74 ) N ;
+    - net_27 + NET net_27 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 14616 74 ) N ;
+    - net_28 + NET net_28 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 20628 74 ) N ;
+    - net_29 + NET net_29 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 21420 74 ) N ;
+    - net_3 + NET net_3 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 44604 74 ) N ;
+    - net_30 + NET net_30 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 7236 74 ) N ;
+    - net_31 + NET net_31 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 28260 74 ) N ;
+    - net_32 + NET net_32 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 15300 74 ) N ;
+    - net_33 + NET net_33 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M7 ( -16 -137 ) ( 16 137 )
+        + PLACED ( 30308 137 ) N ;
+    - net_34 + NET net_34 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 44100 74 ) N ;
+    - net_35 + NET net_35 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 44712 74 ) N ;
+    - net_36 + NET net_36 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M5 ( -12 -167 ) ( 12 167 )
+        + PLACED ( 1176 167 ) N ;
+    - net_37 + NET net_37 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER M5 ( -12 -167 ) ( 12 167 )
+        + PLACED ( 44760 167 ) N ;
+    - net_4 + NET net_4 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 44964 74 ) N ;
+    - net_5 + NET net_5 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 22140 74 ) N ;
+    - net_6 + NET net_6 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 30168 74 ) N ;
+    - net_7 + NET net_7 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M5 ( -12 -167 ) ( 12 167 )
+        + PLACED ( 30216 167 ) N ;
+    - net_8 + NET net_8 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 44784 74 ) N ;
+    - net_9 + NET net_9 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 47700 74 ) N ;
+    - rst + NET rst + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER M3 ( -9 -74 ) ( 9 74 )
+        + PLACED ( 25452 74 ) N ;
+END PINS
+SPECIALNETS 2 ;
+    - VDD ( * VDD ) + USE POWER ;
+    - VSS ( * VSS ) + USE GROUND ;
+END SPECIALNETS
+NETS 124 ;
+    - clk ( PIN clk ) + USE SIGNAL ;
+    - net_0 ( PIN net_0 ) ( inst_61 B ) ( inst_60 A ) ( inst_53 A2 ) ( inst_52 A ) + USE SIGNAL ;
+    - net_1 ( PIN net_1 ) ( inst_13 B ) ( inst_12 A2 ) ( inst_10 C ) + USE SIGNAL ;
+    - net_10 ( PIN net_10 ) ( inst_48 B ) + USE SIGNAL ;
+    - net_100 ( inst_69 A ) ( inst_68 Y ) + USE SIGNAL ;
+    - net_101 ( inst_57 A ) ( inst_56 Y ) + USE SIGNAL ;
+    - net_102 ( inst_75 B ) ( inst_74 A ) ( inst_70 A1 ) ( inst_69 Y ) + USE SIGNAL ;
+    - net_103 ( inst_58 A ) ( inst_57 Y ) + USE SIGNAL ;
+    - net_104 ( inst_71 A ) ( inst_70 Y ) + USE SIGNAL ;
+    - net_105 ( inst_65 B1 ) ( inst_64 C ) ( inst_59 A ) ( inst_58 Y ) + USE SIGNAL ;
+    - net_106 ( inst_74 C ) ( inst_71 Y ) + USE SIGNAL ;
+    - net_107 ( inst_66 B ) ( inst_65 B2 ) ( inst_59 Y ) + USE SIGNAL ;
+    - net_108 ( inst_65 A1 ) ( inst_64 Y ) + USE SIGNAL ;
+    - net_109 ( inst_75 A ) ( inst_74 Y ) + USE SIGNAL ;
+    - net_11 ( PIN net_11 ) ( inst_76 B ) + USE SIGNAL ;
+    - net_110 ( inst_66 A ) ( inst_65 Y ) + USE SIGNAL ;
+    - net_111 ( inst_81 B ) ( inst_80 A2 ) ( inst_75 Y ) + USE SIGNAL ;
+    - net_112 ( inst_82 A2 ) ( inst_81 A1 ) ( inst_80 Y ) + USE SIGNAL ;
+    - net_113 ( inst_82 A1 ) ( inst_81 Y ) + USE SIGNAL ;
+    - net_114 ( inst_97 A1 ) ( inst_96 Y ) + USE SIGNAL ;
+    - net_115 ( inst_83 A ) ( inst_82 Y ) + USE SIGNAL ;
+    - net_116 ( inst_93 B ) ( inst_92 A1 ) ( inst_83 Y ) + USE SIGNAL ;
+    - net_117 ( inst_93 A ) ( inst_92 Y ) + USE SIGNAL ;
+    - net_118 ( inst_94 B ) ( inst_93 Y ) + USE SIGNAL ;
+    - net_119 ( inst_99 B ) ( inst_98 A ) ( inst_97 C1 ) ( inst_95 A ) ( inst_94 Y ) + USE SIGNAL ;
+    - net_12 ( PIN net_12 ) ( inst_76 C ) + USE SIGNAL ;
+    - net_120 ( inst_98 B ) ( inst_97 Y ) + USE SIGNAL ;
+    - net_121 ( inst_99 A ) ( inst_98 Y ) + USE SIGNAL ;
+    - net_13 ( PIN net_13 ) ( inst_77 B ) ( inst_76 A2 ) + USE SIGNAL ;
+    - net_14 ( PIN net_14 ) ( inst_77 A2 ) ( inst_76 A1 ) + USE SIGNAL ;
+    - net_15 ( PIN net_15 ) ( inst_2 B ) + USE SIGNAL ;
+    - net_16 ( PIN net_16 ) ( inst_36 B ) + USE SIGNAL ;
+    - net_17 ( PIN net_17 ) ( inst_39 B ) ( inst_36 A ) + USE SIGNAL ;
+    - net_18 ( PIN net_18 ) ( inst_0 A ) + USE SIGNAL ;
+    - net_19 ( PIN net_19 ) ( inst_0 B ) + USE SIGNAL ;
+    - net_2 ( PIN net_2 ) ( inst_16 B ) + USE SIGNAL ;
+    - net_20 ( PIN net_20 ) ( inst_84 A ) + USE SIGNAL ;
+    - net_21 ( PIN net_21 ) ( inst_88 A ) + USE SIGNAL ;
+    - net_22 ( PIN net_22 ) ( inst_2 A ) ( inst_1 A ) ( inst_0 Y ) + USE SIGNAL ;
+    - net_23 ( PIN net_23 ) ( inst_97 B2 ) ( inst_96 C ) ( inst_92 A3 ) ( inst_67 A ) ( inst_66 Y ) + USE SIGNAL ;
+    - net_24 ( PIN net_24 ) ( inst_50 A3 ) ( inst_49 A ) ( inst_48 Y ) ( inst_44 A ) ( inst_41 A2 ) ( inst_40 A1 ) + USE SIGNAL ;
+    - net_25 ( PIN net_25 ) ( inst_97 C2 ) ( inst_95 Y ) + USE SIGNAL ;
+    - net_26 ( PIN net_26 ) ( inst_55 B1 ) ( inst_54 B ) ( inst_53 A1 ) ( inst_52 Y ) + USE SIGNAL ;
+    - net_27 ( PIN net_27 ) ( inst_97 B1 ) ( inst_96 B ) ( inst_92 B1 ) ( inst_67 Y ) + USE SIGNAL ;
+    - net_28 ( PIN net_28 ) ( inst_95 B ) ( inst_94 A ) ( inst_92 A2 ) ( inst_30 B1 ) ( inst_28 B ) ( inst_24 C )
+      ( inst_21 A2 ) ( inst_20 A1 ) ( inst_19 C ) ( inst_18 B ) ( inst_15 A ) ( inst_14 Y ) + USE SIGNAL ;
+    - net_29 ( PIN net_29 ) ( inst_35 Y ) + USE SIGNAL ;
+    - net_3 ( PIN net_3 ) ( inst_39 C ) + USE SIGNAL ;
+    - net_30 ( PIN net_30 ) ( inst_90 B ) ( inst_85 A ) ( inst_84 Y ) ( inst_79 B ) ( inst_78 A ) ( inst_72 A )
+      ( inst_70 B1 ) ( inst_68 C ) + USE SIGNAL ;
+    - net_31 ( PIN net_31 ) ( inst_61 C ) ( inst_60 B ) ( inst_52 B ) ( inst_30 A2 ) ( inst_28 A2 ) ( inst_20 A2 )
+      ( inst_17 A ) ( inst_16 Y ) ( inst_11 A2 ) ( inst_10 A ) + USE SIGNAL ;
+    - net_32 ( PIN net_32 ) ( inst_99 Y ) + USE SIGNAL ;
+    - net_33 ( PIN net_33 ) ( inst_5 A ) ( inst_4 Y ) + USE SIGNAL ;
+    - net_34 ( PIN net_34 ) ( inst_37 A ) ( inst_36 Y ) + USE SIGNAL ;
+    - net_35 ( PIN net_35 ) ( inst_39 A1 ) ( inst_38 Y ) + USE SIGNAL ;
+    - net_36 ( PIN net_36 ) ( inst_89 A ) ( inst_88 Y ) + USE SIGNAL ;
+    - net_37 ( PIN net_37 ) ( inst_43 A ) ( inst_42 Y ) ( inst_40 B1 ) + USE SIGNAL ;
+    - net_38 ( inst_11 B1 ) ( inst_10 B ) ( inst_3 A ) ( inst_2 Y ) + USE SIGNAL ;
+    - net_39 ( inst_3 B ) ( inst_1 Y ) + USE SIGNAL ;
+    - net_4 ( PIN net_4 ) ( inst_42 A ) ( inst_40 B2 ) + USE SIGNAL ;
+    - net_40 ( inst_19 D ) ( inst_17 Y ) + USE SIGNAL ;
+    - net_41 ( inst_6 B ) ( inst_5 B ) ( inst_3 Y ) + USE SIGNAL ;
+    - net_42 ( inst_13 C ) ( inst_12 B ) ( inst_11 A1 ) ( inst_10 Y ) + USE SIGNAL ;
+    - net_43 ( inst_6 A ) ( inst_5 Y ) + USE SIGNAL ;
+    - net_44 ( inst_13 A2 ) ( inst_12 A1 ) ( inst_7 A ) ( inst_6 Y ) + USE SIGNAL ;
+    - net_45 ( inst_8 B ) ( inst_7 Y ) + USE SIGNAL ;
+    - net_46 ( inst_14 B ) ( inst_13 A1 ) ( inst_12 Y ) ( inst_8 A ) + USE SIGNAL ;
+    - net_47 ( inst_9 A ) ( inst_8 Y ) + USE SIGNAL ;
+    - net_48 ( inst_11 B2 ) ( inst_9 Y ) + USE SIGNAL ;
+    - net_49 ( inst_13 D ) ( inst_11 Y ) + USE SIGNAL ;
+    - net_5 ( PIN net_5 ) ( inst_30 B2 ) ( inst_28 C ) ( inst_24 B ) ( inst_16 A ) + USE SIGNAL ;
+    - net_50 ( inst_14 A ) ( inst_13 Y ) + USE SIGNAL ;
+    - net_51 ( inst_20 A3 ) ( inst_19 A ) ( inst_18 Y ) + USE SIGNAL ;
+    - net_52 ( inst_29 A ) ( inst_28 Y ) + USE SIGNAL ;
+    - net_53 ( inst_30 A1 ) ( inst_29 Y ) ( inst_27 B ) ( inst_26 A ) ( inst_25 B ) ( inst_20 B ) ( inst_19 E ) + USE SIGNAL ;
+    - net_54 ( inst_23 B ) ( inst_21 A1 ) ( inst_20 Y ) + USE SIGNAL ;
+    - net_55 ( inst_22 A ) ( inst_21 B ) ( inst_19 Y ) + USE SIGNAL ;
+    - net_56 ( inst_31 A ) ( inst_30 Y ) + USE SIGNAL ;
+    - net_57 ( inst_23 A1 ) ( inst_22 Y ) + USE SIGNAL ;
+    - net_58 ( inst_23 A2 ) ( inst_21 Y ) + USE SIGNAL ;
+    - net_59 ( inst_33 A2 ) ( inst_32 A ) ( inst_31 Y ) + USE SIGNAL ;
+    - net_6 ( PIN net_6 ) ( inst_4 A ) + USE SIGNAL ;
+    - net_60 ( inst_35 B ) ( inst_34 A ) ( inst_33 B ) ( inst_32 B ) ( inst_24 A ) ( inst_23 Y ) + USE SIGNAL ;
+    - net_61 ( inst_33 A1 ) ( inst_32 Y ) + USE SIGNAL ;
+    - net_62 ( inst_27 C ) ( inst_26 B ) ( inst_25 A ) ( inst_24 Y ) + USE SIGNAL ;
+    - net_63 ( inst_27 D ) ( inst_25 Y ) + USE SIGNAL ;
+    - net_64 ( inst_27 A ) ( inst_26 Y ) + USE SIGNAL ;
+    - net_65 ( inst_35 C ) ( inst_34 B ) ( inst_33 D ) ( inst_27 Y ) + USE SIGNAL ;
+    - net_66 ( inst_35 A ) ( inst_34 Y ) ( inst_33 C ) + USE SIGNAL ;
+    - net_67 ( inst_35 D ) ( inst_33 Y ) + USE SIGNAL ;
+    - net_68 ( inst_29 B ) ( inst_28 A1 ) ( inst_19 B ) ( inst_18 A ) ( inst_15 Y ) + USE SIGNAL ;
+    - net_69 ( inst_97 A2 ) ( inst_96 A ) ( inst_92 B2 ) ( inst_79 C ) ( inst_78 B ) ( inst_77 A1 ) ( inst_76 Y )
+      ( inst_70 A2 ) ( inst_68 A ) + USE SIGNAL ;
+    - net_7 ( PIN net_7 ) ( inst_4 B ) + USE SIGNAL ;
+    - net_70 ( inst_61 D ) ( inst_60 C ) ( inst_55 A2 ) ( inst_54 A ) ( inst_53 B ) ( inst_51 B ) ( inst_50 A1 )
+      ( inst_39 A2 ) ( inst_37 Y ) + USE SIGNAL ;
+    - net_71 ( inst_63 B ) ( inst_62 A ) ( inst_61 E ) ( inst_57 B ) ( inst_56 A1 ) ( inst_50 A2 ) ( inst_49 Y )
+      ( inst_47 B ) ( inst_46 A ) ( inst_41 B ) ( inst_40 A2 ) + USE SIGNAL ;
+    - net_72 ( inst_45 A ) ( inst_44 Y ) + USE SIGNAL ;
+    - net_73 ( inst_73 A ) ( inst_72 Y ) + USE SIGNAL ;
+    - net_74 ( inst_78 C ) ( inst_77 Y ) + USE SIGNAL ;
+    - net_75 ( inst_91 B ) ( inst_89 Y ) ( inst_86 A ) + USE SIGNAL ;
+    - net_76 ( inst_87 B ) ( inst_85 Y ) + USE SIGNAL ;
+    - net_77 ( inst_40 C ) ( inst_39 Y ) + USE SIGNAL ;
+    - net_78 ( inst_50 B2 ) ( inst_47 C ) ( inst_46 B ) ( inst_45 Y ) + USE SIGNAL ;
+    - net_79 ( inst_61 A ) ( inst_60 Y ) + USE SIGNAL ;
+    - net_8 ( PIN net_8 ) ( inst_38 A ) + USE SIGNAL ;
+    - net_80 ( inst_55 B2 ) ( inst_53 Y ) + USE SIGNAL ;
+    - net_81 ( inst_55 A1 ) ( inst_54 Y ) + USE SIGNAL ;
+    - net_82 ( inst_79 A ) ( inst_78 Y ) + USE SIGNAL ;
+    - net_83 ( inst_87 A ) ( inst_86 Y ) + USE SIGNAL ;
+    - net_84 ( inst_43 C ) ( inst_41 A1 ) ( inst_40 Y ) + USE SIGNAL ;
+    - net_85 ( inst_47 A ) ( inst_46 Y ) + USE SIGNAL ;
+    - net_86 ( inst_65 B3 ) ( inst_62 B ) ( inst_61 Y ) + USE SIGNAL ;
+    - net_87 ( inst_57 E ) ( inst_56 B2 ) ( inst_55 Y ) + USE SIGNAL ;
+    - net_88 ( inst_82 B ) ( inst_80 B ) ( inst_79 Y ) ( inst_70 A3 ) ( inst_68 B ) + USE SIGNAL ;
+    - net_89 ( inst_90 A ) ( inst_87 Y ) + USE SIGNAL ;
+    - net_9 ( PIN net_9 ) ( inst_48 A ) + USE SIGNAL ;
+    - net_90 ( inst_43 B ) ( inst_41 Y ) + USE SIGNAL ;
+    - net_91 ( inst_50 B1 ) ( inst_47 Y ) + USE SIGNAL ;
+    - net_92 ( inst_63 A ) ( inst_62 Y ) + USE SIGNAL ;
+    - net_93 ( inst_91 A ) ( inst_90 Y ) + USE SIGNAL ;
+    - net_94 ( inst_65 A3 ) ( inst_64 B ) ( inst_57 D ) ( inst_56 B1 ) ( inst_50 B3 ) ( inst_43 Y ) + USE SIGNAL ;
+    - net_95 ( inst_66 C ) ( inst_63 Y ) + USE SIGNAL ;
+    - net_96 ( inst_92 B3 ) ( inst_91 Y ) ( inst_81 A2 ) ( inst_80 A1 ) ( inst_73 B ) ( inst_70 B2 ) ( inst_68 D ) + USE SIGNAL ;
+    - net_97 ( inst_51 A ) ( inst_50 Y ) + USE SIGNAL ;
+    - net_98 ( inst_74 B ) ( inst_73 Y ) ( inst_70 C ) ( inst_68 E ) + USE SIGNAL ;
+    - net_99 ( inst_65 A2 ) ( inst_64 A ) ( inst_57 C ) ( inst_56 A2 ) ( inst_51 Y ) + USE SIGNAL ;
+    - rst ( PIN rst ) + USE SIGNAL ;
+END NETS
+END DESIGN

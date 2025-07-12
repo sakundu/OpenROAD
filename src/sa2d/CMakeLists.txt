@@ -16,6 +16,7 @@ target_sources(sa2d
     src/ThreadSafeGrid.cpp
     src/Worker.cpp
     src/WorkerManager.cpp
+    src/SA2DReorder.cpp
 )
 
 target_include_directories(sa2d

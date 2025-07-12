@@ -99,6 +99,51 @@ void set_enable_slides(bool enable) {
   getSA2D()->setEnableSlides(enable);
 }
 
+// SA1D operators for single-row scenarios
+void set_use_sa1d_operators(bool enable) {
+  getSA2D()->setUseSA1DOperators(enable);
+}
+
+void set_sa1d_move_probs(const std::vector<float>& probs) {
+  getSA2D()->setSA1DMoveProbs(probs);
+}
+
+void set_use_best_orderings_1d(bool enable) {
+  getSA2D()->setUseBestOrderings1D(enable);
+}
+
+void set_sa1d_overlap_weight(float weight) {
+  getSA2D()->setSA1DOverlapWeight(weight);
+}
+
+void set_enable_reordering(bool enable) {
+  getSA2D()->setEnableReordering(enable);
+}
+
+void set_reorder_window_size(int size) {
+  getSA2D()->setReorderWindowSize(size);
+}
+
+void set_use_dpl_reordering(bool enable) {
+  getSA2D()->setUseDPLReordering(enable);
+}
+
+void set_pre_sa_reordering(bool enable) {
+  getSA2D()->setPreSAReordering(enable);
+}
+
+void set_dpl_reordering_passes(int passes) {
+  getSA2D()->setReorderingPasses(passes);
+}
+
+void set_dpl_reordering_tolerance(double tolerance) {
+  getSA2D()->setReorderingTolerance(tolerance);
+}
+
+void run_dpl_reordering_only() {
+  getSA2D()->runDPLReorderingOnly();
+}
+
 void run() {
   getSA2D()->runSA();
 }

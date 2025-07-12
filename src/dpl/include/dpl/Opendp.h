@@ -139,6 +139,14 @@ class Opendp
   void improvePlacement(int seed,
                         int max_displacement_x,
                         int max_displacement_y);
+  
+  // Run only reordering optimization (exposed for SA2D)
+  void runReorderingOnly(int max_displacement_x = 500,
+                         int max_displacement_y = 100,
+                         int passes = 10,
+                         double tolerance = 0.005,
+                         int window_size = 3);
+  
   // Journalling
   Journal* getJournal() const;
   void setJournal(Journal* journal);

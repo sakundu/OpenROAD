@@ -15,7 +15,7 @@ puts "\n3. Configuring SA2D for parallel execution..."
 sa2d_set_num_workers 80          ;
 sa2d_set_max_temp 100.0
 sa2d_set_min_temp 1e-18
-sa2d_set_cooling_rate 0.995
+sa2d_set_cooling_rate 0.998
 sa2d_set_moves_per_iter 10000   ;
 sa2d_set_max_iter 500          ;# More iterations to see GWTW effect
 sa2d_set_move_budget 10000000   ;# Larger budget for parallel

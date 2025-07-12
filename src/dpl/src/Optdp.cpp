@@ -5,6 +5,8 @@
 #include "odb/util.h"
 #include "utl/Logger.h"
 
+#include <string>
+
 // My stuff.
 #include "legalize_shift.h"
 #include "optimization/detailed.h"
@@ -129,6 +131,77 @@ void Opendp::improvePlacement(const int seed,
              hpwlAfter_x,
              hpwlBefore_y,
              hpwlAfter_y);
+}
+
+////////////////////////////////////////////////////////////////
+
+void Opendp::runReorderingOnly(const int max_displacement_x,
+                               const int max_displacement_y,
+                               const int passes,
+                               const double tolerance,
+                               const int window_size)
+{
+  logger_->report("Running DPL reordering optimization only.");
+
+  odb::WireLengthEvaluator eval(db_->getChip()->getBlock());
+  int64_t hpwlBefore_x = 0;
+  int64_t hpwlBefore_y = 0;
+  const int64_t hpwlBefore = eval.hpwl(hpwlBefore_x, hpwlBefore_y);
+
+  if (hpwlBefore == 0) {
+    logger_->report("Skipping reordering since hpwl is zero.");
+    return;
+  }
+
+  // Get needed information from DB if not already loaded
+  if (!network_) {
+    importDb();
+    initGrid();
+  }
+
+  const bool disallow_one_site_gaps = !odb::hasOneSiteMaster(db_);
+
+  // A manager to track cells
+  DetailedMgr mgr(arch_.get(), network_.get(), grid_.get(), drc_engine_.get());
+  mgr.setLogger(logger_);
+  mgr.setSeed(0);  // Deterministic
+  mgr.setMaxDisplacement(max_displacement_x, max_displacement_y);
+  mgr.setDisallowOneSiteGaps(disallow_one_site_gaps);
+
+  // Legalization - populate data structures
+  ShiftLegalizer lg;
+  lg.legalize(mgr);
+
+  // Run ONLY reordering optimization
+  DetailedParams dtParams;
+  dtParams.script_ = "";
+  // Small reordering with specified passes, tolerance, and window size
+  // Window size must be between 2 and 4 (DPL constraint)
+  int w_size = std::min(4, std::max(2, window_size));
+  dtParams.script_ += "ro -w " + std::to_string(w_size) + " -p " + std::to_string(passes) + " -t " + std::to_string(tolerance) + ";";
+  
+  if (disallow_one_site_gaps) {
+    dtParams.script_ += "disallow_one_site_gaps;";
+  }
+
+  // Run the script
+  Detailed dt(dtParams);
+  dt.improve(mgr);
+
+  // Write solution back
+  updateDbInstLocations();
+
+  // Report results
+  int64_t hpwlAfter_x = 0;
+  int64_t hpwlAfter_y = 0;
+  const int64_t hpwlAfter = eval.hpwl(hpwlAfter_x, hpwlAfter_y);
+  const double dbu_micron = db_->getTech()->getDbUnitsPerMicron();
+  
+  logger_->report("Reordering Results:");
+  logger_->report("  Initial HPWL: {:.1f} u", hpwlBefore / dbu_micron);
+  logger_->report("  Final HPWL:   {:.1f} u", hpwlAfter / dbu_micron);
+  logger_->report("  Improvement:  {:.2f}%", 
+                  100.0 * (hpwlBefore - hpwlAfter) / (double) hpwlBefore);
 }
 
 ////////////////////////////////////////////////////////////////

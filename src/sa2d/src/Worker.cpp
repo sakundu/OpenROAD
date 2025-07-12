@@ -34,6 +34,7 @@
 #include "Worker.h"
 #include "WorkerManager.h"  // For SimpleBarrier definition
 #include "sa2d/SA2D.h"
+#include "SA2DReorder.h"  // For reordering functionality
 #include "dpl/Opendp.h"
 #include "utl/Logger.h"
 #include "infrastructure/Objects.h"  // Now we can access this!
@@ -46,6 +47,8 @@
 #include <unordered_set> // Added for chain validation
 #include <map>
 #include <set>
+#include <chrono>
+#include <numeric>
 
 namespace {
 // Transform pin offset based on cell orientation
@@ -115,9 +118,9 @@ SAWorker::SAWorker(SA2D* sa2d, int worker_id)
       kick_strength_(10),
       kick_temp_multiplier_(1.5f),
       enable_kicks_(true),
+      enable_slides_(true),
       is_winner_(false),
-      distribution_(0.0, 1.0),
-      enable_slides_(true)
+      distribution_(0.0, 1.0)
 {
 }
 
@@ -547,6 +550,22 @@ int64_t SAWorker::calcNetHPWL(int net_id)
     }
     
     return (max_x - min_x).v + (max_y - min_y).v;
+}
+
+double SAWorker::calcCellHPWLContribution(int cell_id)
+{
+    // Get all nets connected to this cell
+    std::vector<int> affected_nets = getAffectedNets(cell_id);
+    
+    double total_contribution = 0.0;
+    for (int net_id : affected_nets) {
+        // For each net, calculate its HPWL
+        int64_t net_hpwl = calcNetHPWL(net_id);
+        // Add to total contribution
+        total_contribution += static_cast<double>(net_hpwl);
+    }
+    
+    return total_contribution;
 }
 
 bool SAWorker::acceptMove(int64_t delta_cost, float temp)
@@ -1627,6 +1646,15 @@ void SAWorker::run()
                 sa2d_->getBlock()->dbuToMicrons(best_state_.total_hpwl),
                 100.0);  // Initial accept rate is 100%
     
+    // Detect single-row scenario and initialize SA1D mode if enabled
+    if (use_sa1d_operators_) {
+        detectSingleRowMode();
+        if (single_row_mode_) {
+            logger->info(utl::SA2D, 702, "Using SA1D operators with move probabilities: [{:.2f}, {:.2f}, {:.2f}]",
+                        sa1d_move_probs_[0], sa1d_move_probs_[1], sa1d_move_probs_[2]);
+        }
+    }
+    
     // Main SA loop
     for (int iter = 0; iter < max_iter_ && moves_tried < move_budget_; ++iter) {
         int moves_per_temp = moves_per_iter_;  // Use fixed moves per iteration
@@ -1635,7 +1663,12 @@ void SAWorker::run()
         
         // Check if we should perform a kick move
         if (shouldPerformKick(iter)) {
+            auto start = std::chrono::high_resolution_clock::now();
             bool kick_success = tryRegionShuffle(kick_strength_);
+            auto end = std::chrono::high_resolution_clock::now();
+            if (kick_success) {
+                kick_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            }
             if (kick_success) {
                 last_kick_iteration_ = iter;
                 stagnation_counter_ = 0;  // Reset stagnation
@@ -1649,7 +1682,12 @@ void SAWorker::run()
             for (int i = 0; i < chain_moves_per_round_; ++i) {
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx = cell_dist(rng_);
-                tryChainMove(movable_cells[idx]);
+                auto start = std::chrono::high_resolution_clock::now();
+                bool chain_accepted = tryChainMove(movable_cells[idx]);
+                auto end = std::chrono::high_resolution_clock::now();
+                if (chain_accepted) {
+                    chain_move_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                }
             }
         }
         
@@ -1657,40 +1695,108 @@ void SAWorker::run()
             int old_accepted = accepted_moves_;
             moves_attempted_this_iter++;
             
-            // Randomly choose between single move, swap, flip, and slide
-            float rand_val = distribution_(rng_);
+            bool move_success = false;
             
-            if (rand_val < 0.10) {
-                // 10% flips
+            if (single_row_mode_) {
+                // Use SA1D-style operators
+                int move_type = selectMoveType1D();
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
-                int idx = cell_dist(rng_);
-                attempted_flips_++;
-                tryFlip(movable_cells[idx]);
-            } else if (rand_val < 0.20 && movable_cells.size() > 1) {
-                // 10% swaps
-                std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
-                int idx1 = cell_dist(rng_);
-                int idx2 = cell_dist(rng_);
-                while (idx2 == idx1) {
-                    idx2 = cell_dist(rng_);
-                }
+                int cell_idx = cell_dist(rng_);
                 
-                attempted_swaps_++;
-                trySwap(movable_cells[idx1], movable_cells[idx2]);
-            } else if (rand_val < 0.30 && enable_slides_) {
-                // 10% slides (if enabled)
-                std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
-                int idx = cell_dist(rng_);
-                trySlide(movable_cells[idx]);
+                switch (move_type) {
+                    case 0: {  // Swap
+                        int cell_idx2 = cell_dist(rng_);
+                        while (cell_idx2 == cell_idx) {
+                            cell_idx2 = cell_dist(rng_);
+                        }
+                        attempted_swaps_1d_++;
+                        auto start = std::chrono::high_resolution_clock::now();
+                        move_success = trySwapCells1D(movable_cells[cell_idx], movable_cells[cell_idx2]);
+                        auto end = std::chrono::high_resolution_clock::now();
+                        if (move_success) {
+                            swap_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                        }
+                        break;
+                    }
+                    case 1: {  // Move
+                        int target_pos = selectRandomPosition1D();
+                        attempted_moves_1d_++;
+                        auto start = std::chrono::high_resolution_clock::now();
+                        move_success = tryMoveCell1D(movable_cells[cell_idx], target_pos);
+                        auto end = std::chrono::high_resolution_clock::now();
+                        if (move_success) {
+                            single_move_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                        }
+                        break;
+                    }
+                    case 2: {  // Flip
+                        attempted_flips_1d_++;
+                        auto start = std::chrono::high_resolution_clock::now();
+                        move_success = tryFlip(movable_cells[cell_idx]);
+                        auto end = std::chrono::high_resolution_clock::now();
+                        if (move_success) {
+                            flip_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                            accepted_flips_1d_++;
+                        }
+                        break;
+                    }
+                }
             } else {
-                // 70% single moves
-                std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
-                int idx = cell_dist(rng_);
-                attempted_single_moves_++;
-                tryMove(movable_cells[idx]);
+                // Use regular SA2D operators
+                float rand_val = distribution_(rng_);
+                
+                if (rand_val < 0.10) {
+                    // 10% flips
+                    std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
+                    int idx = cell_dist(rng_);
+                    attempted_flips_++;
+                    auto start = std::chrono::high_resolution_clock::now();
+                    move_success = tryFlip(movable_cells[idx]);
+                    auto end = std::chrono::high_resolution_clock::now();
+                    if (move_success) {
+                        flip_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                    }
+                } else if (rand_val < 0.20) {
+                    // 10% swaps
+                    std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
+                    int idx1 = cell_dist(rng_);
+                    int idx2 = cell_dist(rng_);
+                    while (idx2 == idx1) {
+                        idx2 = cell_dist(rng_);
+                    }
+                    
+                    attempted_swaps_++;
+                    auto start = std::chrono::high_resolution_clock::now();
+                    move_success = trySwap(movable_cells[idx1], movable_cells[idx2]);
+                    auto end = std::chrono::high_resolution_clock::now();
+                    if (move_success) {
+                        swap_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                    }
+                } else if (rand_val < 0.30 && enable_slides_) {
+                    // 10% slides (if enabled)
+                    std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
+                    int idx = cell_dist(rng_);
+                    auto start = std::chrono::high_resolution_clock::now();
+                    move_success = trySlide(movable_cells[idx]);
+                    auto end = std::chrono::high_resolution_clock::now();
+                    if (move_success) {
+                        slide_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                    }
+                } else {
+                    // 70% single moves
+                    std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
+                    int idx = cell_dist(rng_);
+                    attempted_single_moves_++;
+                    auto start = std::chrono::high_resolution_clock::now();
+                    move_success = tryMove(movable_cells[idx]);
+                    auto end = std::chrono::high_resolution_clock::now();
+                    if (move_success) {
+                        single_move_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                    }
+                }
             }
             
-            if (accepted_moves_ > old_accepted) {
+            if (move_success) {
                 moves_accepted_this_iter++;
             }
             
@@ -1714,6 +1820,11 @@ void SAWorker::run()
         
         // Cool down
         current_temp *= cooling_rate_;
+        
+        // Periodically check if we're still in single-row mode
+        if (use_sa1d_operators_ && iter % 100 == 0) {
+            detectSingleRowMode();
+        }
         
         // Report progress at regular intervals
         int report_interval = std::min(100, std::max(1, max_iter_ / 10));
@@ -1739,28 +1850,42 @@ void SAWorker::run()
     
     // Report move statistics
     logger->info(utl::SA2D, 340, "Worker {} move statistics:", worker_id_);
-    logger->info(utl::SA2D, 341, "  Single moves: {} attempted, {} accepted ({:.1f}%)", 
-                attempted_single_moves_, accepted_single_moves_, 
-                attempted_single_moves_ > 0 ? 100.0 * accepted_single_moves_ / attempted_single_moves_ : 0.0);
-    logger->info(utl::SA2D, 342, "  Swaps: {} attempted, {} accepted ({:.1f}%)", 
-                attempted_swaps_, accepted_swaps_, 
-                attempted_swaps_ > 0 ? 100.0 * accepted_swaps_ / attempted_swaps_ : 0.0);
-    if (attempted_diff_size_swaps_ > 0) {
-        logger->info(utl::SA2D, 345, "    Different-size swaps: {} attempted, {} accepted ({:.1f}%)",
-                    attempted_diff_size_swaps_, accepted_diff_size_swaps_,
-                    100.0 * accepted_diff_size_swaps_ / attempted_diff_size_swaps_);
-    }
-    logger->info(utl::SA2D, 343, "  Flips: {} attempted, {} accepted ({:.1f}%)", 
-                attempted_flips_, accepted_flips_, 
-                attempted_flips_ > 0 ? 100.0 * accepted_flips_ / attempted_flips_ : 0.0);
-    logger->info(utl::SA2D, 346, "  Slides: {} attempted, {} accepted ({:.1f}%)", 
-                attempted_slides_, accepted_slides_, 
-                attempted_slides_ > 0 ? 100.0 * accepted_slides_ / attempted_slides_ : 0.0);
-    if (attempted_chain_moves_ > 0) {
-        logger->info(utl::SA2D, 344, "  Chain moves: {} attempted, {} accepted ({:.1f}%), max chain length: {}, total cells shifted: {}",
-                    attempted_chain_moves_, accepted_chain_moves_,
-                    100.0 * accepted_chain_moves_ / attempted_chain_moves_,
-                    max_chain_length_, total_cells_shifted_);
+    
+    if (single_row_mode_ && (attempted_swaps_1d_ > 0 || attempted_moves_1d_ > 0 || attempted_flips_1d_ > 0)) {
+        logger->info(utl::SA2D, 703, "  SA1D mode statistics:");
+        logger->info(utl::SA2D, 704, "    Swaps (1D): {} attempted, {} accepted ({:.1f}%)", 
+                    attempted_swaps_1d_, accepted_swaps_1d_, 
+                    attempted_swaps_1d_ > 0 ? 100.0 * accepted_swaps_1d_ / attempted_swaps_1d_ : 0.0);
+        logger->info(utl::SA2D, 705, "    Moves (1D): {} attempted, {} accepted ({:.1f}%)", 
+                    attempted_moves_1d_, accepted_moves_1d_, 
+                    attempted_moves_1d_ > 0 ? 100.0 * accepted_moves_1d_ / attempted_moves_1d_ : 0.0);
+        logger->info(utl::SA2D, 706, "    Flips (1D): {} attempted, {} accepted ({:.1f}%)", 
+                    attempted_flips_1d_, accepted_flips_1d_, 
+                    attempted_flips_1d_ > 0 ? 100.0 * accepted_flips_1d_ / attempted_flips_1d_ : 0.0);
+    } else {
+        logger->info(utl::SA2D, 341, "  Single moves: {} attempted, {} accepted ({:.1f}%)", 
+                    attempted_single_moves_, accepted_single_moves_, 
+                    attempted_single_moves_ > 0 ? 100.0 * accepted_single_moves_ / attempted_single_moves_ : 0.0);
+        logger->info(utl::SA2D, 342, "  Swaps: {} attempted, {} accepted ({:.1f}%)", 
+                    attempted_swaps_, accepted_swaps_, 
+                    attempted_swaps_ > 0 ? 100.0 * accepted_swaps_ / attempted_swaps_ : 0.0);
+        if (attempted_diff_size_swaps_ > 0) {
+            logger->info(utl::SA2D, 345, "    Different-size swaps: {} attempted, {} accepted ({:.1f}%)",
+                        attempted_diff_size_swaps_, accepted_diff_size_swaps_,
+                        100.0 * accepted_diff_size_swaps_ / attempted_diff_size_swaps_);
+        }
+        logger->info(utl::SA2D, 343, "  Flips: {} attempted, {} accepted ({:.1f}%)", 
+                    attempted_flips_, accepted_flips_, 
+                    attempted_flips_ > 0 ? 100.0 * accepted_flips_ / attempted_flips_ : 0.0);
+        logger->info(utl::SA2D, 346, "  Slides: {} attempted, {} accepted ({:.1f}%)", 
+                    attempted_slides_, accepted_slides_, 
+                    attempted_slides_ > 0 ? 100.0 * accepted_slides_ / attempted_slides_ : 0.0);
+        if (attempted_chain_moves_ > 0) {
+            logger->info(utl::SA2D, 344, "  Chain moves: {} attempted, {} accepted ({:.1f}%), max chain length: {}, total cells shifted: {}",
+                        attempted_chain_moves_, accepted_chain_moves_,
+                        100.0 * accepted_chain_moves_ / attempted_chain_moves_,
+                        max_chain_length_, total_cells_shifted_);
+        }
     }
     
     // Report kick statistics if kicks were enabled
@@ -1769,6 +1894,22 @@ void SAWorker::run()
                     worker_id_, kick_attempts_, kick_accepted_, 
                     100.0 * kick_accepted_ / kick_attempts_,
                     total_swaps_applied_);
+    }
+    
+    // Report runtime statistics
+    //reportRuntimeStatistics();
+    
+    logger->info(utl::SA2D, 403, "Worker {} starting SA optimization...", worker_id_);
+    logger->info(utl::SA2D, 404, "Parameters: max_temp={}, cooling_rate={}, max_iter={}", 
+                 temp_, cooling_rate_, max_iter_);
+    logger->info(utl::SA2D, 405, "Move budget: {}, moves per iteration: {}",
+                 move_budget_, moves_per_iter_);
+    
+    // Check if this is a low row design
+    if (isLowRowDesign()) {
+        logger->info(utl::SA2D, 485, "Low row design detected ({} rows) - using specialized kick moves", 
+                     grid_info_->getRowCount());
+        logger->info(utl::SA2D, 486, "Kick strategies: horizontal chain swap, row compression, inter-row transfer, sliding window");
     }
 }
 
@@ -1814,7 +1955,12 @@ void SAWorker::runParallel(int iterations, SimpleBarrier& sync_barrier,
         
         // Check if we should perform a kick move
         if (shouldPerformKick(iter)) {
+            auto start = std::chrono::high_resolution_clock::now();
             bool kick_success = tryRegionShuffle(kick_strength_);
+            auto end = std::chrono::high_resolution_clock::now();
+            if (kick_success) {
+                kick_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            }
             if (kick_success) {
                 last_kick_iteration_ = iter;
                 stagnation_counter_ = 0;  // Reset stagnation
@@ -1828,7 +1974,12 @@ void SAWorker::runParallel(int iterations, SimpleBarrier& sync_barrier,
             for (int i = 0; i < chain_moves_per_round_; ++i) {
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx = cell_dist(rng_);
-                tryChainMove(movable_cells[idx]);
+                auto start = std::chrono::high_resolution_clock::now();
+                bool chain_accepted = tryChainMove(movable_cells[idx]);
+                auto end = std::chrono::high_resolution_clock::now();
+                if (chain_accepted) {
+                    chain_move_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                }
             }
         }
         
@@ -1844,8 +1995,13 @@ void SAWorker::runParallel(int iterations, SimpleBarrier& sync_barrier,
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx = cell_dist(rng_);
                 attempted_flips_++;
-                tryFlip(movable_cells[idx]);
-            } else if (rand_val < 0.20 && movable_cells.size() > 1) {
+                auto start = std::chrono::high_resolution_clock::now();
+                bool flip_accepted = tryFlip(movable_cells[idx]);
+                auto end = std::chrono::high_resolution_clock::now();
+                if (flip_accepted) {
+                    flip_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                }
+            } else if (rand_val < 0.20) {
                 // 10% swaps
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx1 = cell_dist(rng_);
@@ -1855,18 +2011,33 @@ void SAWorker::runParallel(int iterations, SimpleBarrier& sync_barrier,
                 }
                 
                 attempted_swaps_++;
-                trySwap(movable_cells[idx1], movable_cells[idx2]);
+                auto start = std::chrono::high_resolution_clock::now();
+                bool swap_accepted = trySwap(movable_cells[idx1], movable_cells[idx2]);
+                auto end = std::chrono::high_resolution_clock::now();
+                if (swap_accepted) {
+                    swap_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                }
             } else if (rand_val < 0.30 && enable_slides_) {
                 // 10% slides (if enabled)
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx = cell_dist(rng_);
-                trySlide(movable_cells[idx]);
+                auto start = std::chrono::high_resolution_clock::now();
+                bool slide_accepted = trySlide(movable_cells[idx]);
+                auto end = std::chrono::high_resolution_clock::now();
+                if (slide_accepted) {
+                    slide_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                }
             } else {
                 // 70% single moves
                 std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
                 int idx = cell_dist(rng_);
                 attempted_single_moves_++;
-                tryMove(movable_cells[idx]);
+                auto start = std::chrono::high_resolution_clock::now();
+                bool move_accepted = tryMove(movable_cells[idx]);
+                auto end = std::chrono::high_resolution_clock::now();
+                if (move_accepted) {
+                    single_move_time_ += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                }
             }
             
             if (accepted_moves_ > old_accepted) {
@@ -1986,11 +2157,370 @@ void SAWorker::applyToDPL(dpl::Network* network)
     }
     
     logger->info(utl::SA2D, 351, "Updated {} cells in DPL network", cells_updated);
+    
+    // Optional: Apply reordering to the best solution
+    if (sa2d_->shouldPerformReordering()) {
+        // Check if we should use DPL's reordering instead
+        if (sa2d_->getUseDPLReordering()) {
+            logger->info(utl::SA2D, 605, "Skipping SA2D reordering - will use DPL reordering after SA completes");
+        } else {
+            logger->warn(utl::SA2D, 605, "SA2D's built-in reordering is disabled due to overlap issues.");
+            logger->info(utl::SA2D, 606, "Please use DPL's native reordering instead:");
+            logger->info(utl::SA2D, 607, "  sa2d_set_use_dpl_reordering 1");
+            logger->info(utl::SA2D, 608, "  sa2d_set_enable_reordering 1");
+            logger->info(utl::SA2D, 609, "This will run DPL's proven reordering after SA completes.");
+            
+            // DISABLED: SA2D's reordering implementation causes overlaps
+            // Use DPL's native reordering instead which is guaranteed to be safe
+        }
+    }
+}
+
+// SA1D Operators Implementation
+
+bool SAWorker::isSingleRowPlacement()
+{
+    // Check if all movable cells are in the same row
+    GridY first_row = GridY{-1};
+    for (int i = 0; i < network_->getNumNodes(); i++) {
+        const dpl::Node* node = network_->getNode(i);
+        if (node->getType() == dpl::Node::CELL && !node->isFixed()) {
+            GridY row = grid_info_->gridSnapDownY(state_.cells[i].y);
+            if (first_row.v == -1) {
+                first_row = row;
+            } else if (row.v != first_row.v) {
+                return false;  // Multiple rows found
+            }
+        }
+    }
+    return first_row.v != -1;  // At least one movable cell found
+}
+
+void SAWorker::detectSingleRowMode()
+{
+    bool was_single_row = single_row_mode_;
+    single_row_mode_ = isSingleRowPlacement();
+    
+    if (single_row_mode_ && !was_single_row) {
+        utl::Logger* logger = sa2d_->getLogger();
+        logger->info(utl::SA2D, 700, "Single-row placement detected, switching to SA1D operators");
+        initializeOrdering1D();
+    } else if (!single_row_mode_ && was_single_row) {
+        utl::Logger* logger = sa2d_->getLogger();
+        logger->info(utl::SA2D, 701, "Multi-row placement detected, switching back to SA2D operators");
+        cell_ordering_1d_.clear();
+    }
+}
+
+void SAWorker::initializeOrdering1D()
+{
+    if (use_best_orderings_1d_) {
+        // TODO: Implement best orderings integration
+        // For now, use current placement ordering
+        buildOrdering1DFromCurrentPlacement();
+    } else {
+        // Default: maintain current X-coordinate ordering
+        buildOrdering1DFromCurrentPlacement();
+    }
+}
+
+void SAWorker::buildOrdering1DFromCurrentPlacement()
+{
+    cell_ordering_1d_.clear();
+    
+    // Collect all movable cells with their X positions
+    std::vector<std::pair<DbuX, int>> cell_positions;
+    for (int i = 0; i < network_->getNumNodes(); i++) {
+        const dpl::Node* node = network_->getNode(i);
+        if (node->getType() == dpl::Node::CELL && !node->isFixed()) {
+            cell_positions.push_back({state_.cells[i].x, i});
+        }
+    }
+    
+    // Sort by X position
+    std::sort(cell_positions.begin(), cell_positions.end(),
+              [](const std::pair<DbuX, int>& a, const std::pair<DbuX, int>& b) {
+                  return a.first.v < b.first.v;
+              });
+    
+    // Build ordering
+    for (const auto& pair : cell_positions) {
+        cell_ordering_1d_.push_back(pair.second);
+    }
+}
+
+void SAWorker::updateOrdering1D()
+{
+    // Rebuild ordering from current placement
+    buildOrdering1DFromCurrentPlacement();
+}
+
+int SAWorker::getCellPosition1D(int cell_id)
+{
+    auto it = std::find(cell_ordering_1d_.begin(), cell_ordering_1d_.end(), cell_id);
+    if (it != cell_ordering_1d_.end()) {
+        return std::distance(cell_ordering_1d_.begin(), it);
+    }
+    return -1;  // Not found
+}
+
+int SAWorker::getCellAt1DPosition(int pos)
+{
+    if (pos >= 0 && pos < static_cast<int>(cell_ordering_1d_.size())) {
+        return cell_ordering_1d_[pos];
+    }
+    return -1;  // Invalid position
+}
+
+void SAWorker::updateGrid1D(const std::vector<int>& affected_cells)
+{
+    // Remove all affected cells from grid
+    for (int cell_id : affected_cells) {
+        grid_->removeCell(cell_id);
+    }
+    
+    // Re-place all affected cells
+    for (int cell_id : affected_cells) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX gx = grid_info_->gridX(state_.cells[cell_id].x);
+        GridY gy = grid_info_->gridSnapDownY(state_.cells[cell_id].y);
+        GridX gw = grid_info_->gridPaddedWidth(node);
+        GridY gh = grid_info_->gridHeight(node);
+        
+        if (grid_info_->isMultiHeightCell(node)) {
+            grid_->placeMultiHeightCell(cell_id, gx, gy, gw, gh);
+        } else {
+            grid_->placeCell(cell_id, gx, gy, gw, gh);
+        }
+    }
+}
+
+int SAWorker::computeOverlap1D()
+{
+    if (!single_row_mode_) return 0;
+    
+    int total_overlap = 0;
+    
+    // Sort cells by X position
+    std::vector<std::pair<DbuX, int>> cell_positions;
+    for (int cell_id : cell_ordering_1d_) {
+        cell_positions.push_back({state_.cells[cell_id].x, cell_id});
+    }
+    
+    std::sort(cell_positions.begin(), cell_positions.end(),
+              [](const std::pair<DbuX, int>& a, const std::pair<DbuX, int>& b) {
+                  return a.first.v < b.first.v;
+              });
+    
+    // Calculate overlaps
+    for (size_t i = 0; i < cell_positions.size() - 1; i++) {
+        int curr_cell = cell_positions[i].second;
+        int next_cell = cell_positions[i + 1].second;
+        
+        const dpl::Node* curr_node = network_->getNode(curr_cell);
+        DbuX curr_right = state_.cells[curr_cell].x + curr_node->getWidth();
+        DbuX next_left = state_.cells[next_cell].x;
+        
+        if (curr_right.v > next_left.v) {
+            total_overlap += curr_right.v - next_left.v;
+        }
+    }
+    
+    return total_overlap;
+}
+
+int SAWorker::selectMoveType1D()
+{
+    float rand_num = distribution_(rng_);
+    float cumulative = 0.0f;
+    
+    for (size_t i = 0; i < sa1d_move_probs_.size(); ++i) {
+        cumulative += sa1d_move_probs_[i];
+        if (rand_num <= cumulative) {
+            return static_cast<int>(i);
+        }
+    }
+    
+    return 0;  // Default to swap
+}
+
+int SAWorker::selectRandomPosition1D()
+{
+    if (cell_ordering_1d_.empty()) return 0;
+    
+    std::uniform_int_distribution<int> pos_dist(0, cell_ordering_1d_.size() - 1);
+    return pos_dist(rng_);
+}
+
+bool SAWorker::trySwapCells1D(int cell_id1, int cell_id2)
+{
+    if (cell_id1 == cell_id2) return false;
+    
+    // Get positions in the 1D ordering
+    int pos1 = getCellPosition1D(cell_id1);
+    int pos2 = getCellPosition1D(cell_id2);
+    
+    if (pos1 == -1 || pos2 == -1) return false;  // Cell not found in ordering
+    
+    if (pos1 > pos2) {
+        std::swap(pos1, pos2);
+        std::swap(cell_id1, cell_id2);
+    }
+    
+    const dpl::Node* node1 = network_->getNode(cell_id1);
+    const dpl::Node* node2 = network_->getNode(cell_id2);
+    
+    GridX width1 = grid_info_->gridPaddedWidth(node1);
+    GridX width2 = grid_info_->gridPaddedWidth(node2);
+    bool same_width = (width1.v == width2.v);
+    
+    // Store original positions
+    DbuX orig_x1 = state_.cells[cell_id1].x;
+    DbuX orig_x2 = state_.cells[cell_id2].x;
+    
+    // Calculate new positions
+    DbuX new_x1 = orig_x2;
+    DbuX new_x2 = orig_x1;
+    
+    std::vector<int> affected_cells = {cell_id1, cell_id2};
+    std::vector<DbuX> original_positions = {orig_x1, orig_x2};
+    
+    // Handle width differences (like SA1D)
+    if (!same_width) {
+        int delta_width = width1.v - width2.v;
+        new_x1 = DbuX{orig_x2.v - delta_width};
+        
+        // Shift intermediate cells
+        for (int pos = pos1 + 1; pos < pos2; pos++) {
+            int intermediate_cell = getCellAt1DPosition(pos);
+            if (intermediate_cell != -1) {
+                original_positions.push_back(state_.cells[intermediate_cell].x);
+                state_.cells[intermediate_cell].x = DbuX{state_.cells[intermediate_cell].x.v - delta_width};
+                affected_cells.push_back(intermediate_cell);
+            }
+        }
+    }
+    
+    // Apply swap
+    state_.cells[cell_id1].x = new_x1;
+    state_.cells[cell_id2].x = new_x2;
+    
+    // Update grid occupancy
+    updateGrid1D(affected_cells);
+    
+    // Calculate HPWL change
+    std::vector<int> affected_nets = getAffectedNets(cell_id1);
+    std::vector<int> affected_nets2 = getAffectedNets(cell_id2);
+    affected_nets.insert(affected_nets.end(), affected_nets2.begin(), affected_nets2.end());
+    
+    // Remove duplicates
+    std::sort(affected_nets.begin(), affected_nets.end());
+    affected_nets.erase(std::unique(affected_nets.begin(), affected_nets.end()), affected_nets.end());
+    
+    int64_t delta = calcDeltaHPWL(affected_nets);
+    
+    if (acceptMove(delta, temp_)) {
+        updateHPWLCache(affected_nets);
+        state_.total_hpwl += delta;
+        accepted_swaps_1d_++;
+        return true;
+    } else {
+        // Restore original positions
+        for (size_t i = 0; i < affected_cells.size(); ++i) {
+            state_.cells[affected_cells[i]].x = original_positions[i];
+        }
+        updateGrid1D(affected_cells);
+        return false;
+    }
+}
+
+bool SAWorker::tryMoveCell1D(int cell_id, int target_pos)
+{
+    int current_pos = getCellPosition1D(cell_id);
+    if (current_pos == -1 || current_pos == target_pos) return false;
+    
+    if (target_pos < 0 || target_pos >= static_cast<int>(cell_ordering_1d_.size())) {
+        return false;
+    }
+    
+    const dpl::Node* node = network_->getNode(cell_id);
+    GridX width = grid_info_->gridPaddedWidth(node);
+    
+    std::vector<int> affected_cells = {cell_id};
+    std::vector<DbuX> original_positions = {state_.cells[cell_id].x};
+    
+    DbuX new_x;
+    
+    if (current_pos > target_pos) {
+        // Moving left - insert before target position
+        int target_cell = getCellAt1DPosition(target_pos);
+        if (target_cell == -1) return false;
+        
+        new_x = state_.cells[target_cell].x;
+        
+        // Shift cells right
+        for (int pos = target_pos; pos < current_pos; pos++) {
+            int shift_cell = getCellAt1DPosition(pos);
+            if (shift_cell != -1) {
+                original_positions.push_back(state_.cells[shift_cell].x);
+                state_.cells[shift_cell].x = DbuX{state_.cells[shift_cell].x.v + width.v};
+                affected_cells.push_back(shift_cell);
+            }
+        }
+    } else {
+        // Moving right - insert after target position
+        int target_cell = getCellAt1DPosition(target_pos);
+        if (target_cell == -1) return false;
+        
+        const dpl::Node* target_node = network_->getNode(target_cell);
+        GridX target_width = grid_info_->gridPaddedWidth(target_node);
+        
+        new_x = DbuX{state_.cells[target_cell].x.v + target_width.v - width.v};
+        
+        // Shift cells left
+        for (int pos = current_pos + 1; pos <= target_pos; pos++) {
+            int shift_cell = getCellAt1DPosition(pos);
+            if (shift_cell != -1) {
+                original_positions.push_back(state_.cells[shift_cell].x);
+                state_.cells[shift_cell].x = DbuX{state_.cells[shift_cell].x.v - width.v};
+                affected_cells.push_back(shift_cell);
+            }
+        }
+    }
+    
+    // Apply move
+    state_.cells[cell_id].x = new_x;
+    
+    // Update grid and calculate delta
+    updateGrid1D(affected_cells);
+    
+    std::vector<int> affected_nets = getAffectedNets(cell_id);
+    int64_t delta = calcDeltaHPWL(affected_nets);
+    
+    if (acceptMove(delta, temp_)) {
+        updateHPWLCache(affected_nets);
+        state_.total_hpwl += delta;
+        updateOrdering1D();  // Maintain 1D ordering
+        accepted_moves_1d_++;
+        return true;
+    } else {
+        // Restore original positions
+        for (size_t i = 0; i < affected_cells.size(); ++i) {
+            state_.cells[affected_cells[i]].x = original_positions[i];
+        }
+        updateGrid1D(affected_cells);
+        return false;
+    }
 }
 
 bool SAWorker::tryRegionShuffle(int region_size)
 {
+    // For low row count designs, use speculative kick moves
+    if (isLowRowDesign()) {
+        return trySpeculativeKick();
+    }
     
+    // Original region-based shuffle for normal designs
     // Get movable cells (cache this if called frequently)
     std::vector<int> movable_cells;
     for (int i = 0; i < network_->getNumNodes(); ++i) {
@@ -2000,18 +2530,28 @@ bool SAWorker::tryRegionShuffle(int region_size)
         }
     }
     
-    if (movable_cells.size() < 2) {
-        return false;  // Need at least 2 cells to shuffle
+    if (movable_cells.empty()) {
+        return false;  // No movable cells
     }
     
     // 1. Select random center point for region
     int max_x_coord = grid_info_->getRowSiteCount();
     int max_y_coord = grid_info_->getRowCount();
     
-    std::uniform_int_distribution<int> x_dist(region_size/2, 
-                                             std::max(region_size/2, max_x_coord - region_size/2));
-    std::uniform_int_distribution<int> y_dist(region_size/2, 
-                                             std::max(region_size/2, max_y_coord - region_size/2));
+    // Debug: Log grid dimensions on first attempt
+    /*if (kick_attempts_ == 0) {
+        utl::Logger* logger = sa2d_->getLogger();
+        logger->info(utl::SA2D, 474, "Grid dimensions: {} sites x {} rows", max_x_coord, max_y_coord);
+    }*/
+    
+    // Fix region center selection to handle small grids
+    int x_min_center = std::min(region_size/2, max_x_coord - 1);
+    int x_max_center = std::max(x_min_center, max_x_coord - region_size/2);
+    int y_min_center = std::min(region_size/2, max_y_coord - 1);
+    int y_max_center = std::max(y_min_center, max_y_coord - region_size/2);
+    
+    std::uniform_int_distribution<int> x_dist(x_min_center, x_max_center);
+    std::uniform_int_distribution<int> y_dist(y_min_center, y_max_center);
     GridX center_x{x_dist(rng_)};
     GridY center_y{y_dist(rng_)};
     
@@ -2021,63 +2561,200 @@ bool SAWorker::tryRegionShuffle(int region_size)
     GridY y_min{std::max(0, center_y.v - region_size/2)};
     GridY y_max{std::min(max_y_coord, center_y.v + region_size/2)};
     
-    // 3. Collect movable cells in region, grouped by size
-    std::map<std::pair<GridX, GridY>, std::vector<int>> size_groups;
+    // 3. Collect all movable cells in region
+    std::vector<int> cells_in_region;
     
     for (int cell_id : movable_cells) {
         GridX gx = grid_info_->gridX(state_.cells[cell_id].x);
         GridY gy = grid_info_->gridSnapDownY(state_.cells[cell_id].y);
         
         if (gx >= x_min && gx < x_max && gy >= y_min && gy < y_max) {
+            cells_in_region.push_back(cell_id);
+        }
+    }
+    
+    if (cells_in_region.size() < 2) {
+        return false;  // Need at least 2 cells in region
+    }
+    
+    // 4. Find free locations in the region
+    std::vector<GridPt> free_locations;
+    for (GridY y = y_min; y < y_max; ++y) {
+        for (GridX x = x_min; x < x_max; ++x) {
+            if (!grid_->isOccupied(x, y)) {
+                free_locations.push_back(GridPt{x, y});
+            }
+        }
+    }
+    
+    // 5. Create moves: both swaps (any dimensions) AND moves to free locations
+    std::vector<std::pair<int, int>> swap_pairs;
+    std::vector<std::pair<int, GridPt>> single_moves;
+    
+    // Strategy 1: Create random swap pairs (different dimensions allowed)
+    int swaps_to_try = std::min(5, (int)cells_in_region.size() / 2);
+    std::shuffle(cells_in_region.begin(), cells_in_region.end(), rng_);
+    
+    for (int i = 0; i < swaps_to_try * 2 && i + 1 < cells_in_region.size(); i += 2) {
+        swap_pairs.push_back({cells_in_region[i], cells_in_region[i+1]});
+    }
+    
+    // Strategy 2: Try to move some cells to free locations
+    if (!free_locations.empty() && cells_in_region.size() > swaps_to_try * 2) {
+        // Move cells that weren't involved in swaps
+        int single_moves_to_try = std::min(5, (int)(cells_in_region.size() - swaps_to_try * 2));
+        std::shuffle(free_locations.begin(), free_locations.end(), rng_);
+        
+        for (int i = swaps_to_try * 2; i < swaps_to_try * 2 + single_moves_to_try && i < cells_in_region.size(); ++i) {
+            int cell_id = cells_in_region[i];
             const dpl::Node* node = network_->getNode(cell_id);
             GridX width = grid_info_->gridPaddedWidth(node);
             GridY height = grid_info_->gridHeight(node);
             
-            size_groups[{width, height}].push_back(cell_id);
-        }
-    }
-    
-    // 4. For each size group with 2+ cells, create random swaps
-    std::vector<std::pair<int, int>> swap_pairs;
-    
-    for (auto& [size, cells] : size_groups) {
-        if (cells.size() < 2) continue;
-        
-        // Shuffle the cell IDs to create random pairings
-        std::vector<int> shuffled = cells;
-        std::shuffle(shuffled.begin(), shuffled.end(), rng_);
-        
-        // Create swap pairs (each cell swaps with its shuffled counterpart)
-        // Only create swaps where cells actually change positions
-        for (size_t i = 0; i < cells.size(); ++i) {
-            if (cells[i] != shuffled[i]) {
-                // Only add each swap once (avoid duplicates)
-                bool already_added = false;
-                for (const auto& [c1, c2] : swap_pairs) {
-                    if ((c1 == cells[i] && c2 == shuffled[i]) ||
-                        (c1 == shuffled[i] && c2 == cells[i])) {
-                        already_added = true;
-                        break;
+            // Find a free location that can fit this cell
+            for (const auto& loc : free_locations) {
+                // Check if cell can fit at this location
+                bool fits = true;
+                if (loc.x.v + width.v <= x_max.v && loc.y.v + height.v <= y_max.v) {
+                    for (GridY y = loc.y; y.v < loc.y.v + height.v && fits; ++y) {
+                        for (GridX x = loc.x; x.v < loc.x.v + width.v && fits; ++x) {
+                            if (grid_->isOccupied(x, y)) {
+                                fits = false;
+                            }
+                        }
                     }
-                }
-                if (!already_added) {
-                    swap_pairs.push_back({cells[i], shuffled[i]});
+                    
+                    if (fits) {
+                        single_moves.push_back({cell_id, loc});
+                        break;  // Found a location for this cell
+                    }
                 }
             }
         }
     }
     
-    if (swap_pairs.empty()) {
-        return false;  // No swaps possible in this region
+    if (swap_pairs.empty() && single_moves.empty()) {
+        return false;  // No moves possible
     }
     
     kick_attempts_++;
     
-    // 5. Save original states and calculate total cost change
+    // Debug: Log kick attempt details
+    /*if (kick_attempts_ % 1000 == 1) {  // Log every 1000th attempt
+        utl::Logger* logger = sa2d_->getLogger();
+        logger->info(utl::SA2D, 475, "Kick attempt {}: region ({},{}) size {}, {} cells in region, {} swaps, {} single moves",
+                    kick_attempts_, center_x.v, center_y.v, region_size, 
+                    cells_in_region.size(), swap_pairs.size(), single_moves.size());
+    }*/
+    
+    // 6. Validate all moves can be legally applied together
+    WorkerGrid temp_grid(grid_info_);
+    temp_grid.copyFrom(*grid_);
+    
+    // First, remove all cells that will be moved
+    for (const auto& [cell1, cell2] : swap_pairs) {
+        temp_grid.removeCell(cell1);
+        temp_grid.removeCell(cell2);
+    }
+    for (const auto& [cell_id, target] : single_moves) {
+        temp_grid.removeCell(cell_id);
+    }
+    
+    // Then check if all moves are legal
+    bool all_moves_legal = true;
+    
+    // Check swap pairs (different dimensions allowed)
+    for (const auto& [cell1, cell2] : swap_pairs) {
+        const dpl::Node* node1 = network_->getNode(cell1);
+        const dpl::Node* node2 = network_->getNode(cell2);
+        GridX gw1 = grid_info_->gridPaddedWidth(node1);
+        GridY gh1 = grid_info_->gridHeight(node1);
+        GridX gw2 = grid_info_->gridPaddedWidth(node2);
+        GridY gh2 = grid_info_->gridHeight(node2);
+        
+        // Get current positions
+        GridX gx1 = grid_info_->gridX(state_.cells[cell1].x);
+        GridY gy1 = grid_info_->gridSnapDownY(state_.cells[cell1].y);
+        GridX gx2 = grid_info_->gridX(state_.cells[cell2].x);
+        GridY gy2 = grid_info_->gridSnapDownY(state_.cells[cell2].y);
+        
+        // Check if cell1 can fit at cell2's position (with cell1's dimensions)
+        bool can_place1 = true;
+        if (gx2.v + gw1.v > grid_info_->getRowSiteCount() || gy2.v + gh1.v > grid_info_->getRowCount()) {
+            can_place1 = false;
+        } else {
+            for (GridY y = gy2; y.v < gy2.v + gh1.v && can_place1; ++y) {
+                for (GridX x = gx2; x.v < gx2.v + gw1.v && can_place1; ++x) {
+                    if (temp_grid.isOccupied(x, y)) {
+                        can_place1 = false;
+                    }
+                }
+            }
+        }
+        
+        // Check if cell2 can fit at cell1's position (with cell2's dimensions)
+        bool can_place2 = true;
+        if (gx1.v + gw2.v > grid_info_->getRowSiteCount() || gy1.v + gh2.v > grid_info_->getRowCount()) {
+            can_place2 = false;
+        } else {
+            for (GridY y = gy1; y.v < gy1.v + gh2.v && can_place2; ++y) {
+                for (GridX x = gx1; x.v < gx1.v + gw2.v && can_place2; ++x) {
+                    if (temp_grid.isOccupied(x, y)) {
+                        can_place2 = false;
+                    }
+                }
+            }
+        }
+        
+        // Also check basic legality (site compatibility, etc.)
+        if (can_place1) {
+            can_place1 = canPlaceCell(cell1, gx2, gy2);
+        }
+        if (can_place2) {
+            can_place2 = canPlaceCell(cell2, gx1, gy1);
+        }
+        
+        if (!can_place1 || !can_place2) {
+            all_moves_legal = false;
+            break;
+        }
+        
+        // Place in temp grid with their own dimensions
+        temp_grid.placeCell(cell1, gx2, gy2, gw1, gh1);
+        temp_grid.placeCell(cell2, gx1, gy1, gw2, gh2);
+    }
+    
+    // Check single moves
+    if (all_moves_legal) {
+        for (const auto& [cell_id, target] : single_moves) {
+            const dpl::Node* node = network_->getNode(cell_id);
+            GridX gw = grid_info_->gridPaddedWidth(node);
+            GridY gh = grid_info_->gridHeight(node);
+            
+            if (!canPlaceCell(cell_id, target.x, target.y)) {
+                all_moves_legal = false;
+                break;
+            }
+            
+            // Place in temp grid
+            temp_grid.placeCell(cell_id, target.x, target.y, gw, gh);
+        }
+    }
+    
+    if (!all_moves_legal) {
+        kick_rejected_++;
+        /*if (kick_rejected_ % 1000 == 0) {  // Log every 1000th rejection
+            utl::Logger* logger = sa2d_->getLogger();
+            logger->info(utl::SA2D, 476, "Kick rejected due to legality: {} total rejections", kick_rejected_);
+        }*/
+        return false;
+    }
+    
+    // 7. Save original states and calculate cost
     std::vector<CellState> saved_states;
     std::set<int> all_affected_nets;
     
-    // Save states and perform swaps temporarily
+    // Save states and perform moves temporarily
     for (const auto& [cell1, cell2] : swap_pairs) {
         saved_states.push_back(state_.cells[cell1]);
         saved_states.push_back(state_.cells[cell2]);
@@ -2092,92 +2769,45 @@ bool SAWorker::tryRegionShuffle(int region_size)
         all_affected_nets.insert(nets2.begin(), nets2.end());
     }
     
-    // 6. Calculate total delta
+    for (const auto& [cell_id, target] : single_moves) {
+        saved_states.push_back(state_.cells[cell_id]);
+        
+        // Move cell to target location
+        state_.cells[cell_id].x = grid_info_->gridToDbuX(target.x);
+        state_.cells[cell_id].y = grid_info_->gridYToDbu(target.y);
+        state_.cells[cell_id].orient = getCellOrientation(cell_id, target.x, target.y);
+        
+        // Collect affected nets
+        auto nets = getAffectedNets(cell_id);
+        all_affected_nets.insert(nets.begin(), nets.end());
+    }
+    
+    // 8. Calculate total delta
     std::vector<int> affected_nets_vec(all_affected_nets.begin(), all_affected_nets.end());
     int64_t total_delta = calcDeltaHPWL(affected_nets_vec);
     
-    // 7. Accept/reject based on kick temperature
+    // 9. Accept/reject based on kick temperature
     float kick_temp = temp_ * kick_temp_multiplier_;
     
     if (acceptMove(total_delta, kick_temp)) {
-        // CRITICAL: Validate that all swaps can be legally applied together
-        // Create a temporary grid to test the swaps
-        WorkerGrid temp_grid(grid_info_);
-        temp_grid.copyFrom(*grid_);
+        // Apply all moves to the actual grid
+        grid_->clear();  // Clear and rebuild for consistency
         
-        // Try to apply all swaps to temporary grid
-        bool all_swaps_legal = true;
-        for (const auto& [cell1, cell2] : swap_pairs) {
-            // Get cell dimensions
-            const dpl::Node* node1 = network_->getNode(cell1);
-            const dpl::Node* node2 = network_->getNode(cell2);
-            GridX gw1 = grid_info_->gridPaddedWidth(node1);
-            GridY gh1 = grid_info_->gridHeight(node1);
-            GridX gw2 = grid_info_->gridPaddedWidth(node2);
-            GridY gh2 = grid_info_->gridHeight(node2);
-            
-            // Get target positions (after swap)
-            GridX gx1 = grid_info_->gridX(state_.cells[cell1].x);
-            GridY gy1 = grid_info_->gridSnapDownY(state_.cells[cell1].y);
-            GridX gx2 = grid_info_->gridX(state_.cells[cell2].x);
-            GridY gy2 = grid_info_->gridSnapDownY(state_.cells[cell2].y);
-            
-            // Remove cells from temp grid
-            temp_grid.removeCell(cell1);
-            temp_grid.removeCell(cell2);
-            
-            // Check if we can place both cells in their new positions
-            // For single-height cells, manually check space availability
-            bool can_place1 = true;
-            bool can_place2 = true;
-            
-            // Check space for cell1 at its new position
-            for (GridY y = gy1; y.v < gy1.v + gh1.v && can_place1; ++y) {
-                for (GridX x = gx1; x.v < gx1.v + gw1.v && can_place1; ++x) {
-                    if (temp_grid.isOccupied(x, y)) {
-                        can_place1 = false;
-                    }
+        // Rebuild grid with new positions
+        for (int i = 0; i < network_->getNumNodes(); i++) {
+            const dpl::Node* node = network_->getNode(i);
+            if (node->getType() == dpl::Node::CELL) {
+                GridX gx = grid_info_->gridX(state_.cells[i].x);
+                GridY gy = grid_info_->gridSnapDownY(state_.cells[i].y);
+                GridX gw = grid_info_->gridPaddedWidth(node);
+                GridY gh = grid_info_->gridHeight(node);
+                
+                if (grid_info_->isMultiHeightCell(node)) {
+                    grid_->placeMultiHeightCell(i, gx, gy, gw, gh);
+                } else {
+                    grid_->placeCell(i, gx, gy, gw, gh);
                 }
             }
-            
-            // Check space for cell2 at its new position
-            for (GridY y = gy2; y.v < gy2.v + gh2.v && can_place2; ++y) {
-                for (GridX x = gx2; x.v < gx2.v + gw2.v && can_place2; ++x) {
-                    if (temp_grid.isOccupied(x, y)) {
-                        can_place2 = false;
-                    }
-                }
-            }
-            
-            if (!can_place1 || !can_place2) {
-                all_swaps_legal = false;
-                break;
-            }
-            
-            // Place cells in their new positions on temp grid
-            temp_grid.placeCell(cell1, gx1, gy1, gw1, gh1);
-            temp_grid.placeCell(cell2, gx2, gy2, gw2, gh2);
-        }
-        
-        if (!all_swaps_legal) {
-            // Restore all original states - swaps would create overlaps
-            utl::Logger* logger = sa2d_->getLogger();
-            /*logger->warn(utl::SA2D, 462, "Worker {} region shuffle would create overlaps! {} swaps rejected",
-                        worker_id_, swap_pairs.size());*/
-            
-            int idx = 0;
-            for (const auto& [cell1, cell2] : swap_pairs) {
-                state_.cells[cell1] = saved_states[idx++];
-                state_.cells[cell2] = saved_states[idx++];
-            }
-            
-            kick_rejected_++;
-            return false;
-        }
-        
-        // All swaps are legal - apply them to the actual grid
-        for (const auto& [cell1, cell2] : swap_pairs) {
-            applySwapToGrid(cell1, cell2);
         }
         
         // Update HPWL cache
@@ -2185,15 +2815,11 @@ bool SAWorker::tryRegionShuffle(int region_size)
         state_.total_hpwl += total_delta;
         
         kick_accepted_++;
-        total_swaps_applied_ += swap_pairs.size();
+        total_swaps_applied_ += swap_pairs.size() + single_moves.size();
         
         // Update best solution if this is better
         updateBestSolution();
         
-        /*logger->info(utl::SA2D, 320, "Region shuffle accepted: {} swaps, delta={:.1f} u, region=({},{}) size={}",
-                    swap_pairs.size(), 
-                    sa2d_->getBlock()->dbuToMicrons(total_delta),
-                    center_x.v, center_y.v, region_size);*/
         return true;
     } else {
         // Restore all original states
@@ -2202,8 +2828,16 @@ bool SAWorker::tryRegionShuffle(int region_size)
             state_.cells[cell1] = saved_states[idx++];
             state_.cells[cell2] = saved_states[idx++];
         }
+        for (const auto& [cell_id, target] : single_moves) {
+            state_.cells[cell_id] = saved_states[idx++];
+        }
         
         kick_rejected_++;
+        if (kick_rejected_ % 1000 == 0) {  // Log every 1000th rejection
+            utl::Logger* logger = sa2d_->getLogger();
+            logger->info(utl::SA2D, 477, "Kick rejected by SA: delta={}, temp={}, kick_temp={}, total rejections={}",
+                        total_delta, temp_, kick_temp, kick_rejected_);
+        }
         return false;
     }
 }
@@ -2444,7 +3078,6 @@ bool SAWorker::canPlaceMultiHeightCell(int cell_id, GridX x, GridY y)
 }
 
 bool SAWorker::checkGridStateConsistency() {
-    utl::Logger* logger = sa2d_->getLogger();
     bool consistent = true;
     
     // Create a fresh grid from state
@@ -2629,6 +3262,1261 @@ bool SAWorker::trySlide(int cell_id)
         rejected_moves_++;
         return false;
     }
+}
+
+void SAWorker::reportRuntimeStatistics() const
+{
+    utl::Logger* logger = sa2d_->getLogger();
+    
+    // Calculate total runtime
+    int64_t total_time = single_move_time_ + swap_time_ + flip_time_ + 
+                        slide_time_ + chain_move_time_ + kick_time_;
+    
+    if (total_time == 0) {
+        logger->info(utl::SA2D, 470, "Worker {} runtime statistics not available (no timing data)", worker_id_);
+        return;
+    }
+    
+    logger->info(utl::SA2D, 471, "");  // Empty line for separation
+    logger->info(utl::SA2D, 472, "Worker {} runtime statistics (accepted moves only):", worker_id_);
+    logger->info(utl::SA2D, 473, "  Total accepted move time: {:.3f} seconds", total_time / 1e6);
+    logger->info(utl::SA2D, 474, "");
+    
+    // Format: Operator | Count | Total Time | Avg Time | % of Total
+    logger->info(utl::SA2D, 475, "  {:15} | {:>10} | {:>12} | {:>12} | {:>10}",
+                "Operator", "Accepted", "Total (s)", "Avg (us)", "% Total");
+    logger->info(utl::SA2D, 476, "  {:->15}-+-{:->10}-+-{:->12}-+-{:->12}-+-{:->10}",
+                "", "", "", "", "");
+    
+    // Single moves
+    if (accepted_single_moves_ > 0) {
+        double avg_time = (double)single_move_time_ / accepted_single_moves_;
+        double percent = 100.0 * single_move_time_ / total_time;
+        logger->info(utl::SA2D, 477, "  {:15} | {:>10} | {:>12.3f} | {:>12.1f} | {:>9.1f}%",
+                    "Single moves", accepted_single_moves_, 
+                    single_move_time_ / 1e6, avg_time, percent);
+    }
+    
+    // Swaps
+    if (accepted_swaps_ > 0) {
+        double avg_time = (double)swap_time_ / accepted_swaps_;
+        double percent = 100.0 * swap_time_ / total_time;
+        logger->info(utl::SA2D, 478, "  {:15} | {:>10} | {:>12.3f} | {:>12.1f} | {:>9.1f}%",
+                    "Swaps", accepted_swaps_, 
+                    swap_time_ / 1e6, avg_time, percent);
+    }
+    
+    // Flips
+    if (accepted_flips_ > 0) {
+        double avg_time = (double)flip_time_ / accepted_flips_;
+        double percent = 100.0 * flip_time_ / total_time;
+        logger->info(utl::SA2D, 479, "  {:15} | {:>10} | {:>12.3f} | {:>12.1f} | {:>9.1f}%",
+                    "Flips", accepted_flips_, 
+                    flip_time_ / 1e6, avg_time, percent);
+    }
+    
+    // Slides
+    if (accepted_slides_ > 0) {
+        double avg_time = (double)slide_time_ / accepted_slides_;
+        double percent = 100.0 * slide_time_ / total_time;
+        logger->info(utl::SA2D, 480, "  {:15} | {:>10} | {:>12.3f} | {:>12.1f} | {:>9.1f}%",
+                    "Slides", accepted_slides_, 
+                    slide_time_ / 1e6, avg_time, percent);
+    }
+    
+    // Chain moves
+    if (accepted_chain_moves_ > 0) {
+        double avg_time = (double)chain_move_time_ / accepted_chain_moves_;
+        double percent = 100.0 * chain_move_time_ / total_time;
+        logger->info(utl::SA2D, 481, "  {:15} | {:>10} | {:>12.3f} | {:>12.1f} | {:>9.1f}%",
+                    "Chain moves", accepted_chain_moves_, 
+                    chain_move_time_ / 1e6, avg_time, percent);
+    }
+    
+    // Kicks
+    if (kick_accepted_ > 0) {
+        double avg_time = (double)kick_time_ / kick_accepted_;
+        double percent = 100.0 * kick_time_ / total_time;
+        logger->info(utl::SA2D, 482, "  {:15} | {:>10} | {:>12.3f} | {:>12.1f} | {:>9.1f}%",
+                    "Kicks", kick_accepted_, 
+                    kick_time_ / 1e6, avg_time, percent);
+    }
+    
+    logger->info(utl::SA2D, 483, "");  // Empty line for separation
+}
+
+// Implementation of specialized kick moves for low row count designs
+
+bool SAWorker::tryLowRowKickMove()
+{
+    // For low row designs, use specialized strategies
+    std::uniform_int_distribution<int> strategy_dist(0, 3);
+    int strategy = strategy_dist(rng_);
+    
+    // Debug logging every 1000 attempts
+    static int debug_counter = 0;
+    debug_counter++;
+    if (debug_counter % 1000 == 0) {
+        utl::Logger* logger = sa2d_->getLogger();
+        logger->info(utl::SA2D, 487, "Low-row kick attempt {}: temp={}, kick_temp_mult={}, strategy={}",
+                    debug_counter, temp_, kick_temp_multiplier_, 
+                    strategy == 0 ? "chain" : strategy == 1 ? "compress" : 
+                    strategy == 2 ? "transfer" : "slide");
+    }
+    
+    switch (strategy) {
+        case 0: {
+            // Horizontal chain swap within a row
+            std::uniform_int_distribution<int> row_dist(0, grid_info_->getRowCount() - 1);
+            std::uniform_int_distribution<int> chain_dist(3, 8);  // Chain length
+            return tryHorizontalChainSwap(row_dist(rng_), chain_dist(rng_));
+        }
+        case 1: {
+            // Row compression to create space
+            std::uniform_int_distribution<int> row_dist(0, grid_info_->getRowCount() - 1);
+            std::uniform_int_distribution<int> start_dist(0, grid_info_->getRowSiteCount() - 50);
+            std::uniform_int_distribution<int> length_dist(20, 50);
+            return tryRowCompression(row_dist(rng_), start_dist(rng_), length_dist(rng_));
+        }
+        case 2: {
+            // Inter-row transfer
+            return tryInterRowTransfer();
+        }
+        case 3: {
+            // Sliding window move
+            std::uniform_int_distribution<int> row_dist(0, grid_info_->getRowCount() - 1);
+            std::uniform_int_distribution<int> window_dist(5, 15);
+            return trySlidingWindowMove(row_dist(rng_), window_dist(rng_));
+        }
+    }
+    
+    return false;
+}
+
+bool SAWorker::tryHorizontalChainSwap(int row, int chain_length)
+{
+    if (row >= grid_info_->getRowCount()) return false;
+    
+    // Find cells in this row
+    std::vector<int> cells_in_row;
+    for (int i = 0; i < network_->getNumNodes(); ++i) {
+        dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
+        if (node->getType() == dpl::Node::CELL && !node->isFixed()) {
+            GridY cell_y = grid_info_->gridSnapDownY(state_.cells[i].y);
+            if (cell_y == row) {
+                cells_in_row.push_back(i);
+            }
+        }
+    }
+    
+    if (cells_in_row.size() < 2) return false;
+    
+    // Sort by x-coordinate
+    std::sort(cells_in_row.begin(), cells_in_row.end(), 
+              [this](int a, int b) { return state_.cells[a].x < state_.cells[b].x; });
+    
+    // Select random starting position
+    if (cells_in_row.size() < chain_length) {
+        chain_length = cells_in_row.size();
+    }
+    
+    std::uniform_int_distribution<int> start_dist(0, cells_in_row.size() - chain_length);
+    int start_idx = start_dist(rng_);
+    
+    // Build swap chain: cell[i] -> position of cell[i+1], last -> position of first
+    std::vector<std::pair<int, GridPt>> moves;
+    
+    for (int i = 0; i < chain_length; ++i) {
+        int cell_id = cells_in_row[start_idx + i];
+        int next_idx = (i + 1) % chain_length;
+        int target_cell = cells_in_row[start_idx + next_idx];
+        
+        GridX target_x = grid_info_->gridX(state_.cells[target_cell].x);
+        GridY target_y = grid_info_->gridSnapDownY(state_.cells[target_cell].y);
+        
+        moves.push_back({cell_id, GridPt{target_x, target_y}});
+    }
+    
+    // Validate all moves are legal
+    WorkerGrid temp_grid(grid_info_);
+    temp_grid.copyFrom(*grid_);
+    
+    // Remove all cells that will move
+    for (const auto& [cell_id, _] : moves) {
+        temp_grid.removeCell(cell_id);
+    }
+    
+    // Check if all can be placed at new positions
+    for (const auto& [cell_id, new_pos] : moves) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        GridY height = grid_info_->gridHeight(node);
+        
+        // Check bounds and overlaps
+        if (new_pos.x < 0 || new_pos.x + width > grid_info_->getRowSiteCount() ||
+            new_pos.y < 0 || new_pos.y + height > grid_info_->getRowCount()) {
+            return false;
+        }
+        
+        for (GridY yi = new_pos.y; yi < new_pos.y + height; ++yi) {
+            for (GridX xi = new_pos.x; xi < new_pos.x + width; ++xi) {
+                if (temp_grid.isOccupied(xi, yi)) {
+                    return false;
+                }
+            }
+        }
+        
+        // Add to temp grid
+        temp_grid.placeCell(cell_id, new_pos.x, new_pos.y, width, height);
+    }
+    
+    // Calculate total HPWL change
+    double total_delta = 0;
+    for (const auto& [cell_id, new_pos] : moves) {
+        double old_contrib = calcCellHPWLContribution(cell_id);
+        
+        // Temporarily update position
+        DbuX old_x = state_.cells[cell_id].x;
+        state_.cells[cell_id].x = gridToDbu(new_pos.x, DbuX{grid_info_->getSiteWidth()});
+        
+        double new_contrib = calcCellHPWLContribution(cell_id);
+        total_delta += new_contrib - old_contrib;
+        
+        // Restore
+        state_.cells[cell_id].x = old_x;
+    }
+    
+    // Use kick temperature for acceptance
+    double kick_temp = temp_ * kick_temp_multiplier_;
+    
+    // For low-row designs, use more aggressive temperature
+    if (isLowRowDesign()) {
+        kick_temp *= 2.0;  // Double the kick temperature for dense designs
+    }
+    
+    // Debug: Log large deltas
+    if (kick_attempts_ % 500 == 0 && total_delta > 0) {
+        utl::Logger* logger = sa2d_->getLogger();
+        logger->info(utl::SA2D, 488, "Chain swap delta: {} at temp={}, kick_temp={}, chain_len={}, acceptance_prob={}",
+                    total_delta, temp_, kick_temp, chain_length,
+                    total_delta > 0 ? std::exp(-total_delta / kick_temp) : 1.0);
+    }
+    
+    kick_attempts_++;
+    double kick_temp_adjusted = temp_ * kick_temp_multiplier_;
+    if (isLowRowDesign()) {
+        kick_temp_adjusted *= 2.0;  // More aggressive for dense designs
+    }
+    if (acceptMove(total_delta, kick_temp_adjusted)) {
+        // Apply all moves
+        for (const auto& [cell_id, new_pos] : moves) {
+            const dpl::Node* node = network_->getNode(cell_id);
+            grid_->removeCell(cell_id);
+            grid_->placeCell(cell_id, new_pos.x, new_pos.y,
+                           grid_info_->gridPaddedWidth(node),
+                           grid_info_->gridHeight(node));
+            
+            state_.cells[cell_id].x = gridToDbu(new_pos.x, DbuX{grid_info_->getSiteWidth()});
+            state_.cells[cell_id].y = grid_info_->gridYToDbu(new_pos.y);
+            state_.cells[cell_id].orient = getCellOrientation(cell_id, new_pos.x, new_pos.y);
+        }
+        
+        // Update HPWL
+        state_.total_hpwl += total_delta;
+        kick_accepted_++;
+        total_swaps_applied_ += chain_length;  // Count the swaps
+        return true;
+    }
+    
+    kick_rejected_++;
+    return false;
+}
+
+bool SAWorker::tryRowCompression(int row, int start_x, int length)
+{
+    if (row >= grid_info_->getRowCount()) return false;
+    
+    // Find cells in the specified x-range of this row
+    std::vector<int> cells_to_compress;
+    for (int i = 0; i < network_->getNumNodes(); ++i) {
+        dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
+        if (node->getType() == dpl::Node::CELL && !node->isFixed()) {
+            GridY cell_y = grid_info_->gridSnapDownY(state_.cells[i].y);
+            GridX cell_x = grid_info_->gridX(state_.cells[i].x);
+            
+            if (cell_y == row && cell_x >= start_x && cell_x < start_x + length) {
+                cells_to_compress.push_back(i);
+            }
+        }
+    }
+    
+    if (cells_to_compress.size() < 2) return false;
+    
+    // Sort by x-coordinate
+    std::sort(cells_to_compress.begin(), cells_to_compress.end(),
+              [this](int a, int b) { return state_.cells[a].x < state_.cells[b].x; });
+    
+    // Calculate total width and find gaps
+    int total_width = 0;
+    std::vector<int> gaps;
+    
+    for (size_t i = 0; i < cells_to_compress.size(); ++i) {
+        const dpl::Node* node = network_->getNode(cells_to_compress[i]);
+        total_width += grid_info_->gridPaddedWidth(node).v;
+        
+        if (i > 0) {
+            GridX curr_x = grid_info_->gridX(state_.cells[cells_to_compress[i]].x);
+            const dpl::Node* prev_node = network_->getNode(cells_to_compress[i-1]);
+            GridX prev_x = grid_info_->gridX(state_.cells[cells_to_compress[i-1]].x);
+            GridX prev_width = grid_info_->gridPaddedWidth(prev_node);
+            
+            int gap = curr_x.v - (prev_x.v + prev_width.v);
+            if (gap > 0) gaps.push_back(gap);
+        }
+    }
+    
+    // If no significant gaps, can't compress
+    int total_gaps = std::accumulate(gaps.begin(), gaps.end(), 0);
+    if (total_gaps < 5) return false;  // Need at least 5 sites of gaps
+    
+    // Try to compress by removing gaps
+    std::vector<std::pair<int, GridPt>> new_positions;
+    GridX current_x{start_x};
+    
+    for (int cell_id : cells_to_compress) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        
+        new_positions.push_back({cell_id, GridPt{current_x, GridY{row}}});
+        current_x = GridX{current_x.v + width.v};
+    }
+    
+    // Validate compression
+    WorkerGrid temp_grid(grid_info_);
+    temp_grid.copyFrom(*grid_);
+    
+    // Remove cells to compress
+    for (int cell_id : cells_to_compress) {
+        temp_grid.removeCell(cell_id);
+    }
+    
+    // Check new positions
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        GridY height = grid_info_->gridHeight(node);
+        
+        // Check bounds and overlaps
+        if (new_pos.x + width > grid_info_->getRowSiteCount()) {
+            return false;
+        }
+        
+        for (GridY yi = new_pos.y; yi < new_pos.y + height; ++yi) {
+            for (GridX xi = new_pos.x; xi < new_pos.x + width; ++xi) {
+                if (temp_grid.isOccupied(xi, yi)) {
+                    return false;
+                }
+            }
+        }
+        
+        temp_grid.placeCell(cell_id, new_pos.x, new_pos.y, width, height);
+    }
+    
+    // Calculate HPWL change and apply if beneficial
+    double total_delta = 0;
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        double old_contrib = calcCellHPWLContribution(cell_id);
+        
+        DbuX old_x = state_.cells[cell_id].x;
+        state_.cells[cell_id].x = gridToDbu(new_pos.x, DbuX{grid_info_->getSiteWidth()});
+        
+        double new_contrib = calcCellHPWLContribution(cell_id);
+        total_delta += new_contrib - old_contrib;
+        
+        state_.cells[cell_id].x = old_x;
+    }
+    
+    kick_attempts_++;
+    double kick_temp_adjusted = temp_ * kick_temp_multiplier_;
+    if (isLowRowDesign()) {
+        kick_temp_adjusted *= 2.0;  // More aggressive for dense designs
+    }
+    if (acceptMove(total_delta, kick_temp_adjusted)) {
+        // Apply compression
+        for (const auto& [cell_id, new_pos] : new_positions) {
+            const dpl::Node* node = network_->getNode(cell_id);
+            grid_->removeCell(cell_id);
+            grid_->placeCell(cell_id, new_pos.x, new_pos.y,
+                           grid_info_->gridPaddedWidth(node),
+                           grid_info_->gridHeight(node));
+            
+            state_.cells[cell_id].x = gridToDbu(new_pos.x, DbuX{grid_info_->getSiteWidth()});
+        }
+        
+        state_.total_hpwl += total_delta;
+        kick_accepted_++;
+        total_swaps_applied_ += cells_to_compress.size();  // Count moves as swaps
+        return true;
+    }
+    
+    kick_rejected_++;
+    return false;
+}
+
+bool SAWorker::tryInterRowTransfer()
+{
+    // Find a cell to transfer between rows
+    std::vector<int> movable_cells;
+    for (int i = 0; i < network_->getNumNodes(); ++i) {
+        dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
+        if (node->getType() == dpl::Node::CELL && !node->isFixed() &&
+            grid_info_->gridHeight(node).v == 1) {  // Single height cells only
+            movable_cells.push_back(i);
+        }
+    }
+    
+    if (movable_cells.empty()) return false;
+    
+    // Select random cell
+    std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
+    int cell_id = movable_cells[cell_dist(rng_)];
+    
+    GridY current_row = grid_info_->gridSnapDownY(state_.cells[cell_id].y);
+    GridX current_x = grid_info_->gridX(state_.cells[cell_id].x);
+    
+    // Try other rows
+    std::vector<int> other_rows;
+    for (int r = 0; r < grid_info_->getRowCount(); ++r) {
+        if (r != current_row.v) {
+            other_rows.push_back(r);
+        }
+    }
+    
+    if (other_rows.empty()) return false;
+    
+    std::shuffle(other_rows.begin(), other_rows.end(), rng_);
+    
+    // Try to find space in other rows
+    const dpl::Node* node = network_->getNode(cell_id);
+    GridX width = grid_info_->gridPaddedWidth(node);
+    
+    for (int target_row : other_rows) {
+        // Search for free space near current x position
+        std::vector<GridX> x_positions;
+        
+        // Try positions near current x
+        int search_range = 50;
+        for (int dx = -search_range; dx <= search_range; dx += 5) {
+            GridX try_x{current_x.v + dx};
+            if (try_x.v >= 0 && try_x.v + width.v <= grid_info_->getRowSiteCount()) {
+                x_positions.push_back(try_x);
+            }
+        }
+        
+        std::shuffle(x_positions.begin(), x_positions.end(), rng_);
+        
+        for (GridX try_x : x_positions) {
+            // Check if position is free
+            bool can_place = true;
+            for (GridX xi = try_x; xi < GridX{try_x.v + width.v}; ++xi) {
+                if (grid_->isOccupied(xi, GridY{target_row})) {
+                    can_place = false;
+                    break;
+                }
+            }
+            
+            if (can_place) {
+                // Check site compatibility
+                const auto& available_sites = grid_info_->getSitesAt(try_x, GridY{target_row});
+                if (available_sites.find(node->getSite()) == available_sites.end()) {
+                    continue;
+                }
+                
+                // Calculate HPWL change
+                double old_contrib = calcCellHPWLContribution(cell_id);
+                
+                DbuX old_x = state_.cells[cell_id].x;
+                DbuY old_y = state_.cells[cell_id].y;
+                state_.cells[cell_id].x = gridToDbu(try_x, DbuX{grid_info_->getSiteWidth()});
+                state_.cells[cell_id].y = grid_info_->gridYToDbu(GridY{target_row});
+                
+                double new_contrib = calcCellHPWLContribution(cell_id);
+                double delta = new_contrib - old_contrib;
+                
+                state_.cells[cell_id].x = old_x;
+                state_.cells[cell_id].y = old_y;
+                
+                kick_attempts_++;
+                double kick_temp_adjusted = temp_ * kick_temp_multiplier_;
+                if (isLowRowDesign()) {
+                    kick_temp_adjusted *= 2.0;  // More aggressive for dense designs
+                }
+                if (acceptMove(delta, kick_temp_adjusted)) {
+                    // Apply move
+                    grid_->removeCell(cell_id);
+                    grid_->placeCell(cell_id, try_x, GridY{target_row}, width, GridY{1});
+                    
+                    state_.cells[cell_id].x = gridToDbu(try_x, DbuX{grid_info_->getSiteWidth()});
+                    state_.cells[cell_id].y = grid_info_->gridYToDbu(GridY{target_row});
+                    state_.cells[cell_id].orient = getCellOrientation(cell_id, try_x, GridY{target_row});
+                    
+                    state_.total_hpwl += delta;
+                    kick_accepted_++;
+                    total_swaps_applied_++;  // Count single move as swap
+                    return true;
+                }
+                
+                kick_rejected_++;
+                return false;
+            }
+        }
+    }
+    
+    return false;
+}
+
+bool SAWorker::trySlidingWindowMove(int row, int window_size)
+{
+    if (row >= grid_info_->getRowCount()) return false;
+    
+    // Find cells in this row
+    std::vector<std::pair<int, GridX>> cells_in_row;
+    for (int i = 0; i < network_->getNumNodes(); ++i) {
+        dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
+        if (node->getType() == dpl::Node::CELL && !node->isFixed()) {
+            GridY cell_y = grid_info_->gridSnapDownY(state_.cells[i].y);
+            if (cell_y == row) {
+                GridX cell_x = grid_info_->gridX(state_.cells[i].x);
+                cells_in_row.push_back({i, cell_x});
+            }
+        }
+    }
+    
+    if (cells_in_row.size() < 3) return false;
+    
+    // Sort by x-coordinate
+    std::sort(cells_in_row.begin(), cells_in_row.end(),
+              [](const auto& a, const auto& b) { return a.second < b.second; });
+    
+    // Select random window start
+    std::uniform_int_distribution<int> start_dist(0, 
+        std::max(0, static_cast<int>(cells_in_row.size()) - window_size));
+    int window_start = start_dist(rng_);
+    
+    // Get cells in window
+    std::vector<int> window_cells;
+    for (int i = window_start; i < window_start + window_size && i < cells_in_row.size(); ++i) {
+        window_cells.push_back(cells_in_row[i].first);
+    }
+    
+    if (window_cells.size() < 2) return false;
+    
+    // Calculate window bounds
+    GridX min_x = cells_in_row[window_start].second;
+    GridX max_x = min_x;
+    int total_width = 0;
+    
+    for (int cell_id : window_cells) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX cell_x = grid_info_->gridX(state_.cells[cell_id].x);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        
+        max_x = std::max(max_x, GridX{cell_x.v + width.v});
+        total_width += width.v;
+    }
+    
+    int window_span = max_x.v - min_x.v;
+    int free_space = window_span - total_width;
+    
+    if (free_space < 5) return false;  // Need some free space to rearrange
+    
+    // Generate random permutation of cells
+    std::vector<int> permuted = window_cells;
+    std::shuffle(permuted.begin(), permuted.end(), rng_);
+    
+    // Try to place permuted cells
+    std::vector<std::pair<int, GridPt>> new_positions;
+    GridX current_x = min_x;
+    
+    for (int cell_id : permuted) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        
+        // Add some random spacing
+        if (free_space > 0 && current_x.v > min_x.v) {
+            std::uniform_int_distribution<int> space_dist(0, std::min(3, free_space));
+            int spacing = space_dist(rng_);
+            current_x = GridX{current_x.v + spacing};
+            free_space -= spacing;
+        }
+        
+        new_positions.push_back({cell_id, GridPt{current_x, GridY{row}}});
+        current_x = GridX{current_x.v + width.v};
+    }
+    
+    // Validate new positions
+    WorkerGrid temp_grid(grid_info_);
+    temp_grid.copyFrom(*grid_);
+    
+    // Remove window cells
+    for (int cell_id : window_cells) {
+        temp_grid.removeCell(cell_id);
+    }
+    
+    // Check new positions
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        GridY height = grid_info_->gridHeight(node);
+        
+        if (new_pos.x + width > grid_info_->getRowSiteCount()) {
+            return false;
+        }
+        
+        for (GridY yi = new_pos.y; yi < new_pos.y + height; ++yi) {
+            for (GridX xi = new_pos.x; xi < new_pos.x + width; ++xi) {
+                if (temp_grid.isOccupied(xi, yi)) {
+                    return false;
+                }
+            }
+        }
+        
+        temp_grid.placeCell(cell_id, new_pos.x, new_pos.y, width, height);
+    }
+    
+    // Calculate HPWL change
+    double total_delta = 0;
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        double old_contrib = calcCellHPWLContribution(cell_id);
+        
+        DbuX old_x = state_.cells[cell_id].x;
+        state_.cells[cell_id].x = gridToDbu(new_pos.x, DbuX{grid_info_->getSiteWidth()});
+        
+        double new_contrib = calcCellHPWLContribution(cell_id);
+        total_delta += new_contrib - old_contrib;
+        
+        state_.cells[cell_id].x = old_x;
+    }
+    
+    kick_attempts_++;
+    double kick_temp_adjusted = temp_ * kick_temp_multiplier_;
+    if (isLowRowDesign()) {
+        kick_temp_adjusted *= 2.0;  // More aggressive for dense designs
+    }
+    if (acceptMove(total_delta, kick_temp_adjusted)) {
+        // Apply moves
+        for (const auto& [cell_id, new_pos] : new_positions) {
+            const dpl::Node* node = network_->getNode(cell_id);
+            grid_->removeCell(cell_id);
+            grid_->placeCell(cell_id, new_pos.x, new_pos.y,
+                           grid_info_->gridPaddedWidth(node),
+                           grid_info_->gridHeight(node));
+            
+            state_.cells[cell_id].x = gridToDbu(new_pos.x, DbuX{grid_info_->getSiteWidth()});
+            state_.cells[cell_id].y = grid_info_->gridYToDbu(new_pos.y);
+            state_.cells[cell_id].orient = getCellOrientation(cell_id, new_pos.x, new_pos.y);
+        }
+        
+        state_.total_hpwl += total_delta;
+        kick_accepted_++;
+        total_swaps_applied_ += window_cells.size();  // Count rearrangements as swaps
+        return true;
+    }
+    
+    kick_rejected_++;
+    return false;
+}
+
+// Speculative kick move framework implementation
+
+bool SAWorker::trySpeculativeKick()
+{
+    // Only use speculative kicks for low-row designs
+    if (!isLowRowDesign()) {
+        return tryLowRowKickMove();  // Fallback to standard approach
+    }
+    
+    utl::Logger* logger = sa2d_->getLogger();
+    
+    // Save current state as baseline
+    saveCurrentState();
+    
+    // Try different kick strategies
+    for (int strategy = 0; strategy < max_kick_strategies_; ++strategy) {
+        
+        // Apply kick move (forced, regardless of immediate cost)
+        if (applyKickMoveForced(strategy)) {
+            
+            // Log speculative attempt
+            /*if (kick_attempts_ % 100 == 0) {
+                logger->info(utl::SA2D, 489, "Speculative kick #{}: strategy={}, baseline_hpwl={}, post_kick_hpwl={}",
+                            kick_attempts_, strategy, saved_baseline_hpwl_, state_.total_hpwl);
+            }*/
+            
+            // Run exploration phase
+            int64_t best_found = runExplorationPhase(speculation_exploration_iterations_);
+            
+            // Check if we found improvement
+            if (best_found < saved_baseline_hpwl_) {
+                kick_accepted_++;
+                /*logger->info(utl::SA2D, 490, "Speculative kick SUCCESS: strategy={}, baseline={}, improved_to={}, delta={}",
+                            strategy, saved_baseline_hpwl_, best_found, best_found - saved_baseline_hpwl_);*/
+                return true;  // Keep the improved state
+            }
+            
+            // No improvement - revert to saved state for next attempt
+            restoreCurrentState();
+        }
+    }
+    
+    // No successful kick found - ensure we're back at baseline
+    restoreCurrentState();
+    kick_rejected_++;
+    return false;
+}
+
+bool SAWorker::applyKickMoveForced(int strategy_index)
+{
+    // Apply kick moves without SA acceptance check
+    switch (strategy_index) {
+        case 0: {
+            // Horizontal chain swap
+            std::uniform_int_distribution<int> row_dist(0, grid_info_->getRowCount() - 1);
+            std::uniform_int_distribution<int> chain_dist(2, 4);  // Smaller chains for dense designs
+            return tryHorizontalChainSwapForced(row_dist(rng_), chain_dist(rng_));
+        }
+        case 1: {
+            // Row compression
+            std::uniform_int_distribution<int> row_dist(0, grid_info_->getRowCount() - 1);
+            std::uniform_int_distribution<int> start_dist(0, grid_info_->getRowSiteCount() - 30);
+            std::uniform_int_distribution<int> length_dist(15, 30);  // Smaller segments
+            return tryRowCompressionForced(row_dist(rng_), start_dist(rng_), length_dist(rng_));
+        }
+        case 2: {
+            // Inter-row transfer
+            return tryInterRowTransferForced();
+        }
+        case 3: {
+            // Sliding window move
+            std::uniform_int_distribution<int> row_dist(0, grid_info_->getRowCount() - 1);
+            std::uniform_int_distribution<int> window_dist(3, 8);  // Smaller windows
+            return trySlidingWindowMoveForced(row_dist(rng_), window_dist(rng_));
+        }
+    }
+    return false;
+}
+
+int64_t SAWorker::runExplorationPhase(int iterations)
+{
+    int64_t best_hpwl = state_.total_hpwl;
+    
+    // Run mini-SA exploration
+    for (int i = 0; i < iterations; ++i) {
+        
+        // Standard SA moves during exploration
+        std::uniform_real_distribution<float> move_dist(0.0f, 1.0f);
+        float move_type = move_dist(rng_);
+        
+        if (move_type < 0.7f) {
+            // Single move
+            std::uniform_int_distribution<int> cell_dist(0, network_->getNumNodes() - 1);
+            tryMove(cell_dist(rng_));
+        } else if (move_type < 0.85f) {
+            // Swap
+            std::uniform_int_distribution<int> cell1_dist(0, network_->getNumNodes() - 1);
+            std::uniform_int_distribution<int> cell2_dist(0, network_->getNumNodes() - 1);
+            trySwap(cell1_dist(rng_), cell2_dist(rng_));
+        } else {
+            // Flip
+            std::uniform_int_distribution<int> cell_dist(0, network_->getNumNodes() - 1);
+            tryFlip(cell_dist(rng_));
+        }
+        
+        // Track best found during exploration
+        if (state_.total_hpwl < best_hpwl) {
+            best_hpwl = state_.total_hpwl;
+        }
+    }
+    
+    return best_hpwl;
+}
+
+void SAWorker::saveCurrentState()
+{
+    saved_state_ = state_;
+    if (!saved_grid_) {
+        saved_grid_ = std::make_unique<WorkerGrid>(grid_info_);
+    }
+    saved_grid_->copyFrom(*grid_);
+    saved_baseline_hpwl_ = state_.total_hpwl;
+}
+
+void SAWorker::restoreCurrentState()
+{
+    state_ = saved_state_;
+    grid_->copyFrom(*saved_grid_);
+}
+
+// Forced kick move implementations (apply without SA acceptance)
+
+bool SAWorker::tryHorizontalChainSwapForced(int row, int chain_length)
+{
+    if (row >= grid_info_->getRowCount()) return false;
+    
+    // Find cells in this row
+    std::vector<int> cells_in_row;
+    for (int i = 0; i < network_->getNumNodes(); ++i) {
+        dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
+        if (node->getType() == dpl::Node::CELL && !node->isFixed()) {
+            GridY cell_y = grid_info_->gridSnapDownY(state_.cells[i].y);
+            if (cell_y == row) {
+                cells_in_row.push_back(i);
+            }
+        }
+    }
+    
+    if (cells_in_row.size() < 2) return false;
+    
+    // Sort by x-coordinate
+    std::sort(cells_in_row.begin(), cells_in_row.end(), 
+              [this](int a, int b) { return state_.cells[a].x < state_.cells[b].x; });
+    
+    // Select random starting position
+    if (cells_in_row.size() < chain_length) {
+        chain_length = cells_in_row.size();
+    }
+    
+    std::uniform_int_distribution<int> start_dist(0, cells_in_row.size() - chain_length);
+    int start_idx = start_dist(rng_);
+    
+    // Build swap chain: cell[i] -> position of cell[i+1], last -> position of first
+    std::vector<std::pair<int, GridPt>> moves;
+    
+    for (int i = 0; i < chain_length; ++i) {
+        int cell_id = cells_in_row[start_idx + i];
+        int next_idx = (i + 1) % chain_length;
+        int target_cell = cells_in_row[start_idx + next_idx];
+        
+        GridX target_x = grid_info_->gridX(state_.cells[target_cell].x);
+        GridY target_y = grid_info_->gridSnapDownY(state_.cells[target_cell].y);
+        
+        moves.push_back({cell_id, GridPt{target_x, target_y}});
+    }
+    
+    // Validate all moves are legal
+    WorkerGrid temp_grid(grid_info_);
+    temp_grid.copyFrom(*grid_);
+    
+    // Remove all cells that will move
+    for (const auto& [cell_id, _] : moves) {
+        temp_grid.removeCell(cell_id);
+    }
+    
+    // Check if all can be placed at new positions
+    for (const auto& [cell_id, new_pos] : moves) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        GridY height = grid_info_->gridHeight(node);
+        
+        // Check bounds and overlaps
+        if (new_pos.x < 0 || new_pos.x + width > grid_info_->getRowSiteCount() ||
+            new_pos.y < 0 || new_pos.y + height > grid_info_->getRowCount()) {
+            return false;
+        }
+        
+        for (GridY yi = new_pos.y; yi < new_pos.y + height; ++yi) {
+            for (GridX xi = new_pos.x; xi < new_pos.x + width; ++xi) {
+                if (temp_grid.isOccupied(xi, yi)) {
+                    return false;
+                }
+            }
+        }
+        
+        // Add to temp grid
+        temp_grid.placeCell(cell_id, new_pos.x, new_pos.y, width, height);
+    }
+    
+    // Apply moves forcibly (no SA acceptance)
+    double total_delta = 0;
+    for (const auto& [cell_id, new_pos] : moves) {
+        double old_contrib = calcCellHPWLContribution(cell_id);
+        
+        // Update position
+        state_.cells[cell_id].x = gridToDbu(new_pos.x, DbuX{grid_info_->getSiteWidth()});
+        state_.cells[cell_id].y = grid_info_->gridYToDbu(new_pos.y);
+        state_.cells[cell_id].orient = getCellOrientation(cell_id, new_pos.x, new_pos.y);
+        
+        double new_contrib = calcCellHPWLContribution(cell_id);
+        total_delta += new_contrib - old_contrib;
+    }
+    
+    // Update grid
+    for (const auto& [cell_id, new_pos] : moves) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        grid_->removeCell(cell_id);
+        grid_->placeCell(cell_id, new_pos.x, new_pos.y,
+                       grid_info_->gridPaddedWidth(node),
+                       grid_info_->gridHeight(node));
+    }
+    
+    // Update total HPWL
+    state_.total_hpwl += total_delta;
+    total_swaps_applied_ += chain_length;
+    
+    return true;
+}
+
+// Additional forced kick move implementations
+
+bool SAWorker::tryRowCompressionForced(int row, int start_x, int length)
+{
+    if (row >= grid_info_->getRowCount()) return false;
+    
+    // Find cells in the specified x-range of this row
+    std::vector<int> cells_to_compress;
+    for (int i = 0; i < network_->getNumNodes(); ++i) {
+        dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
+        if (node->getType() == dpl::Node::CELL && !node->isFixed()) {
+            GridY cell_y = grid_info_->gridSnapDownY(state_.cells[i].y);
+            GridX cell_x = grid_info_->gridX(state_.cells[i].x);
+            
+            if (cell_y == row && cell_x >= start_x && cell_x < start_x + length) {
+                cells_to_compress.push_back(i);
+            }
+        }
+    }
+    
+    if (cells_to_compress.size() < 2) return false;
+    
+    // Sort by x-coordinate
+    std::sort(cells_to_compress.begin(), cells_to_compress.end(),
+              [this](int a, int b) { return state_.cells[a].x < state_.cells[b].x; });
+    
+    // Calculate total width and find gaps
+    int total_width = 0;
+    std::vector<int> gaps;
+    
+    for (size_t i = 0; i < cells_to_compress.size(); ++i) {
+        const dpl::Node* node = network_->getNode(cells_to_compress[i]);
+        total_width += grid_info_->gridPaddedWidth(node).v;
+        
+        if (i > 0) {
+            GridX curr_x = grid_info_->gridX(state_.cells[cells_to_compress[i]].x);
+            const dpl::Node* prev_node = network_->getNode(cells_to_compress[i-1]);
+            GridX prev_x = grid_info_->gridX(state_.cells[cells_to_compress[i-1]].x);
+            GridX prev_width = grid_info_->gridPaddedWidth(prev_node);
+            
+            int gap = curr_x.v - (prev_x.v + prev_width.v);
+            if (gap > 0) gaps.push_back(gap);
+        }
+    }
+    
+    // If no gaps, can't compress (but still allow for speculative kicks)
+    int total_gaps = std::accumulate(gaps.begin(), gaps.end(), 0);
+    if (total_gaps < 2) return false;  // Reduced threshold for speculative mode
+    
+    // Try to compress by removing gaps
+    std::vector<std::pair<int, GridPt>> new_positions;
+    GridX current_x{start_x};
+    
+    for (int cell_id : cells_to_compress) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        
+        new_positions.push_back({cell_id, GridPt{current_x, GridY{row}}});
+        current_x = GridX{current_x.v + width.v};
+    }
+    
+    // Validate compression
+    WorkerGrid temp_grid(grid_info_);
+    temp_grid.copyFrom(*grid_);
+    
+    // Remove cells to compress
+    for (int cell_id : cells_to_compress) {
+        temp_grid.removeCell(cell_id);
+    }
+    
+    // Check new positions
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        GridY height = grid_info_->gridHeight(node);
+        
+        // Check bounds and overlaps
+        if (new_pos.x + width > grid_info_->getRowSiteCount()) {
+            return false;
+        }
+        
+        for (GridY yi = new_pos.y; yi < new_pos.y + height; ++yi) {
+            for (GridX xi = new_pos.x; xi < new_pos.x + width; ++xi) {
+                if (temp_grid.isOccupied(xi, yi)) {
+                    return false;
+                }
+            }
+        }
+        
+        temp_grid.placeCell(cell_id, new_pos.x, new_pos.y, width, height);
+    }
+    
+    // Apply compression forcibly
+    double total_delta = 0;
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        double old_contrib = calcCellHPWLContribution(cell_id);
+        
+        // Update position
+        state_.cells[cell_id].x = gridToDbu(new_pos.x, DbuX{grid_info_->getSiteWidth()});
+        
+        double new_contrib = calcCellHPWLContribution(cell_id);
+        total_delta += new_contrib - old_contrib;
+    }
+    
+    // Update grid
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        grid_->removeCell(cell_id);
+        grid_->placeCell(cell_id, new_pos.x, new_pos.y,
+                       grid_info_->gridPaddedWidth(node),
+                       grid_info_->gridHeight(node));
+    }
+    
+    // Update total HPWL
+    state_.total_hpwl += total_delta;
+    total_swaps_applied_ += cells_to_compress.size();
+    
+    return true;
+}
+
+bool SAWorker::tryInterRowTransferForced()
+{
+    // Find a cell to transfer between rows
+    std::vector<int> movable_cells;
+    for (int i = 0; i < network_->getNumNodes(); ++i) {
+        dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
+        if (node->getType() == dpl::Node::CELL && !node->isFixed() &&
+            grid_info_->gridHeight(node).v == 1) {  // Single height cells only
+            movable_cells.push_back(i);
+        }
+    }
+    
+    if (movable_cells.empty()) return false;
+    
+    // Select random cell
+    std::uniform_int_distribution<int> cell_dist(0, movable_cells.size() - 1);
+    int cell_id = movable_cells[cell_dist(rng_)];
+    
+    GridY current_row = grid_info_->gridSnapDownY(state_.cells[cell_id].y);
+    GridX current_x = grid_info_->gridX(state_.cells[cell_id].x);
+    
+    // Try other rows
+    std::vector<int> other_rows;
+    for (int r = 0; r < grid_info_->getRowCount(); ++r) {
+        if (r != current_row.v) {
+            other_rows.push_back(r);
+        }
+    }
+    
+    if (other_rows.empty()) return false;
+    
+    std::shuffle(other_rows.begin(), other_rows.end(), rng_);
+    
+    // Try to find space in other rows
+    const dpl::Node* node = network_->getNode(cell_id);
+    GridX width = grid_info_->gridPaddedWidth(node);
+    
+    for (int target_row : other_rows) {
+        // Search for free space near current x position
+        std::vector<GridX> x_positions;
+        
+        // Try positions near current x
+        int search_range = 30;  // Reduced range for faster search
+        for (int dx = -search_range; dx <= search_range; dx += 5) {
+            GridX try_x{current_x.v + dx};
+            if (try_x.v >= 0 && try_x.v + width.v <= grid_info_->getRowSiteCount()) {
+                x_positions.push_back(try_x);
+            }
+        }
+        
+        std::shuffle(x_positions.begin(), x_positions.end(), rng_);
+        
+        for (GridX try_x : x_positions) {
+            // Check if position is free
+            bool can_place = true;
+            for (GridX xi = try_x; xi < GridX{try_x.v + width.v}; ++xi) {
+                if (grid_->isOccupied(xi, GridY{target_row})) {
+                    can_place = false;
+                    break;
+                }
+            }
+            
+            if (can_place) {
+                // Check site compatibility
+                const auto& available_sites = grid_info_->getSitesAt(try_x, GridY{target_row});
+                if (available_sites.find(node->getSite()) == available_sites.end()) {
+                    continue;
+                }
+                
+                // Apply move forcibly
+                double old_contrib = calcCellHPWLContribution(cell_id);
+                
+                // Update position
+                grid_->removeCell(cell_id);
+                grid_->placeCell(cell_id, try_x, GridY{target_row}, width, GridY{1});
+                
+                state_.cells[cell_id].x = gridToDbu(try_x, DbuX{grid_info_->getSiteWidth()});
+                state_.cells[cell_id].y = grid_info_->gridYToDbu(GridY{target_row});
+                state_.cells[cell_id].orient = getCellOrientation(cell_id, try_x, GridY{target_row});
+                
+                double new_contrib = calcCellHPWLContribution(cell_id);
+                double delta = new_contrib - old_contrib;
+                
+                state_.total_hpwl += delta;
+                total_swaps_applied_++;
+                
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
+bool SAWorker::trySlidingWindowMoveForced(int row, int window_size)
+{
+    if (row >= grid_info_->getRowCount()) return false;
+    
+    // Find cells in this row
+    std::vector<std::pair<int, GridX>> cells_in_row;
+    for (int i = 0; i < network_->getNumNodes(); ++i) {
+        dpl::Node* node = const_cast<dpl::Node*>(network_->getNode(i));
+        if (node->getType() == dpl::Node::CELL && !node->isFixed()) {
+            GridY cell_y = grid_info_->gridSnapDownY(state_.cells[i].y);
+            if (cell_y == row) {
+                GridX cell_x = grid_info_->gridX(state_.cells[i].x);
+                cells_in_row.push_back({i, cell_x});
+            }
+        }
+    }
+    
+    if (cells_in_row.size() < 3) return false;
+    
+    // Sort by x-coordinate
+    std::sort(cells_in_row.begin(), cells_in_row.end(),
+              [](const auto& a, const auto& b) { return a.second < b.second; });
+    
+    // Select random window start
+    std::uniform_int_distribution<int> start_dist(0, 
+        std::max(0, static_cast<int>(cells_in_row.size()) - window_size));
+    int window_start = start_dist(rng_);
+    
+    // Get cells in window
+    std::vector<int> window_cells;
+    for (int i = window_start; i < window_start + window_size && i < cells_in_row.size(); ++i) {
+        window_cells.push_back(cells_in_row[i].first);
+    }
+    
+    if (window_cells.size() < 2) return false;
+    
+    // Calculate window bounds
+    GridX min_x = cells_in_row[window_start].second;
+    GridX max_x = min_x;
+    int total_width = 0;
+    
+    for (int cell_id : window_cells) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX cell_x = grid_info_->gridX(state_.cells[cell_id].x);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        
+        max_x = std::max(max_x, GridX{cell_x.v + width.v});
+        total_width += width.v;
+    }
+    
+    int window_span = max_x.v - min_x.v;
+    int free_space = window_span - total_width;
+    
+    if (free_space < 2) return false;  // Reduced threshold for speculative mode
+    
+    // Generate random permutation of cells
+    std::vector<int> permuted = window_cells;
+    std::shuffle(permuted.begin(), permuted.end(), rng_);
+    
+    // Try to place permuted cells
+    std::vector<std::pair<int, GridPt>> new_positions;
+    GridX current_x = min_x;
+    
+    for (int cell_id : permuted) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        
+        // Add some random spacing
+        if (free_space > 0 && current_x.v > min_x.v) {
+            std::uniform_int_distribution<int> space_dist(0, std::min(2, free_space));
+            int spacing = space_dist(rng_);
+            current_x = GridX{current_x.v + spacing};
+            free_space -= spacing;
+        }
+        
+        new_positions.push_back({cell_id, GridPt{current_x, GridY{row}}});
+        current_x = GridX{current_x.v + width.v};
+    }
+    
+    // Validate new positions
+    WorkerGrid temp_grid(grid_info_);
+    temp_grid.copyFrom(*grid_);
+    
+    // Remove window cells
+    for (int cell_id : window_cells) {
+        temp_grid.removeCell(cell_id);
+    }
+    
+    // Check new positions
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        GridX width = grid_info_->gridPaddedWidth(node);
+        GridY height = grid_info_->gridHeight(node);
+        
+        if (new_pos.x + width > grid_info_->getRowSiteCount()) {
+            return false;
+        }
+        
+        for (GridY yi = new_pos.y; yi < new_pos.y + height; ++yi) {
+            for (GridX xi = new_pos.x; xi < new_pos.x + width; ++xi) {
+                if (temp_grid.isOccupied(xi, yi)) {
+                    return false;
+                }
+            }
+        }
+        
+        temp_grid.placeCell(cell_id, new_pos.x, new_pos.y, width, height);
+    }
+    
+    // Apply moves forcibly
+    double total_delta = 0;
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        double old_contrib = calcCellHPWLContribution(cell_id);
+        
+        // Update position
+        state_.cells[cell_id].x = gridToDbu(new_pos.x, DbuX{grid_info_->getSiteWidth()});
+        state_.cells[cell_id].y = grid_info_->gridYToDbu(new_pos.y);
+        state_.cells[cell_id].orient = getCellOrientation(cell_id, new_pos.x, new_pos.y);
+        
+        double new_contrib = calcCellHPWLContribution(cell_id);
+        total_delta += new_contrib - old_contrib;
+    }
+    
+    // Update grid
+    for (const auto& [cell_id, new_pos] : new_positions) {
+        const dpl::Node* node = network_->getNode(cell_id);
+        grid_->removeCell(cell_id);
+        grid_->placeCell(cell_id, new_pos.x, new_pos.y,
+                       grid_info_->gridPaddedWidth(node),
+                       grid_info_->gridHeight(node));
+    }
+    
+    // Update total HPWL
+    state_.total_hpwl += total_delta;
+    total_swaps_applied_ += window_cells.size();
+    
+    return true;
 }
 
 }  // namespace sa2d 

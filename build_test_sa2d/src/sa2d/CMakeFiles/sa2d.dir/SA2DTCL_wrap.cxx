@@ -1650,8 +1650,9 @@ SWIG_Tcl_GetArgs(Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[], const char
 
 #define SWIGTYPE_p_char swig_types[0]
 #define SWIGTYPE_p_sa2d__SA2D swig_types[1]
-static swig_type_info *swig_types[3];
-static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
+#define SWIGTYPE_p_std__vectorT_float_t swig_types[2]
+static swig_type_info *swig_types[4];
+static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1799,6 +1800,51 @@ void set_chain_moves_per_round(int moves) {
 
 void set_enable_slides(bool enable) {
   getSA2D()->setEnableSlides(enable);
+}
+
+// SA1D operators for single-row scenarios
+void set_use_sa1d_operators(bool enable) {
+  getSA2D()->setUseSA1DOperators(enable);
+}
+
+void set_sa1d_move_probs(const std::vector<float>& probs) {
+  getSA2D()->setSA1DMoveProbs(probs);
+}
+
+void set_use_best_orderings_1d(bool enable) {
+  getSA2D()->setUseBestOrderings1D(enable);
+}
+
+void set_sa1d_overlap_weight(float weight) {
+  getSA2D()->setSA1DOverlapWeight(weight);
+}
+
+void set_enable_reordering(bool enable) {
+  getSA2D()->setEnableReordering(enable);
+}
+
+void set_reorder_window_size(int size) {
+  getSA2D()->setReorderWindowSize(size);
+}
+
+void set_use_dpl_reordering(bool enable) {
+  getSA2D()->setUseDPLReordering(enable);
+}
+
+void set_pre_sa_reordering(bool enable) {
+  getSA2D()->setPreSAReordering(enable);
+}
+
+void set_dpl_reordering_passes(int passes) {
+  getSA2D()->setReorderingPasses(passes);
+}
+
+void set_dpl_reordering_tolerance(double tolerance) {
+  getSA2D()->setReorderingTolerance(tolerance);
+}
+
+void run_dpl_reordering_only() {
+  getSA2D()->runDPLReorderingOnly();
 }
 
 void run() {
@@ -2885,6 +2931,495 @@ fail:
 
 
 SWIGINTERN int
+_wrap_set_use_sa1d_operators(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_use_sa1d_operators enable ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_bool SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_use_sa1d_operators" "', argument " "1"" of type '" "bool""'");
+  } 
+  arg1 = static_cast< bool >(val1);
+  {
+    try {
+      sa2d::set_use_sa1d_operators(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_sa1d_move_probs(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  std::vector< float > *arg1 = 0 ;
+  void *argp1 ;
+  int res1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_sa1d_move_probs probs ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1, SWIGTYPE_p_std__vectorT_float_t,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_sa1d_move_probs" "', argument " "1"" of type '" "std::vector< float > const &""'"); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "set_sa1d_move_probs" "', argument " "1"" of type '" "std::vector< float > const &""'"); 
+  }
+  arg1 = reinterpret_cast< std::vector< float > * >(argp1);
+  {
+    try {
+      sa2d::set_sa1d_move_probs((std::vector< float > const &)*arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_use_best_orderings_1d(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_use_best_orderings_1d enable ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_bool SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_use_best_orderings_1d" "', argument " "1"" of type '" "bool""'");
+  } 
+  arg1 = static_cast< bool >(val1);
+  {
+    try {
+      sa2d::set_use_best_orderings_1d(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_sa1d_overlap_weight(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  float arg1 ;
+  float val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_sa1d_overlap_weight weight ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_float SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_sa1d_overlap_weight" "', argument " "1"" of type '" "float""'");
+  } 
+  arg1 = static_cast< float >(val1);
+  {
+    try {
+      sa2d::set_sa1d_overlap_weight(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_enable_reordering(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_enable_reordering enable ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_bool SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_enable_reordering" "', argument " "1"" of type '" "bool""'");
+  } 
+  arg1 = static_cast< bool >(val1);
+  {
+    try {
+      sa2d::set_enable_reordering(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_reorder_window_size(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_reorder_window_size size ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_reorder_window_size" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = static_cast< int >(val1);
+  {
+    try {
+      sa2d::set_reorder_window_size(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_use_dpl_reordering(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_use_dpl_reordering enable ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_bool SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_use_dpl_reordering" "', argument " "1"" of type '" "bool""'");
+  } 
+  arg1 = static_cast< bool >(val1);
+  {
+    try {
+      sa2d::set_use_dpl_reordering(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_pre_sa_reordering(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  bool arg1 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_pre_sa_reordering enable ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_bool SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_pre_sa_reordering" "', argument " "1"" of type '" "bool""'");
+  } 
+  arg1 = static_cast< bool >(val1);
+  {
+    try {
+      sa2d::set_pre_sa_reordering(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_dpl_reordering_passes(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_dpl_reordering_passes passes ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_dpl_reordering_passes" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = static_cast< int >(val1);
+  {
+    try {
+      sa2d::set_dpl_reordering_passes(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_set_dpl_reordering_tolerance(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  double arg1 ;
+  double val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:sa2d::set_dpl_reordering_tolerance tolerance ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_double SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_dpl_reordering_tolerance" "', argument " "1"" of type '" "double""'");
+  } 
+  arg1 = static_cast< double >(val1);
+  {
+    try {
+      sa2d::set_dpl_reordering_tolerance(arg1); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_run_dpl_reordering_only(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  if (SWIG_GetArgs(interp, objc, objv,":sa2d::run_dpl_reordering_only ") == TCL_ERROR) SWIG_fail;
+  {
+    try {
+      sa2d::run_dpl_reordering_only(); 
+    }
+    catch (std::bad_alloc &) {
+      fprintf(stderr, "Error: out of memory.");
+      abort();
+    }
+    // This catches std::runtime_error (utl::error) and sta::Exception.
+    catch (std::exception &excp) {
+      auto* openroad = ord::OpenRoad::openRoad();
+      if (openroad != nullptr) {
+        auto* logger = openroad->getLogger();
+        if (logger->debugCheck(utl::ORD, "trace", 1)) {
+          std::stringstream trace;
+          trace << boost::stacktrace::stacktrace();
+          logger->report("Stack trace");
+          logger->report(trace.str());
+        }
+      }
+      
+      Tcl_ResetResult(interp);
+      Tcl_AppendResult(interp, excp.what(), nullptr);
+      return TCL_ERROR;
+    }
+  }
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
 _wrap_run(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   if (SWIG_GetArgs(interp, objc, objv,":sa2d::run ") == TCL_ERROR) SWIG_fail;
   {
@@ -2943,6 +3478,17 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "set_chain_move_interval", (swig_wrapper_func) _wrap_set_chain_move_interval, NULL},
     { SWIG_prefix "set_chain_moves_per_round", (swig_wrapper_func) _wrap_set_chain_moves_per_round, NULL},
     { SWIG_prefix "set_enable_slides", (swig_wrapper_func) _wrap_set_enable_slides, NULL},
+    { SWIG_prefix "set_use_sa1d_operators", (swig_wrapper_func) _wrap_set_use_sa1d_operators, NULL},
+    { SWIG_prefix "set_sa1d_move_probs", (swig_wrapper_func) _wrap_set_sa1d_move_probs, NULL},
+    { SWIG_prefix "set_use_best_orderings_1d", (swig_wrapper_func) _wrap_set_use_best_orderings_1d, NULL},
+    { SWIG_prefix "set_sa1d_overlap_weight", (swig_wrapper_func) _wrap_set_sa1d_overlap_weight, NULL},
+    { SWIG_prefix "set_enable_reordering", (swig_wrapper_func) _wrap_set_enable_reordering, NULL},
+    { SWIG_prefix "set_reorder_window_size", (swig_wrapper_func) _wrap_set_reorder_window_size, NULL},
+    { SWIG_prefix "set_use_dpl_reordering", (swig_wrapper_func) _wrap_set_use_dpl_reordering, NULL},
+    { SWIG_prefix "set_pre_sa_reordering", (swig_wrapper_func) _wrap_set_pre_sa_reordering, NULL},
+    { SWIG_prefix "set_dpl_reordering_passes", (swig_wrapper_func) _wrap_set_dpl_reordering_passes, NULL},
+    { SWIG_prefix "set_dpl_reordering_tolerance", (swig_wrapper_func) _wrap_set_dpl_reordering_tolerance, NULL},
+    { SWIG_prefix "run_dpl_reordering_only", (swig_wrapper_func) _wrap_run_dpl_reordering_only, NULL},
     { SWIG_prefix "run", (swig_wrapper_func) _wrap_run, NULL},
     {0, 0, 0}
 };
@@ -2959,18 +3505,22 @@ static swig_const_info swig_constants[] = {
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_sa2d__SA2D = {"_p_sa2d__SA2D", "sa2d::SA2D *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_float_t = {"_p_std__vectorT_float_t", "std::vector< float > *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
   &_swigt__p_sa2d__SA2D,
+  &_swigt__p_std__vectorT_float_t,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_sa2d__SA2D[] = {  {&_swigt__p_sa2d__SA2D, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_float_t[] = {  {&_swigt__p_std__vectorT_float_t, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
   _swigc__p_sa2d__SA2D,
+  _swigc__p_std__vectorT_float_t,
 };
 
 

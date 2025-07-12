@@ -42,6 +42,9 @@
 #include "odb/util.h"
 #include "utl/Logger.h"
 #include <algorithm>
+#include <string>
+
+// No need for DPL internal headers - use public API
 
 namespace sa2d {
 
@@ -118,6 +121,20 @@ void SA2D::runSA()
   logger_->info(utl::SA2D, 23, "Initial HPWL (ODB): {:.1f} u", 
                 block_->dbuToMicrons(initial_odb_hpwl));
   
+  // Run pre-SA reordering if enabled
+  if (pre_sa_reordering_) {
+    logger_->info(utl::SA2D, 24, "Running DPL reordering before SA optimization");
+    dpl_->runReorderingOnly(max_displacement_x_, max_displacement_y_, 
+                            reordering_passes_, reordering_tolerance_,
+                            reorder_window_size_);
+    
+    // Report HPWL after pre-reordering
+    odb::WireLengthEvaluator eval_after_reorder(block_);
+    int64_t hpwl_after_reorder = eval_after_reorder.hpwl();
+    logger_->info(utl::SA2D, 25, "HPWL after pre-SA reordering: {:.1f} u", 
+                  block_->dbuToMicrons(hpwl_after_reorder));
+  }
+  
   // Choose between single and parallel execution
   if (num_workers_ == 1) {
     runSingleWorkerSA();
@@ -126,6 +143,11 @@ void SA2D::runSA()
   }
   
   logger_->info(utl::SA2D, 22, "SA2D placement optimization completed");
+  
+  // Run DPL reordering if requested
+  if (enable_reordering_ && use_dpl_reordering_) {
+    runDPLReorderingOnly();
+  }
 }
 
 void SA2D::runSingleWorkerSA()
@@ -152,6 +174,12 @@ void SA2D::runSingleWorkerSA()
   worker->setChainMoveInterval(chain_move_interval_);
   worker->setChainMovesPerRound(chain_moves_per_round_);
   worker->setEnableSlides(enable_slides_);
+  
+  // Set SA1D operator parameters
+  worker->setUseSA1DOperators(use_sa1d_operators_);
+  worker->setSA1DMoveProbs(sa1d_move_probs_);
+  worker->setUseBestOrderings1D(use_best_orderings_1d_);
+  worker->setSA1DOverlapWeight(sa1d_overlap_weight_);
   
   // Report initial state
   int64_t initial_hpwl = worker->getTotalHPWL();
@@ -212,7 +240,10 @@ void SA2D::runParallelSA()
                                      kick_interval_, kick_threshold_, kick_strength_,
                                      kick_temp_multiplier_, enable_kicks_,
                                      enable_chain_moves_, chain_move_interval_,
-                                     chain_moves_per_round_, enable_slides_);
+                                     chain_moves_per_round_, enable_slides_,
+                                     // SA1D operator parameters
+                                     use_sa1d_operators_, sa1d_move_probs_,
+                                     use_best_orderings_1d_, sa1d_overlap_weight_);
   
   // Report initial state
   auto initial_costs = worker_manager_->getWorkerCosts();
@@ -321,6 +352,29 @@ void SA2D::initTestGrid()
   
   // For now, just log that we would initialize the grid
   // Real implementation needs access to DPL internals
+}
+
+void SA2D::runDPLReorderingOnly()
+{
+  if (!dpl_) {
+    logger_->error(utl::SA2D, 650, "DPL engine not set. Call setDplEngine() first.");
+  }
+  
+  // Get the current block if not already available
+  if (!block_) {
+    if (!db_ || !db_->getChip()) {
+      logger_->error(utl::SA2D, 651, "No chip found in database.");
+    }
+    block_ = db_->getChip()->getBlock();
+  }
+  
+  logger_->info(utl::SA2D, 652, "Running DPL reordering optimization only");
+  
+  // Run DPL's native reordering - this is guaranteed to not cause overlaps
+  // as it uses DPL's internal structures and validation
+  dpl_->runReorderingOnly(max_displacement_x_, max_displacement_y_, 
+                          reordering_passes_, reordering_tolerance_,
+                          reorder_window_size_);
 }
 
 

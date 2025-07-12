@@ -1,0 +1,66 @@
+[INFO SA2D-0001] SA2D initialized
+OpenROAD v2.0-22160-g3fbf3fa 
+Features included (+) or not (-): +GPU -GUI -Python
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7_tech_1x_201209.lef, created 24 layers, 9 vias
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7sc7p5t_27_R_1x_201211.lef, created 212 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t in asap7sc7p5t_27_L_1x_201211 already seen in asap7sc7p5t_27_R_1x_201211
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7sc7p5t_27_L_1x_201211.lef, created 212 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t in asap7sc7p5t_27_SL_1x_201211 already seen in asap7sc7p5t_27_R_1x_201211
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7sc7p5t_27_SL_1x_201211.lef, created 212 library cells
+[WARNING ODB-0176] error: undefined layer (OVERLAP) referenced
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/sram_asap7_16x256_1rw.lef, created 1 library cells
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx3_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx1_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx1_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx2_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx1_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx3_ASAP7_75t_L already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx3_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx2_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx2_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx1_ASAP7_75t_SL already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx1_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx1_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx1_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx1_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx1_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx3_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx3_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx2_ASAP7_75t_L already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx2_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx1_ASAP7_75t_SL already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx1_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx2_ASAP7_75t_SL already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx2_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx2_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx2_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx1_ASAP7_75t_L already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx1_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx3_ASAP7_75t_SL already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx3_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx3_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx3_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx3_ASAP7_75t_L already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx3_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx3_ASAP7_75t_SL already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx3_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx2_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx2_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx2_ASAP7_75t_SL already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx2_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx1_ASAP7_75t_R already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx1_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx3_ASAP7_75t_R already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx3_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx2_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx2_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx3_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx3_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx1_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx1_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx2_ASAP7_75t_R already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx2_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx2_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_pr

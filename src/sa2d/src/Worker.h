@@ -84,6 +84,16 @@ public:
     void setChainMoveInterval(int interval) { chain_move_interval_ = interval; }
     void setChainMovesPerRound(int moves) { chain_moves_per_round_ = moves; }
     void setEnableSlides(bool enable) { enable_slides_ = enable; }
+    void setSlideSearchRadius(int radius) { slide_search_radius_ = radius; }
+    
+    // SA1D operators control
+    void setUseSA1DOperators(bool enable) { use_sa1d_operators_ = enable; }
+    void setSA1DMoveProbs(const std::vector<float>& probs) { sa1d_move_probs_ = probs; }
+    void setUseBestOrderings1D(bool enable) { use_best_orderings_1d_ = enable; }
+    void setSA1DOverlapWeight(float weight) { sa1d_overlap_weight_ = weight; }
+    
+    // Speculative kick configuration
+    void setSpeculationExplorationIterations(int iterations) { speculation_exploration_iterations_ = iterations; }
     
     // Main SA run function
     void run();
@@ -147,6 +157,9 @@ public:
     int getAttemptedDiffSizeSwaps() const { return attempted_diff_size_swaps_; }
     int getAcceptedDiffSizeSwaps() const { return accepted_diff_size_swaps_; }
     
+    // Report runtime statistics
+    void reportRuntimeStatistics() const;
+    
     // Get kick statistics
     int getKickAttempts() const { return kick_attempts_; }
     int getKickAccepted() const { return kick_accepted_; }
@@ -192,6 +205,13 @@ private:
     int chain_move_interval_ = 50;    // How often to attempt chain moves  
     int chain_moves_per_round_ = 5;   // Number of chain moves to try when triggered
     bool enable_slides_ = true; // Enable/disable slide moves
+    int slide_search_radius_ = 10; // Radius for slide search
+    
+    // SA1D operators control
+    bool use_sa1d_operators_ = false;  // Enable SA1D operators for single-row scenarios
+    std::vector<float> sa1d_move_probs_ = {0.49f, 0.49f, 0.02f};  // [swap, move, flip]
+    bool use_best_orderings_1d_ = false;  // Use SA1D's best orderings for initialization
+    float sa1d_overlap_weight_ = 1.0f;  // Weight for overlap in SA1D mode
     
     // LSMC tracking
     int stagnation_counter_ = 0;
@@ -202,6 +222,10 @@ private:
     
     // Parallel execution state
     bool is_winner_ = false;
+    
+    // SA1D mode state
+    bool single_row_mode_ = false;
+    std::vector<int> cell_ordering_1d_;  // 1D ordering for single-row mode
     
     // Move operations with full legality
     bool tryMove(int cell_id);
@@ -218,6 +242,25 @@ private:
     bool tryChainMove(int cell_id);
     bool tryRippleLeft(int cell_id, GridPt target_pos, int max_chain_length = 3);
     bool tryRippleRight(int cell_id, GridPt target_pos, int max_chain_length = 3);
+    
+    // SA1D-style operators
+    bool trySwapCells1D(int cell_id1, int cell_id2);
+    bool tryMoveCell1D(int cell_id, int target_pos);
+    
+    // SA1D mode detection and management
+    bool isSingleRowPlacement();
+    void detectSingleRowMode();
+    void initializeOrdering1D();
+    void updateOrdering1D();
+    int getCellPosition1D(int cell_id);
+    int getCellAt1DPosition(int pos);
+    void updateGrid1D(const std::vector<int>& affected_cells);
+    void buildOrdering1DFromCurrentPlacement();
+    int computeOverlap1D();
+    
+    // SA1D move selection
+    int selectMoveType1D();
+    int selectRandomPosition1D();
     
     struct ChainedMove {
         int cell_id;
@@ -241,8 +284,9 @@ private:
     // Cost evaluation
     int64_t calcInitialHPWL();
     int64_t calcDeltaHPWL(const std::vector<int>& affected_nets);
+    int64_t calcNetHPWL(int net_id);
+    double calcCellHPWLContribution(int cell_id);
     void updateHPWLCache(const std::vector<int>& affected_nets);
-    int64_t calcNetHPWL(int net_id);  // Calculate HPWL for a single net
     std::vector<int> getAffectedNets(int cell_id);
     
     // SA acceptance
@@ -261,36 +305,79 @@ private:
     void performSwapInState(int cell1_id, int cell2_id);
     void applySwapToGrid(int cell1_id, int cell2_id);
     
+    // Specialized kick moves for low row count designs
+    bool tryLowRowKickMove();
+    bool tryHorizontalChainSwap(int row, int chain_length);
+    bool tryRowCompression(int row, int start_x, int length);
+    bool tryInterRowTransfer();
+    bool trySlidingWindowMove(int row, int window_size);
+    
+    // Speculative kick move framework
+    bool trySpeculativeKick();
+    bool applyKickMoveForced(int strategy_index);
+    int64_t runExplorationPhase(int iterations);
+    void saveCurrentState();
+    void restoreCurrentState();
+    
+    // Forced kick move implementations (no SA acceptance)
+    bool tryHorizontalChainSwapForced(int row, int chain_length);
+    bool tryRowCompressionForced(int row, int start_x, int length);
+    bool tryInterRowTransferForced();
+    bool trySlidingWindowMoveForced(int row, int window_size);
+    
+    // Helper to detect low row count scenario
+    bool isLowRowDesign() const { 
+        return grid_info_->getRowCount() <= 5; 
+    }
+    
     // Statistics
-    int accepted_moves_{0};
-    int rejected_moves_{0};
-    int illegal_moves_{0};
-    int accepted_flips_{0};  // Track successful flips
-    int accepted_swaps_{0};  // Track successful swaps
-    int accepted_single_moves_{0};  // Track successful single moves
-    int accepted_slides_{0};  // Track successful slide moves
+    int attempted_moves_ = 0;
+    int accepted_moves_ = 0;
+    int rejected_moves_ = 0;
+    int illegal_moves_ = 0;
+    int attempted_swaps_ = 0;
+    int accepted_swaps_ = 0;
+    int attempted_diff_size_swaps_ = 0;
+    int accepted_diff_size_swaps_ = 0;
+    int accepted_single_moves_ = 0;
+    int attempted_single_moves_ = 0;
+    int attempted_flips_ = 0;
+    int accepted_flips_ = 0;
+    int attempted_slides_ = 0;
+    int accepted_slides_ = 0;
+    int attempted_chain_moves_ = 0;
+    int kick_attempts_ = 0;
+    int kick_accepted_ = 0;
+    int kick_rejected_ = 0;
+    int total_swaps_applied_ = 0;
     
-    // Attempt counters
-    int attempted_flips_{0};
-    int attempted_swaps_{0};
-    int attempted_single_moves_{0};
-    int attempted_slides_{0};
-    int attempted_chain_moves_{0};  // Track chain move attempts
-    
-    // Different-size swap tracking
-    int attempted_diff_size_swaps_{0};
-    int accepted_diff_size_swaps_{0};
-    
-    // LSMC kick statistics
-    int kick_attempts_{0};
-    int kick_accepted_{0};
-    int kick_rejected_{0};
-    int total_swaps_applied_{0};
+    // Speculative kick state management
+    WorkerState saved_state_;
+    std::unique_ptr<WorkerGrid> saved_grid_;
+    int64_t saved_baseline_hpwl_ = 0;
+    int speculation_exploration_iterations_ = 50;  // Configurable
+    int max_kick_strategies_ = 4;  // Number of different kick strategies
     
     // Chain move specific statistics
     int accepted_chain_moves_{0};
     int total_cells_shifted_{0};  // Total cells affected by chain moves
     int max_chain_length_{0};     // Track longest successful chain
+    
+    // SA1D mode statistics
+    int attempted_swaps_1d_{0};
+    int accepted_swaps_1d_{0};
+    int attempted_moves_1d_{0};
+    int accepted_moves_1d_{0};
+    int attempted_flips_1d_{0};
+    int accepted_flips_1d_{0};
+    
+    // Runtime statistics (in microseconds)
+    int64_t single_move_time_{0};
+    int64_t swap_time_{0};
+    int64_t flip_time_{0};
+    int64_t slide_time_{0};
+    int64_t chain_move_time_{0};
+    int64_t kick_time_{0};
     
     // Performance optimization: cache affected nets
     mutable std::unordered_map<int, std::vector<int>> affected_nets_cache_;

@@ -1,0 +1,1142 @@
+[INFO SA2D-0001] SA2D initialized
+OpenROAD v2.0-22160-g3fbf3fa 
+Features included (+) or not (-): +GPU -GUI -Python
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7_tech_1x_201209.lef, created 24 layers, 9 vias
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7sc7p5t_27_R_1x_201211.lef, created 212 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t in asap7sc7p5t_27_L_1x_201211 already seen in asap7sc7p5t_27_R_1x_201211
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7sc7p5t_27_L_1x_201211.lef, created 212 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t in asap7sc7p5t_27_SL_1x_201211 already seen in asap7sc7p5t_27_R_1x_201211
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7sc7p5t_27_SL_1x_201211.lef, created 212 library cells
+[WARNING ODB-0176] error: undefined layer (OVERLAP) referenced
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/sram_asap7_16x256_1rw.lef, created 1 library cells
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx3_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx1_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx1_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx2_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx1_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx3_ASAP7_75t_L already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx3_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx2_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx2_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx1_ASAP7_75t_SL already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx1_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx1_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx1_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx1_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx1_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx3_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx3_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx2_ASAP7_75t_L already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx2_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx1_ASAP7_75t_SL already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx1_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx2_ASAP7_75t_SL already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx2_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx2_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx2_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx1_ASAP7_75t_L already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx1_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx3_ASAP7_75t_SL already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx3_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx3_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx3_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx3_ASAP7_75t_L already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx3_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx3_ASAP7_75t_SL already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx3_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx2_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx2_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx2_ASAP7_75t_SL already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx2_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx1_ASAP7_75t_R already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx1_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx3_ASAP7_75t_R already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx3_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx2_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx2_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx3_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx3_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx1_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx1_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx2_ASAP7_75t_R already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx2_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx2_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx2_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R8 in DFFHQNV8H2Xx1_ASAP7_75t_R already seen in DFFHQNV8H2Xx2_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV8H2Xx1_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx2_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx2_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx3_ASAP7_75t_R already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx3_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx3_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx3_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx1_ASAP7_75t_L already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx1_ASAP7_75t_L.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4H2Xx3_ASAP7_75t_R already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4H2Xx3_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R4 in DFFHQNV4Xx1_ASAP7_75t_SL already seen in DFFHQNV4Xx3_ASAP7_75t_R
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV4Xx1_ASAP7_75t_SL.lef, created 1 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t_R2 in DFFHQNV2Xx2_ASAP7_75t_R already seen in DFFHQNV2Xx1_ASAP7_75t_L
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/mbff_lef/DFFHQNV2Xx2_ASAP7_75t_R.lef, created 1 library cells
+[INFO ODB-0127] Reading DEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/def_mh/aes_cipher_top_placed_mh.def
+[INFO ODB-0128] Design: aes_cipher_top
+[INFO ODB-0130]     Created 388 pins.
+[INFO ODB-0131]     Created 15280 components and 83390 component-terminals.
+[INFO ODB-0132]     Created 2 special nets and 30560 connections.
+[INFO ODB-0133]     Created 15924 nets and 52830 connections.
+[INFO ODB-0134] Finished DEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/def_mh/aes_cipher_top_placed_mh.def
+Placement Analysis
+---------------------------------
+total displacement        583.7 u
+average displacement        0.0 u
+max displacement            2.4 u
+original HPWL           44279.3 u
+legalized HPWL          46178.5 u
+delta HPWL                    4 %
+
+
+3. Configuring SA2D for parallel execution...
+[INFO SA2D-0002] Max displacement set to (18, 7) sites
+
+4. Running parallel SA2D optimization...
+[INFO SA2D-0005] Starting SA2D placement optimization
+[INFO SA2D-0006] Parameters: temp=100.0, cooling=0.998, iter=6000, displacement=(18,7) sites, seed=42
+[INFO SA2D-0023] Initial HPWL (ODB): 46178.5 u
+[INFO SA2D-0301] Running parallel SA with 80 workers
+[INFO SA2D-0303] Initial HPWL: 46071.7 u
+[INFO SA2D-0410] 
+[INFO SA2D-0411] Iteration    Progress    Temperature    Current HPWL    Best HPWL    Accept Rate
+[INFO SA2D-0412] ---------    --------    -----------    ------------    ---------    -----------
+[INFO SA2D-0413]         0          0%       1.00e+02         46071.7      46071.7           0.0%
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (712,101) size 20, 61 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (702,44) size 20, 64 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (215,60) size 20, 48 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (424,66) size 20, 58 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (353,43) size 20, 42 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (406,112) size 20, 63 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (503,119) size 20, 47 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (675,25) size 20, 57 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (615,57) size 20, 33 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (585,100) size 20, 24 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (389,62) size 20, 27 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (640,40) size 20, 53 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (737,107) size 20, 66 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 1: region (593,138) size 20, 39 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (306,11) size 20, 70 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (86,68) size 20, 68 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (471,21) size 20, 68 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (560,133) size 20, 57 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (92,16) size 20, 59 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (168,130) size 20, 54 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (643,115) size 20, 60 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (598,76) size 20, 26 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 1: region (191,130) size 20, 52 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (641,125) size 20, 53 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 1: region (204,17) size 20, 70 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (496,108) size 20, 57 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (578,82) size 20, 42 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1: region (267,109) size 20, 54 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (89,35) size 20, 52 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1: region (494,37) size 20, 35 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (613,67) size 20, 34 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (706,130) size 20, 55 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 1: region (105,54) size 20, 67 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (652,22) size 20, 44 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (19,18) size 20, 58 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (258,133) size 20, 41 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (116,114) size 20, 52 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (218,134) size 20, 55 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 1: region (498,61) size 20, 39 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (141,92) size 20, 39 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (17,39) size 20, 58 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (234,115) size 20, 41 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (115,44) size 20, 60 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (457,142) size 20, 55 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (404,78) size 20, 28 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (309,125) size 20, 51 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1: region (623,12) size 20, 64 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (314,28) size 20, 50 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (441,91) size 20, 47 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (540,54) size 20, 45 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (231,98) size 20, 64 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (692,139) size 20, 59 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (424,110) size 20, 62 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (62,19) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (263,93) size 20, 65 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 1: region (348,65) size 20, 52 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (389,103) size 20, 60 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (577,66) size 20, 40 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (676,19) size 20, 61 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 1: region (156,128) size 20, 44 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (451,114) size 20, 58 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (246,57) size 20, 45 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (737,88) size 20, 65 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (313,33) size 20, 40 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1: region (161,64) size 20, 30 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (687,117) size 20, 60 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (91,86) size 20, 60 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 1: region (102,33) size 20, 44 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (631,118) size 20, 60 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (131,60) size 20, 32 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (100,72) size 20, 69 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (223,45) size 20, 36 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (71,92) size 20, 69 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (532,91) size 20, 23 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (463,91) size 20, 36 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (252,118) size 20, 36 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (628,12) size 20, 60 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (313,55) size 20, 59 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (496,49) size 20, 41 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0474] Grid dimensions: 775 sites x 153 rows
+[INFO SA2D-0475] Kick attempt 1: region (544,16) size 20, 59 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0413]       300          5%       5.48e+01         44159.1      44158.8           3.9%
+[INFO SA2D-0413]       600         10%       3.01e+01         43990.7      43990.7           2.4%
+[INFO SA2D-0413]       900         15%       1.65e+01         43912.6      43912.6           1.7%
+[INFO SA2D-0413]      1200         20%       9.05e+00         43870.8      43870.8           1.3%
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (77,115) size 20, 63 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (354,87) size 20, 50 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (642,45) size 20, 54 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (451,138) size 20, 56 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (329,49) size 20, 55 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (137,17) size 20, 54 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (292,77) size 20, 60 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (760,31) size 20, 43 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (26,43) size 20, 61 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (436,50) size 20, 51 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (112,73) size 20, 61 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (732,124) size 20, 61 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (183,121) size 20, 42 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (747,45) size 20, 63 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (226,140) size 20, 63 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (150,15) size 20, 62 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (747,38) size 20, 58 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (26,138) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (203,75) size 20, 53 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (252,117) size 20, 41 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (79,131) size 20, 69 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (62,34) size 20, 68 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (187,110) size 20, 35 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (294,11) size 20, 67 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (49,139) size 20, 67 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (91,111) size 20, 58 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (308,117) size 20, 50 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (593,107) size 20, 28 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (546,23) size 20, 54 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (83,128) size 20, 57 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (573,60) size 20, 34 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (80,123) size 20, 63 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (203,45) size 20, 24 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (732,118) size 20, 65 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (317,50) size 20, 58 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (469,27) size 20, 54 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (754,27) size 20, 55 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (287,88) size 20, 55 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (290,31) size 20, 39 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (498,131) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (522,93) size 20, 24 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (326,96) size 20, 32 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (445,141) size 20, 45 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (243,40) size 20, 42 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (161,112) size 20, 25 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (430,47) size 20, 39 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (105,105) size 20, 63 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (641,48) size 20, 49 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (289,95) size 20, 50 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (535,105) size 20, 32 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (43,29) size 20, 58 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (441,65) size 20, 53 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (401,25) size 20, 48 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (327,125) size 20, 51 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (249,10) size 20, 55 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (582,47) size 20, 35 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (558,43) size 20, 26 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (670,77) size 20, 67 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (185,94) size 20, 55 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (71,84) size 20, 69 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (349,81) size 20, 48 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (214,42) size 20, 20 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (303,93) size 20, 42 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (162,119) size 20, 36 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (143,17) size 20, 58 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (758,84) size 20, 68 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (198,108) size 20, 53 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (587,24) size 20, 62 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (628,100) size 20, 40 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (274,52) size 20, 59 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (166,138) size 20, 58 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (40,131) size 20, 70 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (167,94) size 20, 46 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (81,60) size 20, 74 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (511,43) size 20, 25 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (575,69) size 20, 33 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (465,132) size 20, 54 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 1001: region (631,120) size 20, 57 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (232,41) size 20, 43 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 1000 total rejections
+[INFO SA2D-0475] Kick attempt 1001: region (560,19) size 20, 56 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0413]      1500         25%       4.96e+00         43842.7      43842.7           1.1%
+[INFO SA2D-0413]      1800         30%       2.72e+00         43822.3      43822.3           1.1%
+[INFO SA2D-0413]      2100         35%       1.49e+00         43804.2      43804.2           1.0%
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (378,48) size 20, 35 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (124,80) size 20, 51 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (377,36) size 20, 33 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (445,31) size 20, 41 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (745,73) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (498,134) size 20, 64 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (349,108) size 20, 42 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (289,32) size 20, 38 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (120,45) size 20, 55 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (485,36) size 20, 28 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (495,109) size 20, 56 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (376,138) size 20, 59 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (431,134) size 20, 41 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (619,123) size 20, 53 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (737,103) size 20, 66 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (37,125) size 20, 67 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (676,11) size 20, 67 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (77,124) size 20, 64 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (31,79) size 20, 72 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (396,41) size 20, 28 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (681,110) size 20, 56 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (484,15) size 20, 69 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (350,137) size 20, 60 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (59,70) size 20, 71 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (491,11) size 20, 64 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (439,27) size 20, 60 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (507,20) size 20, 55 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (553,126) size 20, 55 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (52,72) size 20, 66 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (705,105) size 20, 58 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (568,22) size 20, 66 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (308,80) size 20, 38 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (117,88) size 20, 53 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (296,130) size 20, 53 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (574,101) size 20, 26 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (189,114) size 20, 42 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (606,38) size 20, 44 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (67,28) size 20, 65 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (585,36) size 20, 41 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (399,15) size 20, 48 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (712,40) size 20, 60 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (16,48) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (726,115) size 20, 71 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (615,86) size 20, 20 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (306,48) size 20, 48 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (113,49) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (598,43) size 20, 45 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (155,131) size 20, 57 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (434,90) size 20, 37 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (191,117) size 20, 40 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (34,65) size 20, 63 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (365,74) size 20, 36 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (112,51) size 20, 67 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (756,59) size 20, 62 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (178,142) size 20, 64 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (347,55) size 20, 51 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (457,99) size 20, 44 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (342,12) size 20, 63 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (143,110) size 20, 40 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (473,69) size 20, 50 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (31,14) size 20, 63 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (144,90) size 20, 40 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (316,102) size 20, 38 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (615,78) size 20, 33 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (506,79) size 20, 39 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (731,101) size 20, 66 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (515,43) size 20, 23 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (259,28) size 20, 40 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (209,91) size 20, 60 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (108,70) size 20, 65 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (517,80) size 20, 25 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (71,97) size 20, 66 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (706,63) size 20, 67 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (617,112) size 20, 47 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (121,28) size 20, 42 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (53,49) size 20, 67 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (183,18) size 20, 63 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 2001: region (415,83) size 20, 41 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (349,36) size 20, 32 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 2000 total rejections
+[INFO SA2D-0475] Kick attempt 2001: region (181,42) size 20, 13 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0413]      2400         40%       8.19e-01         43791.4      43791.4           1.0%
+[INFO SA2D-0413]      2700         45%       4.49e-01         43779.0      43779.0           1.0%
+[INFO SA2D-0413]      3000         50%       2.46e-01         43771.2      43771.2           1.0%
+[INFO SA2D-0413]      3300         55%       1.35e-01         43761.7      43761.7           1.0%
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (228,55) size 20, 49 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (192,64) size 20, 41 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (493,120) size 20, 55 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (140,58) size 20, 18 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (138,143) size 20, 60 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (200,84) size 20, 62 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (264,115) size 20, 49 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (719,73) size 20, 69 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (704,39) size 20, 57 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (384,34) size 20, 32 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (139,12) size 20, 60 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (394,102) size 20, 59 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (74,87) size 20, 67 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (45,58) size 20, 61 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (731,113) size 20, 68 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (276,61) size 20, 55 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (252,33) size 20, 34 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (170,47) size 20, 29 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (130,122) size 20, 43 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (169,82) size 20, 44 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (24,101) size 20, 70 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (265,72) size 20, 57 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (428,121) size 20, 57 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (155,12) size 20, 67 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (757,20) size 20, 54 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (573,10) size 20, 64 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (714,107) size 20, 60 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (492,14) size 20, 68 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (328,124) size 20, 50 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (659,134) size 20, 54 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (347,24) size 20, 55 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (225,47) size 20, 46 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (191,19) size 20, 68 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (43,120) size 20, 61 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (257,122) size 20, 30 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (239,39) size 20, 36 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (718,110) size 20, 62 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (61,36) size 20, 68 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (369,129) size 20, 43 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (518,69) size 20, 39 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (247,34) size 20, 40 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (678,85) size 20, 64 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (760,98) size 20, 56 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (246,131) size 20, 41 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (266,62) size 20, 53 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (214,111) size 20, 44 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (161,88) size 20, 46 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (512,39) size 20, 30 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (726,44) size 20, 64 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (620,139) size 20, 53 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (764,59) size 20, 49 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (11,40) size 20, 57 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (41,68) size 20, 63 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (24,117) size 20, 62 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (750,62) size 20, 65 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (746,53) size 20, 61 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (356,51) size 20, 54 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (127,86) size 20, 47 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (584,44) size 20, 35 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (513,14) size 20, 53 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (673,80) size 20, 64 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (449,48) size 20, 50 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (562,74) size 20, 52 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (271,113) size 20, 53 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (184,139) size 20, 63 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (749,73) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (285,43) size 20, 47 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (618,132) size 20, 44 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (256,128) size 20, 33 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (76,63) size 20, 75 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (245,20) size 20, 53 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (275,41) size 20, 48 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (70,76) size 20, 75 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (404,95) size 20, 47 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (645,44) size 20, 57 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (394,26) size 20, 44 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (666,106) size 20, 60 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 3001: region (533,53) size 20, 40 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (199,80) size 20, 56 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 3000 total rejections
+[INFO SA2D-0475] Kick attempt 3001: region (484,138) size 20, 67 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0413]      3600         60%       7.41e-02         43753.8      43753.8           1.0%
+[INFO SA2D-0413]      3900         65%       4.07e-02         43747.7      43747.7           1.0%
+[INFO SA2D-0413]      4200         70%       2.23e-02         43742.2      43742.2           1.0%
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (740,88) size 20, 64 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (415,26) size 20, 48 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (392,125) size 20, 45 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (605,83) size 20, 18 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (606,25) size 20, 58 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (472,133) size 20, 56 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (224,78) size 20, 54 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (426,91) size 20, 38 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (204,36) size 20, 25 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (340,98) size 20, 32 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (694,123) size 20, 60 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (518,111) size 20, 36 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (522,77) size 20, 32 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (621,117) size 20, 53 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (696,49) size 20, 63 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (33,78) size 20, 69 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (599,50) size 20, 35 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (62,134) size 20, 68 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (688,68) size 20, 73 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (611,95) size 20, 32 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (579,69) size 20, 34 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (137,128) size 20, 47 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (646,107) size 20, 60 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (715,44) size 20, 61 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (287,141) size 20, 41 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (454,85) size 20, 32 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (366,137) size 20, 57 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (569,18) size 20, 68 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (465,71) size 20, 50 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (674,95) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (535,91) size 20, 26 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (439,43) size 20, 45 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (353,97) size 20, 43 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (231,111) size 20, 47 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (28,17) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (10,54) size 20, 62 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (62,123) size 20, 66 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (84,141) size 20, 64 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (239,74) size 20, 59 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (730,87) size 20, 66 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (405,136) size 20, 51 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (388,135) size 20, 54 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (608,37) size 20, 51 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (483,123) size 20, 58 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (681,107) size 20, 60 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (467,30) size 20, 46 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (648,40) size 20, 64 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (757,124) size 20, 46 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (674,60) size 20, 66 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (660,113) size 20, 66 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (717,18) size 20, 63 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (74,58) size 20, 71 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (12,47) size 20, 61 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (739,89) size 20, 64 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (620,10) size 20, 64 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (479,118) size 20, 58 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (335,78) size 20, 34 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (507,98) size 20, 40 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (118,64) size 20, 51 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (614,110) size 20, 45 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (48,130) size 20, 70 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (188,27) size 20, 47 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (569,102) size 20, 26 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (585,83) size 20, 30 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (129,114) size 20, 50 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (40,94) size 20, 67 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (740,38) size 20, 69 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (362,105) size 20, 50 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (573,109) size 20, 32 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (297,83) size 20, 51 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (607,25) size 20, 60 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (163,141) size 20, 60 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (451,123) size 20, 52 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (260,99) size 20, 58 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (263,113) size 20, 53 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (36,70) size 20, 60 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 4001: region (96,119) size 20, 50 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (212,56) size 20, 42 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (721,83) size 20, 65 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 4000 total rejections
+[INFO SA2D-0475] Kick attempt 4001: region (249,26) size 20, 38 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0413]      4500         75%       1.22e-02         43730.7      43730.7           1.0%
+[INFO SA2D-0413]      4800         80%       6.71e-03         43729.2      43729.2           1.0%
+[INFO SA2D-0413]      5100         85%       3.68e-03         43724.7      43724.7           1.0%
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (286,38) size 20, 42 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (676,84) size 20, 61 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (418,79) size 20, 50 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (193,126) size 20, 43 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (241,30) size 20, 33 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (578,81) size 20, 42 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (591,141) size 20, 28 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (702,141) size 20, 58 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (666,50) size 20, 60 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (229,14) size 20, 66 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (612,127) size 20, 44 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (165,115) size 20, 33 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (367,102) size 20, 53 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (680,98) size 20, 59 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (630,35) size 20, 45 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (556,53) size 20, 39 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (418,71) size 20, 59 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (696,29) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (509,66) size 20, 47 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (642,115) size 20, 62 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (75,52) size 20, 69 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (545,90) size 20, 41 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (596,131) size 20, 39 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (74,125) size 20, 63 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (493,77) size 20, 55 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (231,71) size 20, 47 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (521,28) size 20, 35 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (745,26) size 20, 57 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (482,41) size 20, 34 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (521,73) size 20, 36 cells in region, 5 swaps, 1 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (587,143) size 20, 23 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (564,27) size 20, 55 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (236,30) size 20, 35 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (625,45) size 20, 54 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (518,97) size 20, 27 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (672,60) size 20, 68 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (734,26) size 20, 60 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (452,48) size 20, 49 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (379,10) size 20, 62 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (394,10) size 20, 48 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (152,83) size 20, 47 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (178,105) size 20, 34 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (220,46) size 20, 39 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (631,64) size 20, 46 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (390,100) size 20, 56 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (195,13) size 20, 68 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (122,30) size 20, 46 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (97,63) size 20, 67 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (547,86) size 20, 42 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (315,44) size 20, 44 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (334,68) size 20, 43 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (446,129) size 20, 48 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (726,63) size 20, 69 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (400,119) size 20, 51 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (388,59) size 20, 28 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (183,66) size 20, 39 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (530,141) size 20, 64 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (456,55) size 20, 59 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (462,22) size 20, 68 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (95,130) size 20, 56 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (361,24) size 20, 57 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (96,109) size 20, 59 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (409,100) size 20, 59 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (144,90) size 20, 40 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (135,90) size 20, 43 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (257,30) size 20, 40 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (608,75) size 20, 33 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (121,138) size 20, 46 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (382,29) size 20, 37 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (625,15) size 20, 59 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (84,23) size 20, 61 cells in region, 5 swaps, 2 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (216,138) size 20, 63 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (224,42) size 20, 33 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (567,26) size 20, 52 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (126,19) size 20, 43 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (684,47) size 20, 61 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (451,121) size 20, 53 cells in region, 5 swaps, 5 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (485,142) size 20, 64 cells in region, 5 swaps, 0 single moves
+[INFO SA2D-0475] Kick attempt 5001: region (131,38) size 20, 41 cells in region, 5 swaps, 3 single moves
+[INFO SA2D-0476] Kick rejected due to legality: 5000 total rejections
+[INFO SA2D-0475] Kick attempt 5001: region (222,66) size 20, 41 cells in region, 5 swaps, 4 single moves
+[INFO SA2D-0413]      5400         90%       2.02e-03         43720.5      43720.5           1.0%
+[INFO SA2D-0413]      5700         95%       1.11e-03         43715.3      43715.3           1.0%
+[INFO SA2D-0413]      6000        100%       6.07e-04         43710.5      43710.5           3.9%
+[INFO SA2D-0308] Best solution found by worker 20 with HPWL: 43710.5 u
+[INFO SA2D-0350] Worker 20 applying best solution with HPWL: 43710.5 u
+[INFO SA2D-0463] Validating best solution for overlaps...
+[INFO SA2D-0351] Updated 15280 cells in DPL network
+[INFO SA2D-0605] Skipping SA2D reordering - will use DPL reordering after SA completes
+[INFO SA2D-0309] DPL network updated, proceeding to update ODB instances
+[INFO SA2D-0331] Aggregate LSMC kicks: 451837 attempted, 0 accepted (0.0% success), 0 total swaps
+[INFO SA2D-0307] 
+[INFO SA2D-0306] Final HPWL: 43576.5 u (improvement: 5.42%)
+[INFO SA2D-0022] SA2D placement optimization completed
+[INFO SA2D-0652] Running DPL reordering optimization only
+Running DPL reordering optimization only.
+[INFO DPL-0401] Setting random seed to 0.
+[INFO DPL-0402] Setting maximum displacement 18 7 to 4860 1890 units.
+[INFO DPL-0320] Collected 388 fixed cells.
+[INFO DPL-0318] Collected 15183 single height cells.
+[INFO DPL-0319] Collected 33 multi-height cells spanning 2 rows.
+[INFO DPL-0319] Collected 61 multi-height cells spanning 4 rows.
+[INFO DPL-0319] Collected 3 multi-height cells spanning 8 rows.
+[INFO DPL-0321] Collected 0 wide cells.
+[INFO DPL-0322] Image (216, 216) - (42066, 41526)
+[INFO DPL-0310] Assigned 15183 cells into segments.  Movement in X-direction is 0.000000, movement in Y-direction is 0.000000.
+[INFO DPL-0310] Assigned 33 cells into segments.  Movement in X-direction is 0.000000, movement in Y-direction is 0.000000.
+[INFO DPL-0310] Assigned 61 cells into segments.  Movement in X-direction is 0.000000, movement in Y-direction is 0.000000.
+[INFO DPL-0310] Assigned 3 cells into segments.  Movement in X-direction is 0.000000, movement in Y-direction is 0.000000.
+[INFO DPL-0313] Found 0 cells in wrong regions.
+[INFO DPL-0315] Found 0 row alignment problems.
+[INFO DPL-0314] Found 0 site alignment problems.
+[INFO DPL-0311] Found 0 overlaps between adjacent cells.
+[INFO DPL-0312] Found 0 edge spacing violations and 0 padding violations.
+[INFO DPL-0303] Running algorithm for reordering.
+[INFO DPL-0304] Pass   1 of reordering; objective is 4.355913e+07.
+[INFO DPL-0305] End of reordering; objective is 4.355913e+07, improvement is 0.35 percent.
+[INFO DPL-0380] Cell flipping.
+[INFO DPL-0382] Changed 0 cell orientations for row compatibility.
+[INFO DPL-0383] Performed 377 cell flips.
+[INFO DPL-0384] End of flipping; objective is 4.352921e+07, improvement is 0.07 percent.
+[INFO DPL-0313] Found 0 cells in wrong regions.
+[INFO DPL-0315] Found 0 row alignment problems.
+[INFO DPL-0314] Found 0 site alignment problems.
+[INFO DPL-0311] Found 0 overlaps between adjacent cells.
+[INFO DPL-0312] Found 0 edge spacing violations and 0 padding violations.
+Reordering Results:
+  Initial HPWL: 43576.5 u
+  Final HPWL:   45134.4 u
+  Improvement:  -3.58%
+
+Parallel SA2D runtime: 315.168 seconds
+
+5. Checking final placement...

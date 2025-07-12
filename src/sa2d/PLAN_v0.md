@@ -659,6 +659,345 @@ void SAWorker::applyToDPL(dpl::DetailedMgr* mgr) {
 }
 ```
 
+## SA1D Operators Adaptation for Single-Row Scenarios
+
+### Single-Row Detection
+
+SA2D should detect when the placement effectively becomes 1-dimensional:
+
+```cpp
+bool SAWorker::isSingleRowPlacement() {
+    // Check if all movable cells are in the same row
+    GridY first_row = -1;
+    for (int i = 0; i < network_->getNumNodes(); i++) {
+        const dpl::Node* node = network_->getNode(i);
+        if (node->getType() == dpl::Node::CELL && !node->isFixed()) {
+            GridY row = grid_info_->gridSnapDownY(state_.cells[i].y);
+            if (first_row == -1) {
+                first_row = row;
+            } else if (row != first_row) {
+                return false;  // Multiple rows found
+            }
+        }
+    }
+    return first_row != -1;  // At least one movable cell found
+}
+```
+
+### Adapted SA1D Operators
+
+When single-row placement is detected, SA2D switches to SA1D-style operators:
+
+#### 1. SA1D-Style Swap Operation
+
+```cpp
+bool SAWorker::trySwapCells1D(int cell_id1, int cell_id2) {
+    if (cell_id1 == cell_id2) return false;
+    
+    // Get positions in the 1D ordering
+    int pos1 = getCellPosition1D(cell_id1);
+    int pos2 = getCellPosition1D(cell_id2);
+    
+    if (pos1 > pos2) {
+        std::swap(pos1, pos2);
+        std::swap(cell_id1, cell_id2);
+    }
+    
+    const dpl::Node* node1 = network_->getNode(cell_id1);
+    const dpl::Node* node2 = network_->getNode(cell_id2);
+    
+    int width1 = grid_info_->gridPaddedWidth(node1);
+    int width2 = grid_info_->gridPaddedWidth(node2);
+    bool same_width = (width1 == width2);
+    
+    // Backup current state
+    backupCellStates({cell_id1, cell_id2});
+    
+    // Calculate new positions
+    GridX x1 = grid_info_->gridX(state_.cells[cell_id2].x);
+    GridX x2 = grid_info_->gridX(state_.cells[cell_id1].x);
+    
+    std::vector<int> affected_cells = {cell_id1, cell_id2};
+    
+    // Handle width differences (like SA1D)
+    if (!same_width) {
+        int delta_width = width1 - width2;
+        x1 -= delta_width;
+        
+        // Shift intermediate cells
+        for (int pos = pos1 + 1; pos < pos2; pos++) {
+            int intermediate_cell = getCellAt1DPosition(pos);
+            backupCellStates({intermediate_cell});
+            GridX curr_x = grid_info_->gridX(state_.cells[intermediate_cell].x);
+            state_.cells[intermediate_cell].x = grid_info_->gridXToDbu(curr_x - delta_width);
+            affected_cells.push_back(intermediate_cell);
+        }
+    }
+    
+    // Apply swap
+    state_.cells[cell_id1].x = grid_info_->gridXToDbu(x1);
+    state_.cells[cell_id2].x = grid_info_->gridXToDbu(x2);
+    
+    // Update grid occupancy
+    updateGrid1D(affected_cells);
+    
+    // Calculate HPWL change
+    std::vector<int> affected_nets = getAffectedNets(affected_cells);
+    int64_t delta = calcDeltaHPWL(affected_nets);
+    
+    if (acceptMove(delta, temp_)) {
+        updateHPWLCache(affected_nets);
+        return true;
+    } else {
+        restoreCellStates(affected_cells);
+        return false;
+    }
+}
+```
+
+#### 2. SA1D-Style Move Operation
+
+```cpp
+bool SAWorker::tryMoveCell1D(int cell_id, int target_pos) {
+    int current_pos = getCellPosition1D(cell_id);
+    if (current_pos == target_pos) return false;
+    
+    const dpl::Node* node = network_->getNode(cell_id);
+    int width = grid_info_->gridPaddedWidth(node);
+    
+    std::vector<int> affected_cells = {cell_id};
+    backupCellStates(affected_cells);
+    
+    GridX new_x;
+    
+    if (current_pos > target_pos) {
+        // Moving left - insert before target position
+        int target_cell = getCellAt1DPosition(target_pos);
+        new_x = grid_info_->gridX(state_.cells[target_cell].x);
+        
+        // Shift cells right
+        for (int pos = target_pos; pos < current_pos; pos++) {
+            int shift_cell = getCellAt1DPosition(pos);
+            backupCellStates({shift_cell});
+            GridX curr_x = grid_info_->gridX(state_.cells[shift_cell].x);
+            state_.cells[shift_cell].x = grid_info_->gridXToDbu(curr_x + width);
+            affected_cells.push_back(shift_cell);
+        }
+    } else {
+        // Moving right - insert after target position
+        int target_cell = getCellAt1DPosition(target_pos);
+        const dpl::Node* target_node = network_->getNode(target_cell);
+        int target_width = grid_info_->gridPaddedWidth(target_node);
+        
+        GridX target_x = grid_info_->gridX(state_.cells[target_cell].x);
+        new_x = target_x + target_width - width;
+        
+        // Shift cells left
+        for (int pos = current_pos + 1; pos <= target_pos; pos++) {
+            int shift_cell = getCellAt1DPosition(pos);
+            backupCellStates({shift_cell});
+            GridX curr_x = grid_info_->gridX(state_.cells[shift_cell].x);
+            state_.cells[shift_cell].x = grid_info_->gridXToDbu(curr_x - width);
+            affected_cells.push_back(shift_cell);
+        }
+    }
+    
+    // Apply move
+    state_.cells[cell_id].x = grid_info_->gridXToDbu(new_x);
+    
+    // Update grid and calculate delta
+    updateGrid1D(affected_cells);
+    std::vector<int> affected_nets = getAffectedNets(affected_cells);
+    int64_t delta = calcDeltaHPWL(affected_nets);
+    
+    if (acceptMove(delta, temp_)) {
+        updateHPWLCache(affected_nets);
+        update1DOrdering();  // Maintain 1D ordering
+        return true;
+    } else {
+        restoreCellStates(affected_cells);
+        return false;
+    }
+}
+```
+
+#### 3. Enhanced Flip Operation (Already in SA2D)
+
+The flip operation is already well-designed in SA2D and works for single-row scenarios.
+
+### SA1D Mode Integration
+
+```cpp
+class SAWorker {
+private:
+    bool single_row_mode_ = false;
+    std::vector<int> cell_ordering_1d_;  // 1D ordering for single-row mode
+    
+    // SA1D-style operators
+    bool trySwapCells1D(int cell_id1, int cell_id2);
+    bool tryMoveCell1D(int cell_id, int target_pos);
+    
+    // Helper methods for 1D mode
+    void detectSingleRowMode();
+    void initializeOrdering1D();
+    void updateOrdering1D();
+    int getCellPosition1D(int cell_id);
+    int getCellAt1DPosition(int pos);
+    void updateGrid1D(const std::vector<int>& affected_cells);
+    
+public:
+    void setUseSA1DOperators(bool use_sa1d) { use_sa1d_operators_ = use_sa1d; }
+};
+
+// Modified main SA loop
+void SAWorker::run() {
+    // ... initialization ...
+    
+    // Detect single-row scenario
+    if (use_sa1d_operators_) {
+        detectSingleRowMode();
+        if (single_row_mode_) {
+            initializeOrdering1D();
+            logger_->info(utl::SA2D, 100, "Single-row placement detected, using SA1D operators");
+        }
+    }
+    
+    for (int iter = 0; iter < max_iter_; iter++) {
+        for (int move_id = 0; move_id < num_move_per_iter_; move_id++) {
+            bool move_success = false;
+            
+            if (single_row_mode_) {
+                // Use SA1D-style operators
+                int move_type = selectMoveType();
+                int cell_id1 = selectRandomCell();
+                
+                switch (move_type) {
+                    case 0: {  // Swap
+                        int cell_id2 = selectRandomCell();
+                        move_success = trySwapCells1D(cell_id1, cell_id2);
+                        break;
+                    }
+                    case 1: {  // Move
+                        int target_pos = selectRandomPosition1D();
+                        move_success = tryMoveCell1D(cell_id1, target_pos);
+                        break;
+                    }
+                    case 2: {  // Flip
+                        move_success = tryFlip(cell_id1);
+                        break;
+                    }
+                }
+            } else {
+                // Use regular SA2D operators
+                move_success = tryRegularMove();
+            }
+            
+            // ... acceptance logic ...
+        }
+        
+        // Periodically check if we're still in single-row mode
+        if (iter % 100 == 0 && single_row_mode_) {
+            if (!isSingleRowPlacement()) {
+                single_row_mode_ = false;
+                logger_->info(utl::SA2D, 101, "Switching back to SA2D operators");
+            }
+        }
+        
+        temp_ *= cooling_rate_;
+    }
+}
+```
+
+### Advanced SA1D Integration Features
+
+From the SA1D analysis, we can also incorporate:
+
+#### 1. Best Orderings Integration
+
+```cpp
+void SAWorker::initializeOrdering1D() {
+    if (use_best_orderings_) {
+        // Use SA1D's sophisticated initialization methods:
+        // - Fiedler ordering
+        // - RCM ordering  
+        // - Space-filling curves (Hilbert, Z-order)
+        // - I/O-aware methods (Dirichlet embedding)
+        auto ordering_result = computeBestOrdering1D();
+        if (ordering_result.success) {
+            cell_ordering_1d_ = ordering_result.cell_ordering;
+            applyOrdering1D(cell_ordering_1d_);
+        }
+    } else {
+        // Default: maintain current X-coordinate ordering
+        buildOrdering1DFromCurrentPlacement();
+    }
+}
+```
+
+#### 2. Overlap Handling
+
+```cpp
+// Adapt SA1D's overlap calculation for single-row scenarios
+int SAWorker::computeOverlap1D() {
+    if (!single_row_mode_) return 0;
+    
+    int total_overlap = 0;
+    
+    // Sort cells by X position
+    std::vector<std::pair<int, int>> cell_positions;  // (x, cell_id)
+    for (int i = 0; i < cell_ordering_1d_.size(); i++) {
+        int cell_id = cell_ordering_1d_[i];
+        GridX x = grid_info_->gridX(state_.cells[cell_id].x);
+        cell_positions.push_back({x, cell_id});
+    }
+    
+    std::sort(cell_positions.begin(), cell_positions.end());
+    
+    // Calculate overlaps
+    for (int i = 0; i < cell_positions.size() - 1; i++) {
+        int curr_cell = cell_positions[i].second;
+        int next_cell = cell_positions[i + 1].second;
+        
+        GridX curr_right = grid_info_->gridX(state_.cells[curr_cell].x) + 
+                          grid_info_->gridPaddedWidth(network_->getNode(curr_cell));
+        GridX next_left = grid_info_->gridX(state_.cells[next_cell].x);
+        
+        if (curr_right > next_left) {
+            total_overlap += curr_right - next_left;
+        }
+    }
+    
+    return total_overlap;
+}
+```
+
+### TCL Interface Extensions
+
+```tcl
+# Enable SA1D operators for single-row scenarios
+sa2d_set_use_sa1d_operators 1
+
+# Control SA1D operator probabilities when in single-row mode
+sa2d_set_sa1d_move_probs {0.49 0.49 0.02}  # [swap, move, flip]
+
+# Enable best orderings for 1D initialization
+sa2d_set_sa1d_best_orderings 1
+sa2d_set_sa1d_ordering_method "fiedler"  # or "rcm", "hilbert", etc.
+
+# Enable overlap handling in 1D mode
+sa2d_set_sa1d_overlap_weight 1.0
+```
+
+### Benefits of This Approach
+
+1. **Automatic Detection**: Seamlessly switches between 2D and 1D modes
+2. **Proven Operators**: Leverages SA1D's well-tested 1D operators
+3. **Performance**: 1D operators are more efficient for single-row scenarios
+4. **Quality**: Benefits from SA1D's sophisticated initialization methods
+5. **Flexibility**: Can switch back to 2D mode if placement evolves
+
+This approach provides the best of both worlds - SA2D's general 2D capabilities with SA1D's specialized 1D optimizations when appropriate.
+
 ## Implementation Steps
 
 ### Phase 1: Setup & Grid Infrastructure (Week 1)

@@ -309,6 +309,200 @@ proc sa2d_set_enable_slides { args } {
   sa2d::set_enable_slides $enable
 }
 
+# SA1D Operators for Single-Row Scenarios
+sta::define_cmd_args "sa2d_set_use_sa1d_operators" {enable}
+proc sa2d_set_use_sa1d_operators { args } {
+  sta::parse_key_args "sa2d_set_use_sa1d_operators" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 140 "sa2d_set_use_sa1d_operators requires one argument."
+  }
+  
+  set enable [lindex $args 0]
+  sa2d::set_use_sa1d_operators $enable
+}
+
+sta::define_cmd_args "sa2d_set_sa1d_move_probs" {probs}
+proc sa2d_set_sa1d_move_probs { args } {
+  sta::parse_key_args "sa2d_set_sa1d_move_probs" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 141 "sa2d_set_sa1d_move_probs requires one argument."
+  }
+  
+  set probs [lindex $args 0]
+  
+  # Validate that we have exactly 3 probabilities
+  if { [llength $probs] != 3 } {
+    utl::error SA2D 142 "sa2d_set_sa1d_move_probs expects 3 probabilities [swap, move, flip] (got [llength $probs])."
+  }
+  
+  # Validate that probabilities sum to approximately 1.0
+  set sum [expr [lindex $probs 0] + [lindex $probs 1] + [lindex $probs 2]]
+  if { abs($sum - 1.0) > 0.01 } {
+    utl::error SA2D 143 "sa2d_set_sa1d_move_probs probabilities must sum to 1.0 (got $sum)."
+  }
+  
+  sa2d::set_sa1d_move_probs $probs
+}
+
+sta::define_cmd_args "sa2d_set_use_best_orderings_1d" {enable}
+proc sa2d_set_use_best_orderings_1d { args } {
+  sta::parse_key_args "sa2d_set_use_best_orderings_1d" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 144 "sa2d_set_use_best_orderings_1d requires one argument."
+  }
+  
+  set enable [lindex $args 0]
+  sa2d::set_use_best_orderings_1d $enable
+}
+
+sta::define_cmd_args "sa2d_set_sa1d_overlap_weight" {weight}
+proc sa2d_set_sa1d_overlap_weight { args } {
+  sta::parse_key_args "sa2d_set_sa1d_overlap_weight" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 145 "sa2d_set_sa1d_overlap_weight requires one argument."
+  }
+  
+  set weight [lindex $args 0]
+  
+  # Validate weight is non-negative
+  if { $weight < 0 } {
+    utl::error SA2D 146 "sa2d_set_sa1d_overlap_weight must be non-negative (got $weight)."
+  }
+  
+  sa2d::set_sa1d_overlap_weight $weight
+}
+
+sta::define_cmd_args "sa2d_set_enable_reordering" {enable}
+proc sa2d_set_enable_reordering { args } {
+  sta::parse_key_args "sa2d_set_enable_reordering" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 119 "sa2d_set_enable_reordering requires one argument."
+  }
+  
+  set enable [lindex $args 0]
+  sa2d::set_enable_reordering $enable
+}
+
+sta::define_cmd_args "sa2d_set_reorder_window_size" {size}
+proc sa2d_set_reorder_window_size { args } {
+  sta::parse_key_args "sa2d_set_reorder_window_size" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 122 "sa2d_set_reorder_window_size requires one argument."
+  }
+  
+  set size [lindex $args 0]
+  
+  # Validate window size (must be between 2 and 4)
+  if { $size < 2 || $size > 4 } {
+    utl::error SA2D 123 "Reorder window size must be between 2 and 4 (got $size)."
+  }
+  
+  # Note: This window size now applies to DPL's native reordering when
+  # sa2d_set_use_dpl_reordering is enabled (recommended)
+  sa2d::set_reorder_window_size $size
+}
+
+sta::define_cmd_args "sa2d_set_use_dpl_reordering" {enable}
+proc sa2d_set_use_dpl_reordering { args } {
+  sta::parse_key_args "sa2d_set_use_dpl_reordering" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 127 "sa2d_set_use_dpl_reordering requires one argument."
+  }
+  
+  set enable [lindex $args 0]
+  sa2d::set_use_dpl_reordering $enable
+}
+
+sta::define_cmd_args "sa2d_set_pre_sa_reordering" {enable}
+proc sa2d_set_pre_sa_reordering { args } {
+  sta::parse_key_args "sa2d_set_pre_sa_reordering" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 133 "sa2d_set_pre_sa_reordering requires one argument."
+  }
+  
+  set enable [lindex $args 0]
+  sa2d::set_pre_sa_reordering $enable
+}
+
+sta::define_cmd_args "sa2d_set_dpl_reordering_passes" {passes}
+proc sa2d_set_dpl_reordering_passes { args } {
+  sta::parse_key_args "sa2d_set_dpl_reordering_passes" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 128 "sa2d_set_dpl_reordering_passes requires one argument."
+  }
+  
+  set passes [lindex $args 0]
+  
+  # Validate passes (must be positive)
+  if { $passes < 1 } {
+    utl::error SA2D 129 "DPL reordering passes must be at least 1 (got $passes)."
+  }
+  
+  sa2d::set_dpl_reordering_passes $passes
+}
+
+sta::define_cmd_args "sa2d_set_dpl_reordering_tolerance" {tolerance}
+proc sa2d_set_dpl_reordering_tolerance { args } {
+  sta::parse_key_args "sa2d_set_dpl_reordering_tolerance" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 1 } {
+    utl::error SA2D 130 "sa2d_set_dpl_reordering_tolerance requires one argument."
+  }
+  
+  set tolerance [lindex $args 0]
+  
+  # Validate tolerance (must be positive)
+  if { $tolerance <= 0 } {
+    utl::error SA2D 131 "DPL reordering tolerance must be positive (got $tolerance)."
+  }
+  
+  sa2d::set_dpl_reordering_tolerance $tolerance
+}
+
+sta::define_cmd_args "sa2d_run_dpl_reordering_only" {}
+proc sa2d_run_dpl_reordering_only { args } {
+  sta::parse_key_args "sa2d_run_dpl_reordering_only" args \
+    keys {} \
+    flags {}
+    
+  if { [llength $args] != 0 } {
+    utl::error SA2D 132 "sa2d_run_dpl_reordering_only expects no arguments."
+  }
+  
+  # Run DPL's native reordering optimization
+  # This is guaranteed to not cause overlaps as it uses DPL's internal validation
+  sa2d::run_dpl_reordering_only
+}
+
 # Basic SA2D placement command
 # This runs simulated annealing to optimize placement
 # Options:
@@ -322,6 +516,7 @@ proc sa2d_set_enable_slides { args } {
 #   -num_workers <value>: Number of parallel workers for GWTW (default: 1)
 #   -gwtw_interval <value>: Iterations between GWTW synchronization (default: 50)
 #   -elite_ratio <value>: Fraction of workers considered elite in GWTW (default: 0.2)
+#   -kick_region_size <value>: Size of region for kick moves in grid sites (default: 10)
 sta::define_cmd_args "sa2d_simple_place" {
   [-seed seed]
   [-max_displacement disp]
@@ -333,16 +528,18 @@ sta::define_cmd_args "sa2d_simple_place" {
   [-num_workers workers]
   [-gwtw_interval interval]
   [-elite_ratio ratio]
+  [-kick_region_size size]
 }
 
 proc sa2d_simple_place { args } {
   sta::parse_key_args "sa2d_simple_place" args \
     keys {-seed -max_displacement -max_temp -cooling_rate -max_iter \
-          -move_budget -moves_per_iter -num_workers -gwtw_interval -elite_ratio} \
+          -move_budget -moves_per_iter -num_workers -gwtw_interval -elite_ratio \
+          -kick_region_size} \
     flags {}
     
   if { [llength $args] != 0 } {
-    utl::error SA2D 109 "sa2d_simple_place expects no positional arguments."
+    utl::error SA2D 124 "sa2d_simple_place expects no positional arguments."
   }
   
   # Apply parameters if provided
@@ -358,7 +555,7 @@ proc sa2d_simple_place { args } {
     } elseif { [llength $disp] == 2 } {
       sa2d_set_max_displacement [lindex $disp 0] [lindex $disp 1]
     } else {
-      utl::error SA2D 119 "-max_displacement expects 1 or 2 values"
+      utl::error SA2D 125 "-max_displacement expects 1 or 2 values"
     }
   }
   
@@ -394,6 +591,10 @@ proc sa2d_simple_place { args } {
     sa2d::set_elite_ratio $keys(-elite_ratio)
   }
   
+  if { [info exists keys(-kick_region_size)] } {
+    sa2d::set_kick_strength $keys(-kick_region_size)
+  }
+  
   # Run SA
   sa2d::run
 }
@@ -406,7 +607,7 @@ proc sa2d_run { args } {
     flags {}
     
   if { [llength $args] != 0 } {
-    utl::error SA2D 120 "sa2d_run expects no arguments."
+    utl::error SA2D 126 "sa2d_run expects no arguments."
   }
   
   sa2d::run

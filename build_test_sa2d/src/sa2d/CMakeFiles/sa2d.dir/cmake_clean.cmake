@@ -8,6 +8,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/sa2d.dir/src/MakeSA2D.cpp.o.d"
   "CMakeFiles/sa2d.dir/src/SA2D.cpp.o"
   "CMakeFiles/sa2d.dir/src/SA2D.cpp.o.d"
+  "CMakeFiles/sa2d.dir/src/SA2DReorder.cpp.o"
+  "CMakeFiles/sa2d.dir/src/SA2DReorder.cpp.o.d"
   "CMakeFiles/sa2d.dir/src/ThreadSafeGrid.cpp.o"
   "CMakeFiles/sa2d.dir/src/ThreadSafeGrid.cpp.o.d"
   "CMakeFiles/sa2d.dir/src/Worker.cpp.o"

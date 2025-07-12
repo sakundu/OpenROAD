@@ -105,7 +105,11 @@ public:
                           bool enable_chain_moves,
                           int chain_move_interval,
                           int chain_moves_per_round,
-                          bool enable_slides);
+                          bool enable_slides,
+                          bool use_sa1d_operators,
+                          const std::vector<float>& sa1d_move_probs,
+                          bool use_best_orderings_1d,
+                          float sa1d_overlap_weight);
     
     void runWorkers(int iterations);
     void performGWTW();
@@ -154,6 +158,9 @@ private:
     
     // Random number generation for GWTW
     std::mt19937 gwtw_rng_;
+    
+    // Grid info reference for checking design characteristics
+    const ImmutableGridInfo* grid_info_ = nullptr;
 };
 
 }  // namespace sa2d 

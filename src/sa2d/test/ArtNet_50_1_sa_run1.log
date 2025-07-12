@@ -1,0 +1,106 @@
+[INFO SA2D-0001] SA2D initialized
+OpenROAD v2.0-22160-g3fbf3fa 
+Features included (+) or not (-): +GPU -GUI -Python
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7_tech_1x_201209.lef, created 24 layers, 9 vias
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7sc7p5t_27_R_1x_201211.lef, created 212 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t in asap7sc7p5t_27_L_1x_201211 already seen in asap7sc7p5t_27_R_1x_201211
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7sc7p5t_27_L_1x_201211.lef, created 212 library cells
+[INFO ODB-0394] Duplicate site asap7sc7p5t in asap7sc7p5t_27_SL_1x_201211 already seen in asap7sc7p5t_27_R_1x_201211
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/asap7sc7p5t_27_SL_1x_201211.lef, created 212 library cells
+[WARNING ODB-0176] error: undefined layer (OVERLAP) referenced
+[INFO ODB-0227] LEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/lef/sram_asap7_16x256_1rw.lef, created 1 library cells
+[INFO ODB-0127] Reading DEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/def/ArtNet_50_1_placed.def
+[INFO ODB-0128] Design: ArtNet
+[INFO ODB-0130]     Created 14 pins.
+[INFO ODB-0131]     Created 50 components and 242 component-terminals.
+[INFO ODB-0132]     Created 2 special nets and 100 connections.
+[INFO ODB-0133]     Created 59 nets and 142 connections.
+[INFO ODB-0134] Finished DEF file: /home/fetzfs_projects/SAITPlacement/sakundu/Testcases/def/ArtNet_50_1_placed.def
+Placement Analysis
+---------------------------------
+total displacement          0.0 u
+average displacement        0.0 u
+max displacement            0.0 u
+original HPWL             194.9 u
+legalized HPWL            202.0 u
+delta HPWL                    4 %
+
+
+3. Configuring SA2D for parallel execution...
+[INFO SA2D-0002] Max displacement set to (0, 7) sites
+
+4. Running parallel SA2D optimization...
+[INFO SA2D-0005] Starting SA2D placement optimization
+[INFO SA2D-0006] Parameters: temp=100.0, cooling=0.998, iter=6000, displacement=(0,7) sites, seed=42
+[INFO SA2D-0023] Initial HPWL (ODB): 202.0 u
+[INFO SA2D-0301] Running parallel SA with 80 workers
+[INFO SA2D-0303] Initial HPWL: 203.0 u
+[INFO SA2D-0410] 
+[INFO SA2D-0411] Iteration    Progress    Temperature    Current HPWL    Best HPWL    Accept Rate
+[INFO SA2D-0412] ---------    --------    -----------    ------------    ---------    -----------
+[INFO SA2D-0413]         0          0%       1.00e+02           203.0        203.0           0.0%
+[INFO SA2D-0413]       300          5%       5.48e+01           191.8        191.8          16.0%
+[INFO SA2D-0413]       600         10%       3.01e+01           191.8        191.8          15.1%
+[INFO SA2D-0413]       900         15%       1.65e+01           191.8        191.8          14.7%
+[INFO SA2D-0413]      1200         20%       9.05e+00           191.8        191.8          14.3%
+[INFO SA2D-0413]      1500         25%       4.96e+00           191.8        191.8          13.7%
+[INFO SA2D-0413]      1800         30%       2.72e+00           191.8        191.8          13.1%
+[INFO SA2D-0413]      2100         35%       1.49e+00           191.8        191.8          12.7%
+[INFO SA2D-0413]      2400         40%       8.19e-01           191.8        191.8          12.6%
+[INFO SA2D-0413]      2700         45%       4.49e-01           191.8        191.8          12.6%
+[INFO SA2D-0413]      3000         50%       2.46e-01           191.8        191.8          12.6%
+[INFO SA2D-0413]      3300         55%       1.35e-01           191.8        191.8          12.6%
+[INFO SA2D-0413]      3600         60%       7.41e-02           191.8        191.8          12.6%
+[INFO SA2D-0413]      3900         65%       4.07e-02           191.8        191.8          12.6%
+[INFO SA2D-0413]      4200         70%       2.23e-02           191.8        191.8          12.6%
+[INFO SA2D-0413]      4500         75%       1.22e-02           191.8        191.8          12.6%
+[INFO SA2D-0413]      4800         80%       6.71e-03           191.8        191.8          12.6%
+[INFO SA2D-0413]      5100         85%       3.68e-03           191.8        191.8          12.6%
+[INFO SA2D-0413]      5400         90%       2.02e-03           191.8        191.8          12.6%
+[INFO SA2D-0413]      5700         95%       1.11e-03           191.8        191.8          12.6%
+[INFO SA2D-0413]      6000        100%       6.07e-04           191.8        191.8          50.3%
+[INFO SA2D-0308] Best solution found by worker 0 with HPWL: 191.8 u
+[INFO SA2D-0350] Worker 0 applying best solution with HPWL: 191.8 u
+[INFO SA2D-0463] Validating best solution for overlaps...
+[INFO SA2D-0351] Updated 50 cells in DPL network
+[INFO SA2D-0605] Skipping SA2D reordering - will use DPL reordering after SA completes
+[INFO SA2D-0309] DPL network updated, proceeding to update ODB instances
+[INFO SA2D-0307] 
+[INFO SA2D-0306] Final HPWL: 191.5 u (improvement: 5.64%)
+[INFO SA2D-0022] SA2D placement optimization completed
+[INFO SA2D-0652] Running DPL reordering optimization only
+Running DPL reordering optimization only.
+[INFO DPL-0401] Setting random seed to 0.
+[INFO DPL-0402] Setting maximum displacement 0 7 to 63828 1890 units.
+[INFO DPL-0320] Collected 14 fixed cells.
+[INFO DPL-0318] Collected 50 single height cells.
+[INFO DPL-0321] Collected 0 wide cells.
+[INFO DPL-0322] Image (504, 504) - (32418, 774)
+[INFO DPL-0310] Assigned 50 cells into segments.  Movement in X-direction is 0.000000, movement in Y-direction is 0.000000.
+[INFO DPL-0313] Found 0 cells in wrong regions.
+[INFO DPL-0315] Found 0 row alignment problems.
+[INFO DPL-0314] Found 0 site alignment problems.
+[INFO DPL-0311] Found 0 overlaps between adjacent cells.
+[INFO DPL-0312] Found 0 edge spacing violations and 0 padding violations.
+[INFO DPL-0303] Running algorithm for reordering.
+[INFO DPL-0304] Pass   1 of reordering; objective is 1.917740e+05.
+[INFO DPL-0305] End of reordering; objective is 1.917740e+05, improvement is 0.58 percent.
+[INFO DPL-0380] Cell flipping.
+[INFO DPL-0382] Changed 0 cell orientations for row compatibility.
+[INFO DPL-0383] Performed 2 cell flips.
+[INFO DPL-0384] End of flipping; objective is 1.913200e+05, improvement is 0.24 percent.
+[INFO DPL-0313] Found 0 cells in wrong regions.
+[INFO DPL-0315] Found 0 row alignment problems.
+[INFO DPL-0314] Found 0 site alignment problems.
+[INFO DPL-0311] Found 0 overlaps between adjacent cells.
+[INFO DPL-0312] Found 0 edge spacing violations and 0 padding violations.
+Reordering Results:
+  Initial HPWL: 191.5 u
+  Final HPWL:   198.6 u
+  Improvement:  -3.67%
+
+Parallel SA2D runtime: 105.795 seconds
+
+5. Checking final placement...
